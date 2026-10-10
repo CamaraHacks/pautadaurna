@@ -26,7 +26,7 @@ sudo mkdir -p /var/www/pautadaurna && sudo chown "$USER" /var/www/pautadaurna
 
 ## 4. Project
 ```sh
-git clone <repo-url> ~/abstencao-2026 && cd ~/abstencao-2026
+git clone https://github.com/CamaraHacks/pautadaurna.git ~/abstencao-2026 && cd ~/abstencao-2026
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 cp deploy/.env.example .env && chmod 600 .env   # put the SerpApi key in .env
 deploy/atualiza.sh --completo                   # first run downloads TSE/IBGE (~250 MB) and publishes
