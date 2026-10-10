@@ -104,6 +104,33 @@ def build_perfil():
     return p.sort_values(["dimensao", "ordem"])
 
 
+def build_zonas():
+    """Turnout and top-2 vote share per electoral zone, for municipalities with more than one zone."""
+    z = {}
+    for year in (2026, 2022):
+        (csv,) = extract(f"detalhe_votacao_munzona_{year}.zip", lambda n: n.endswith("_BRASIL.csv"))
+        z[year] = duckdb.sql(f"""
+            select cast(CD_MUNICIPIO as int) cd_tse, cast(NR_ZONA as int) zona,
+                   sum(cast(QT_APTOS as bigint)) aptos_{year}, sum(cast(QT_ABSTENCOES as bigint)) abst_{year}
+            from read_csv('{csv}', delim=';', encoding='latin-1', all_varchar=true)
+            where DS_CARGO = 'Presidente' and NR_TURNO = '1' and SG_UF <> 'ZZ' group by all
+        """).df()
+    (csv,) = extract("votacao_candidato_munzona_2026.zip", lambda n: n.endswith("_BRASIL.csv"))
+    v = duckdb.sql(f"""
+        select cast(CD_MUNICIPIO as int) cd_tse, cast(NR_ZONA as int) zona, NM_URNA_CANDIDATO candidato,
+               sum(cast(QT_VOTOS_NOMINAIS_VALIDOS as bigint)) votos
+        from read_csv('{csv}', delim=';', encoding='latin-1', all_varchar=true)
+        where DS_CARGO = 'Presidente' and NR_TURNO = '1' and SG_UF <> 'ZZ' group by all
+    """).df()
+    vt = v.pivot_table(index=["cd_tse", "zona"], columns="candidato", values="votos", aggfunc="sum", fill_value=0)
+    top2 = v.groupby("candidato").votos.sum().nlargest(2).index
+    sh = vt[top2].div(vt.sum(axis=1), axis=0).mul(100).round(1)
+    sh.columns = ["pct_1", "pct_2"]
+    out = z[2026].merge(z[2022], on=["cd_tse", "zona"], how="left").merge(sh.reset_index(), on=["cd_tse", "zona"], how="left")
+    n = out.groupby("cd_tse").zona.transform("size")
+    return out[n > 1]
+
+
 SEGMENTO = """
     case
         when cast(CD_FAIXA_ETARIA as int) >= 7074 then 'idosos'
@@ -154,6 +181,9 @@ if __name__ == "__main__":
     seg.to_csv(ROOT / "data" / "segmentos.csv", index=False)
     print(seg.groupby("segmento")[["aptos", "abst"]].sum().assign(tx=lambda d: 100 * d.abst / d.aptos,
                                                                    share=lambda d: 100 * d.abst / d.abst.sum()))
+    z = build_zonas()
+    z.to_csv(ROOT / "data" / "zonas.csv", index=False)
+    print(f"zonas: {len(z)} rows in {z.cd_tse.nunique()} municipalities")
     v = build_votos()
     v.to_csv(ROOT / "data" / "votos.csv", index=False)
     print(v.groupby(["candidato", "partido"]).votos.sum().sort_values(ascending=False)

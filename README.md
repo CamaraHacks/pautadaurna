@@ -22,10 +22,17 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python pipeline/01_download.py   # TSE + IBGE SIDRA + mesh -> data/raw (cached)
 .venv/bin/python pipeline/02_build.py      # -> data/municipios.csv, data/perfil.csv
 .venv/bin/python pipeline/03_analyze.py    # -> site/data.json
+.venv/bin/python pipeline/05_trends.py     # optional: Google daily trending snapshot -> site/trends.json
 .venv/bin/python pipeline/04_export.py     # -> site/index.html
 ```
 
 When TSE publishes `perfil_comparecimento_abstencao_2026.zip`, rerun all four steps; the profile switches to 2026 automatically.
+
+## Site structure
+
+One self-contained page with four views and a global filter (city, state, group) kept in the URL:
+**Panorama** (national story), **Onde agir** (ranking, city detail, electoral zones, group weights, abstainers vs. vote margin),
+**Kit de redes** (per-group channels, formats, keywords, ready civic messages), **Método**. See `DESIGN.md`.
 
 ## Sources
 

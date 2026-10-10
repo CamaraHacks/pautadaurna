@@ -31,6 +31,10 @@
     "idosos": {
       "nome": "Movimento Econômico, abstenção de 60% entre idosos",
       "url": "https://movimentoeconomico.com.br/politica/eleicoes-2026/2026/10/02/abstencao-de-60-entre-idosos-coloca-grupo-no-centro-do-debate-eleitoral/"
+    },
+    "reuters": {
+      "nome": "Reuters Institute, Digital News Report 2025, Brasil",
+      "url": "https://reutersinstitute.politics.ox.ac.uk/es/digital-news-report/2025/brasil"
     }
   },
   "grupos": [
@@ -79,7 +83,25 @@
         "avaaz",
         "nicolau",
         "idosos",
-        "tic"
+        "tic",
+        "reuters"
+      ],
+      "formatos": [
+        {
+          "rede": "YouTube",
+          "formato": "Vídeo curto horizontal, legenda grande",
+          "exemplo": "“Tem mais de 70? Seu voto ainda vale. Veja como chegar à seção com prioridade.”"
+        },
+        {
+          "rede": "WhatsApp",
+          "formato": "Card com letra grande ou áudio de até 30s para encaminhar à família",
+          "exemplo": "“Vó, vô: dia 25 tem 2º turno. Quem tem 60+ não pega fila.”"
+        },
+        {
+          "rede": "TV e rádio",
+          "formato": "Spot de serviço, entrevista em rádio local",
+          "exemplo": "Horário da votação, prioridade na fila, documento com foto."
+        }
       ]
     },
     {
@@ -127,7 +149,25 @@
         "df_motivos",
         "avaaz",
         "nicolau",
-        "problemas"
+        "problemas",
+        "reuters"
+      ],
+      "formatos": [
+        {
+          "rede": "Instagram",
+          "formato": "Reels vertical de 15–30s, carrossel “passo a passo”",
+          "exemplo": "“e-Título em 3 passos: baixa, entra, vê sua seção.”"
+        },
+        {
+          "rede": "TikTok",
+          "formato": "Vídeo nativo com criador local, resposta a comentário, dueto",
+          "exemplo": "“Faltou no 1º turno? Responde aqui que eu te mostro como resolver.”"
+        },
+        {
+          "rede": "WhatsApp",
+          "formato": "Status e grupo da turma ou do trabalho",
+          "exemplo": "Print do e-Título com a seção e “e você, já sabe onde vota?”"
+        }
       ]
     },
     {
@@ -173,7 +213,25 @@
       "fontes": [
         "df_motivos",
         "renda",
-        "problemas"
+        "problemas",
+        "reuters"
+      ],
+      "formatos": [
+        {
+          "rede": "WhatsApp",
+          "formato": "Áudio curto e card simples com um só recado",
+          "exemplo": "“Pra votar basta RG ou CNH. Não precisa do título de papel.”"
+        },
+        {
+          "rede": "Rádio e TV aberta",
+          "formato": "Spot de 30s, chamada em programa popular",
+          "exemplo": "Disque-Eleitor 148 e transporte no dia da eleição."
+        },
+        {
+          "rede": "Facebook e YouTube",
+          "formato": "Vídeo curto com gente do bairro, em lugar conhecido",
+          "exemplo": "Liderança comunitária explicando como achar a seção."
+        }
       ]
     },
     {
@@ -218,7 +276,25 @@
       ],
       "fontes": [
         "df_motivos",
-        "problemas"
+        "problemas",
+        "reuters"
+      ],
+      "formatos": [
+        {
+          "rede": "Instagram",
+          "formato": "Carrossel prático e Stories com enquete",
+          "exemplo": "“Vota cedo ou depois do almoço? Fila menor antes das 10h.”"
+        },
+        {
+          "rede": "WhatsApp",
+          "formato": "Status e grupos de condomínio, igreja e trabalho",
+          "exemplo": "Lembrete na véspera com horário e documento."
+        },
+        {
+          "rede": "Facebook",
+          "formato": "Post com serviço local (transporte, horário)",
+          "exemplo": "“Sua cidade tem ônibus de graça no dia 25? Confira.”"
+        }
       ]
     },
     {
@@ -260,7 +336,25 @@
       ],
       "fontes": [
         "df_motivos",
-        "problemas"
+        "problemas",
+        "reuters"
+      ],
+      "formatos": [
+        {
+          "rede": "Instagram",
+          "formato": "Carrossel com dados (abstenção × margem)",
+          "exemplo": "“A diferença entre os dois primeiros foi de 2,2 milhões de votos. 32,9 milhões não votaram.”"
+        },
+        {
+          "rede": "LinkedIn",
+          "formato": "Post de dado com fonte",
+          "exemplo": "Abstenção cresceu nas cidades mais ricas: o que isso diz?"
+        },
+        {
+          "rede": "Newsletters e podcasts",
+          "formato": "Nota curta com link para o e-Título",
+          "exemplo": "“Viajando no dia 25? Justifique pelo e-Título em minutos.”"
+        }
       ]
     }
   ]
