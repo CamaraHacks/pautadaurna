@@ -1,4 +1,4 @@
-# Design system — Mapa da Abstenção
+# Design system — Pauta da Urna
 
 A small, dependency-free system built for one job: helping organizers find where abstainers are and how to reach them.
 Visual identity: white paper with **red** (accent, abstention numbers) and **yellow** (highlighter, source labels),
