@@ -79,6 +79,7 @@ def main():
                 (converte_video if video else converte_imagem)(src, dst)
             indice[v["id"]] = {"arquivo": f"midia/{dst.name}", "mb": round(dst.stat().st_size / 1e6, 1)}
             feitos += 1
+            print(f"[{feitos + falhas}/{len(acv['itens'][:limite])}] {dst.name} {indice[v['id']]['mb']} MB", flush=True)
         except Exception as e:  # keep going; the item simply has no local file
             falhas += 1
             print(f"falhou {v['id']} ({v['titulo'][:40]}): {e}")
