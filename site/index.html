@@ -204,6 +204,11 @@ main { padding-inline: 20px; padding-block: 36px 96px; gap: 0; }
 .blk { display: grid; gap: 8px; align-content: start; }
 .blk h3 { font-size: 0.72rem; font-family: var(--mono); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .blk ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; font-size: 0.94rem; }
+/* Dores: o único bloco com fundo cheio no kit */
+.dores { background: var(--yellow); color: #191714; border-radius: 6px; padding: 18px 20px 20px; display: grid; gap: 12px; box-shadow: 0 2px 0 rgba(25, 23, 20, 0.28); }
+.dores h3 { justify-self: start; font: 700 0.78rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: var(--accent); padding: 6px 9px; border-radius: 3px; }
+.dores ul { margin: 0; padding-left: 20px; display: grid; gap: 8px; font-size: 1.02rem; line-height: 1.5; }
+.dores li::marker { color: var(--accent-ink); }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { font: 500 0.78rem/1 var(--mono); padding: 6px 8px; border: 1px solid var(--rule); border-radius: 3px; background: var(--ground); color: var(--ink); display: inline-flex; gap: 8px; align-items: center; }
 .chip.kw > span::before { content: "#"; color: var(--accent-ink); margin-right: 2px; }
@@ -1257,10 +1262,8 @@ function renderKit() {
         <p class="note">“Trends ↗” abre o Google Trends dos últimos 30 dias${S.uf ? " em " + S.uf : " no Brasil"} para conferir se o termo é buscado.</p></div>
       <div class="blk"><h3>Mensagens cívicas prontas</h3>
         ${g.mensagens.map(m => `<div class="msg"><span>${esc(m)}</span><span><button type="button" class="btn sm" data-copy="${esc(m)}">Copiar</button></span></div>`).join("")}</div>
-      <div class="cols">
-        <div class="blk"><h3>Dores</h3><ul>${g.dores.map(d => `<li>${esc(d)}</li>`).join("")}</ul></div>
-        <div class="blk"><h3>Temas que pesam</h3><div class="chips">${g.temas.map(t => `<span class="chip">${esc(t)}</span>`).join("")}</div></div>
-      </div>
+      <div class="dores"><h3>Dores deste grupo</h3><ul>${g.dores.map(d => `<li>${esc(d)}</li>`).join("")}</ul></div>
+      <div class="blk"><h3>Temas que pesam</h3><div class="chips">${g.temas.map(t => `<span class="chip">${esc(t)}</span>`).join("")}</div></div>
       <details class="vies"><summary>Inclinação política estimada</summary>
         <p class="note">No Brasil, resultado do 1º turno nos municípios onde vivem os ausentes deste grupo (média ponderada): ${CAND.map((c, j) => `${NOMES[c]} <b class="num">${pf(pcts[j])}%</b>`).join(" · ")}</p>
         <div class="leanbar" aria-hidden="true">${pcts.map((p, j) => `<div style="flex:${p} 1 0;background:${css(j ? "--ink-3" : "--ink-2")}"></div>`).join("")}<div style="flex:${Math.max(0, 100 - pcts[0] - pcts[1])} 1 0;background:var(--rule)"></div></div>
