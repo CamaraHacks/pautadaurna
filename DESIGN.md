@@ -4,7 +4,7 @@ A small, dependency-free system built for one job: helping organizers find where
 Visual identity: white paper with **red** (accent, abstention numbers) and **yellow** (highlighter, source labels),
 a voting-machine (urna) illustration in the hero, and buttons shaped like urna keys: the black number key marks the
 active tab, the orange **CORRIGE** key clears filters, the white **BRANCO** key copies text. Single light theme by choice.
-The choropleth runs yellow → red. Candidates never get a color. Data-viz rules follow IBM Carbon's data patterns.
+The choropleth runs yellow → red. Candidates get a validated neutral pair (violet / teal), never party colors, and red stays reserved for abstention. Data-viz rules follow IBM Carbon's data patterns.
 
 ## Tokens (`site/template.html`, `:root`)
 
@@ -20,8 +20,9 @@ The choropleth runs yellow → red. Candidates never get a color. Data-viz rules
 | `--seq-0…6` | yellow → dark red | choropleth (sequential) |
 | `--div-neg/mid/pos` | steel blue / paper grey / red | change since 2022 (diverging) |
 | `--g1…g5` | validated categorical slots 1–5 | the five abstainer groups, fixed order, never cycled |
+| `--cand-1` / `--cand-2` | `#4a3aa7` / `#0090a0` | Flávio / Lula: dot next to the name, vote-split bars; text keeps text color |
 
-Candidates are never given a color. Political lean is drawn in neutral inks.
+Candidates use the neutral `--cand` pair (passes lightness, chroma, CVD and contrast checks on white); the legend says the colors are unrelated to parties.
 
 Type: **Archivo** (condensed, display), **Source Serif 4** (reading), **IBM Plex Mono** (numbers, labels, controls).
 

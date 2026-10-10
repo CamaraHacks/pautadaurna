@@ -1,0 +1,7 @@
+# /etc/caddy/Caddyfile — HTTPS certificate is issued automatically once DNS points here
+pautadaurna.com.br, www.pautadaurna.com.br {
+	root * /var/www/pautadaurna
+	encode gzip
+	header Cache-Control "public, max-age=600"
+	file_server
+}

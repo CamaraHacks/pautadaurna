@@ -24,6 +24,8 @@
   --seq-0: #fff6cc; --seq-1: #ffe27a; --seq-2: #fcc63a; --seq-3: #f59e1b; --seq-4: #e4661f; --seq-5: #c8321f; --seq-6: #8f1515;
   --div-neg: #2f6f8f; --div-mid: #efece4; --div-pos: #c81e2b;
   --nodata: #e3dfd5;
+  --cand-1: #4a3aa7;       /* Flávio: violeta neutro, sem relação com partido */
+  --cand-2: #0090a0;       /* Lula: verde-azulado neutro */
   --g1: #2a78d6; --g2: #eb6834; --g3: #1baf7a; --g4: #eda100; --g5: #e87ba4;
   --display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
   --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
@@ -204,6 +206,16 @@ main { padding-inline: 20px; padding-block: 36px 96px; gap: 0; }
 .blk { display: grid; gap: 8px; align-content: start; }
 .blk h3 { font-size: 0.72rem; font-family: var(--mono); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .blk ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; font-size: 0.94rem; }
+/* Votos por candidato (cores neutras) */
+.cand { display: inline-flex; align-items: center; gap: 6px; }
+.cand i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+.votebar { display: flex; height: 10px; gap: 2px; border-radius: 2px; overflow: hidden; max-width: 360px; margin-top: 6px; }
+.votebar.sm { height: 8px; width: 120px; margin: 0; }
+.visor .votebar { display: flex; gap: 2px; }
+.visor .votebar > div { display: block; }
+.site-foot { max-width: 980px; margin: 0 auto; padding: 18px 20px 28px; border-top: 3px solid var(--yellow); display: flex; gap: 8px 20px; flex-wrap: wrap; justify-content: space-between; font-size: 0.86rem; color: var(--ink-2); }
+.site-foot strong { color: var(--ink); }
+
 /* Carrossel de temas */
 .carousel { display: grid; gap: 10px; }
 .car-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
@@ -449,6 +461,10 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
     </footer>
   </div>
 </main>
+<footer class="site-foot">
+  <span>Criado por <strong>Gustavo Câmara</strong></span>
+  <span>Dados: TSE, IBGE, Datafolha e Quaest<span id="foot-trends"></span></span>
+</footer>
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
@@ -457,6 +473,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
 const D = /*__DATA__*/null;
 const TOPO = /*__TOPO__*/null;
 const G = /*__GRUPOS__*/null;
+const TG = /*__TRENDS_GRUPOS__*/null;
 // Theme pictograms (24×24, stroke = currentColor), drawn inline so the page needs no image files
 const ICON = {
   saude: '<path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/><path d="M12 9v5M9.5 11.5h5"/>',
@@ -481,6 +498,9 @@ const ICON = {
   aviao: '<path d="M3 13.5l7-1.5 4.5-7.5c.8-1.3 2.8-.9 2.6.7L16 12l4.5 1.5-.5 2-5-.5-3 4.5H10l1-4.5-7-.5z"/>',
 };
 const icon = (k, size = 40) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k] || ICON.documento}</svg>`;
+// candidates: neutral colors (not party colors); text keeps text color, the dot carries identity
+const candLbl = (i, pct) => `<span class="cand"><i style="background:var(--cand-${i + 1})"></i>${NOMES[CAND[i]]} <b class="num">${pf(pct)}%</b></span>`;
+const voteBar = (pcts, cls = "") => `<div class="votebar ${cls}" role="img" aria-label="${CAND.map((c, i) => `${NOMES[c]} ${pf(pcts[i])}%`).join(", ")}">${pcts.map((p, i) => `<div style="flex:${p} 1 0;background:var(--cand-${i + 1})"></div>`).join("")}<div style="flex:${Math.max(0, 100 - pcts[0] - pcts[1])} 1 0;background:var(--rule)"></div></div>`;
 const hashtag = t => "#" + t.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join("");
 
 const nf = new Intl.NumberFormat("pt-BR");
@@ -634,7 +654,7 @@ function renderPanorama() {
   $("visor-br").innerHTML = `
     <div><span class="k">Não compareceram</span><span class="v big">${nf.format(T.abst)}</span><span class="d">de ${nf.format(T.aptos)} eleitores aptos no Brasil</span></div>
     <div><span class="k">Taxa de abstenção</span><span class="v">${pf(T.tx_2026, 2)}%</span><span class="d">${pf(T.tx_2022, 2)}% no 1º turno de 2022 (${sign(T.tx_2026 - T.tx_2022, 2)} p.p.)</span></div>
-    <div><span class="k">1º turno, votos válidos</span><span class="v" style="font-size:1.05rem;line-height:1.4">${CAND.map((c, i) => `${NOMES[c]} <b>${pf(D.voto_br[i])}%</b>`).join("<br>")}</span><span class="d">2º turno em 25 de outubro</span></div>`;
+    <div><span class="k">1º turno, votos válidos</span><span class="v" style="font-size:1.05rem;line-height:1.5;display:grid">${CAND.map((c, i) => candLbl(i, D.voto_br[i])).join("")}</span>${voteBar(D.voto_br)}<span class="d">Cores neutras, sem relação com partidos · 2º turno em 25/10</span></div>`;
   const rb = ratioBlock(T.abst, D.margem_br, "todo o Brasil");
   $("ratio-br").textContent = rb.big; $("ratio-br-txt").textContent = rb.txt + " Cada voto de diferença corresponde a muitos ausentes."; $("cmp-br").innerHTML = rb.cmp;
 }
@@ -760,11 +780,11 @@ function renderCidade(r) {
   $("exp-h").textContent = `${r[1]} · ${r[2]}`;
   $("exp-src").textContent = "1º turno 2026";
   const d22 = r[5] == null ? "sem dado de 2022" : `${pf(r[5])}% em 2022 (${sign(r[4] - r[5])} p.p.)`;
-  const votos = r[12] ? CAND.map((c, i) => `${NOMES[c]} ${pf(r[12][i])}%`).join(" · ") : "sem dado";
+  const votos = r[12] ? `<span style="display:grid">${CAND.map((c, i) => candLbl(i, r[12][i])).join("")}</span>${voteBar(r[12])}` : "sem dado";
   $("visor-cidade").innerHTML = `
     <div><span class="k">Não compareceram</span><span class="v big">${nf.format(r[9])}</span><span class="d">de ${nf.format(r[3])} eleitores aptos</span></div>
     <div><span class="k">Taxa de abstenção</span><span class="v">${pf(r[4])}%</span><span class="d">${d22}; Brasil ${pf(D.total.tx_2026)}%</span></div>
-    <div><span class="k">1º turno, votos válidos</span><span class="v" style="font-size:1.2rem">${votos.replace(" · ", "<br>")}</span><span class="d">2º turno em 25 de outubro</span></div>`;
+    <div><span class="k">1º turno, votos válidos</span><span class="v" style="font-size:1.05rem;line-height:1.5">${votos}</span><span class="d">2º turno em 25 de outubro</span></div>`;
   const rb = ratioBlock(r[9], r[13], r[1]);
   $("ratio-c").textContent = rb.big; $("ratio-c-txt").textContent = rb.txt; $("cmp-c").innerHTML = rb.cmp;
   // pesos dos grupos: cidade × Brasil
@@ -787,8 +807,8 @@ function renderCidade(r) {
   $("zonas-wrap").hidden = !z;
   if (z) {
     const zs = [...z].sort((a, b) => b[2] - a[2]).slice(0, zonasAll ? z.length : 10);
-    $("t-zonas").innerHTML = `<thead><tr><th>Zona</th><th class="n">Aptos</th><th class="n">Ausentes</th><th class="n">Taxa</th>${CAND.map(c => `<th class="n">${NOMES[c]}</th>`).join("")}</tr></thead><tbody>` +
-      zs.map(q => `<tr><td class="num">${q[0]}ª</td><td class="n">${nf.format(q[1])}</td><td class="n">${nf.format(q[2])}</td><td class="n">${pf(100 * q[2] / q[1])}%</td><td class="n">${pf(q[3])}%</td><td class="n">${pf(q[4])}%</td></tr>`).join("") + "</tbody>";
+    $("t-zonas").innerHTML = `<thead><tr><th>Zona</th><th class="n">Aptos</th><th class="n">Ausentes</th><th class="n">Taxa</th>${CAND.map((c, i) => `<th class="n"><span class="cand" style="justify-content:flex-end"><i style="background:var(--cand-${i + 1})"></i>${NOMES[c]}</span></th>`).join("")}<th>Divisão</th></tr></thead><tbody>` +
+      zs.map(q => `<tr><td class="num">${q[0]}ª</td><td class="n">${nf.format(q[1])}</td><td class="n">${nf.format(q[2])}</td><td class="n">${pf(100 * q[2] / q[1])}%</td><td class="n">${pf(q[3])}%</td><td class="n">${pf(q[4])}%</td><td>${voteBar([q[3], q[4]], "sm")}</td></tr>`).join("") + "</tbody>";
   }
 }
 $("zonas-more").onclick = () => { zonasAll = !zonasAll; renderCidade(S.c); };
@@ -828,19 +848,30 @@ $("rank-more").onclick = () => { rankLimit += 50; renderRanking(); };
 
 // ---------- kit: themes carousel + group × searches cross ----------
 function temasCarousel(g) {
+  const tg = TG && TG.grupos[g.id];
+  const vols = tg ? Object.values(tg.termos).map(t => t.volume) : [];
+  const vmax = Math.max(1, ...vols);
   const cards = g.temas.map((t, i) => {
+    const d = tg && t.termo ? tg.termos[t.termo] : null;
     const tag = hashtag(t.termo || t.tema);
     return `<article class="tcard" aria-roledescription="slide" aria-label="${i + 1} de ${g.temas.length}: ${esc(t.tema)}">
       <span class="ic">${icon(t.icone)}</span>
       <h4>${esc(t.tema)}</h4>
+      ${d ? `<span class="k">Busca no Google · “${esc(t.termo)}”</span>
+        <div class="vol" title="Volume relativo entre os temas do grupo"><i style="width:${100 * d.volume / vmax}%"></i></div>
+        <span class="k">Onde vivem os ausentes do grupo: <b style="color:var(--ink)">${pf(d.indice, 2)}×</b> ${d.indice >= 1.03 ? '<span class="badge up">▲ mais buscado</span>' : d.indice <= 0.97 ? '<span class="badge dn">▼ menos buscado</span>' : '<span class="badge eq">● na média</span>'}</span>
+        ${d.em_alta_uf.length ? `<span class="k">Em alta em ${d.uf_ref}, onde o grupo mais pesa</span><ul>${d.em_alta_uf.slice(0, 3).map(q => `<li>${esc(q)}</li>`).join("")}</ul>`
+          : `<span class="none">Nenhuma busca relacionada em alta no período.</span>`}
+        <span class="k" style="color:var(--ink-3)">Atualizado em ${esc(d.atualizado_em)}</span>`
+      : `<span class="none">Tema das pesquisas de opinião, sem termo medido no Google Trends.</span>`}
       <div class="acts"><button type="button" class="btn sm" data-copy="${esc(tag)}">Copiar ${esc(tag)}</button></div>
     </article>`;
   }).join("");
   return `<div class="blk carousel" data-car>
-    <div class="car-head"><h3>Temas que pesam</h3>
+    <div class="car-head"><h3>Temas que pesam ${TG ? `<span class="tag inf">Google Trends · ${esc(TG.periodo)} · atualização diária</span>` : ""}</h3>
       <div class="car-nav"><button type="button" class="btn" data-car-step="-1" aria-label="Tema anterior">‹</button><span data-car-pos>1 de ${g.temas.length}</span><button type="button" class="btn" data-car-step="1" aria-label="Próximo tema">›</button></div></div>
     <div class="car-track" tabindex="0" role="region" aria-label="Temas que pesam, use as setas para navegar">${cards}</div>
-    <p class="note">Temas das pesquisas de opinião (Datafolha e Quaest) e das dores do grupo.</p>
+    ${tg ? `<p class="note">O Google Trends não separa buscas por idade, escolaridade ou classe. Para ler as buscas <b>deste grupo</b>, usamos onde os ausentes dele vivem: o índice pondera o interesse de cada estado pelo número de ausentes do grupo ali e compara com todos os ausentes. As buscas em alta vêm de ${tg.uf_grupo}, o estado em que o grupo pesa mais (${pf(tg.peso_uf_grupo, 2)}× a média). Os índices ficam perto de 1× porque os ausentes de cada grupo estão espalhados pelo país: o que separa os grupos é idade e escolaridade, não o lugar. A barra compara o volume dos temas do grupo entre si.</p>` : ""}
   </div>`;
 }
 function wireCarousel(root) {
@@ -895,8 +926,8 @@ function renderKit() {
       <div class="dores"><h3>Dores deste grupo</h3><ul>${g.dores.map(d => `<li>${esc(d)}</li>`).join("")}</ul></div>
       ${temasCarousel(g)}
       <details class="vies"><summary>Inclinação política estimada</summary>
-        <p class="note">No Brasil, resultado do 1º turno nos municípios onde vivem os ausentes deste grupo (média ponderada): ${CAND.map((c, j) => `${NOMES[c]} <b class="num">${pf(pcts[j])}%</b>`).join(" · ")}</p>
-        <div class="leanbar" aria-hidden="true">${pcts.map((p, j) => `<div style="flex:${p} 1 0;background:${css(j ? "--ink-3" : "--ink-2")}"></div>`).join("")}<div style="flex:${Math.max(0, 100 - pcts[0] - pcts[1])} 1 0;background:var(--rule)"></div></div>
+        <p class="note">No Brasil, resultado do 1º turno nos municípios onde vivem os ausentes deste grupo (média ponderada): ${CAND.map((c, j) => candLbl(j, pcts[j])).join(" · ")}</p>
+        ${voteBar(pcts)}
         <p class="note">${esc(g.vies)} <span class="tag inf">estimativa</span></p>
       </details>
       <p class="fontes-g">Fontes: ${[...new Set([...g.vies_fontes, ...g.fontes])].map(link).join("; ")}.</p>
@@ -924,6 +955,7 @@ function drawPanorama() {
   ["c-idade", "c-escola"].forEach(id => $(id).innerHTML = "");
   renderPanorama(); drawMap(); perfil();
 }
+if (TG && TG.atualizado_em) $("foot-trends").textContent = ` · Buscas: Google Trends, atualizadas em ${TG.atualizado_em}`;
 $("tx-br").textContent = pf(D.total.tx_2026, 2) + "%";
 $("n-inflado").textContent = nf.format(D.mais_aptos_que_habitantes);
 $("n-zonas").textContent = nf.format(Object.keys(D.zonas).length);

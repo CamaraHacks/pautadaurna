@@ -23,7 +23,7 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python pipeline/02_build.py      # -> data/municipios.csv, data/perfil.csv
 .venv/bin/python pipeline/03_analyze.py    # -> site/data.json
 .venv/bin/python pipeline/05_trends.py     # optional: Google daily trending snapshot -> site/trends.json
-.venv/bin/python pipeline/06_group_trends.py # optional: Google Trends per group (slow, rate-limited, cached) -> site/trends_grupos.json
+.venv/bin/python pipeline/06_group_trends.py # Google Trends per group via SerpApi (SERPAPI_KEY; daily rotation, <=95/month) -> site/trends_grupos.json
 .venv/bin/python pipeline/04_export.py     # -> site/index.html
 ```
 
@@ -34,6 +34,10 @@ When TSE publishes `perfil_comparecimento_abstencao_2026.zip`, rerun all four st
 One self-contained page with four views and a global filter (city, state, group) kept in the URL:
 **Panorama** (national story), **Onde agir** (ranking, city detail, electoral zones, group weights, abstainers vs. vote margin),
 **Kit de redes** (per-group channels, formats, keywords, ready civic messages), **Método**. See `DESIGN.md`.
+
+## Deploy
+
+OCI VM + Caddy + daily cron: see `deploy/README.md`.
 
 ## Sources
 
