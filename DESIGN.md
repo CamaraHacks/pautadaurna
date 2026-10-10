@@ -8,17 +8,18 @@ The choropleth runs yellow → red. Candidates never get a color. Data-viz rules
 
 ## Tokens (`site/template.html`, `:root`)
 
-| Role | Light | Dark | Use |
-|---|---|---|---|
-| `--ground` | `#fdfcf9` (paper white) | — | page background |
-| `--panel` | `#f8f9f6` | `#1c201f` | cards, charts, inputs |
-| `--ink` / `--ink-2` / `--ink-3` | `#15181a` / `#4a524f` / `#78807c` | `#e8ebe6` / `#b4bbb6` / `#8a928d` | text hierarchy |
-| `--rule` | `#d3d8d2` | `#2f3533` | borders, grid lines |
-| `--accent` | `#c8541a` | `#ec7a3f` | the one highlight: headline number, focus ring, "acima da média" |
-| `--s-2026` / `--s-2022` | blue / grey | | current vs. reference series |
-| `--seq-0…6` | blue ramp | stepped for dark | choropleth (sequential) |
-| `--div-neg/mid/pos` | blue / grey / red | | change since 2022 (diverging) |
-| `--g1…g5` | categorical slots 1–5 | | the five abstainer groups, fixed order, never cycled |
+| Role | Value | Use |
+|---|---|---|
+| `--ground` / `--panel` | `#fdfcf9` / `#ffffff` | paper background / cards, charts, inputs |
+| `--ink` / `--ink-2` / `--ink-3` | `#191714` / `#4f4a42` / `#857e72` | text hierarchy |
+| `--rule` | `#e6e1d6` | borders, grid lines |
+| `--accent` / `--accent-ink` | `#c81e2b` / `#a3121e` | red: headline numbers, focus ring, "acima da média" |
+| `--yellow` / `--yellow-soft` | `#f5c400` / `#fff1b3` | highlighter marks, source labels, app bar rule |
+| `--corrige` / `--confirma` | `#e2632b` / `#1f8a4c` | urna keys: clear filters / "Copiado" confirmation |
+| `--s-2026` / `--s-2022` | red / warm grey | current vs. reference series |
+| `--seq-0…6` | yellow → dark red | choropleth (sequential) |
+| `--div-neg/mid/pos` | steel blue / paper grey / red | change since 2022 (diverging) |
+| `--g1…g5` | validated categorical slots 1–5 | the five abstainer groups, fixed order, never cycled |
 
 Candidates are never given a color. Political lean is drawn in neutral inks.
 
