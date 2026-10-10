@@ -6,44 +6,29 @@
 <style>
 
 :root {
-  --ground: #eef0ec;
-  --panel: #f8f9f6;
-  --ink: #15181a;
-  --ink-2: #4a524f;
-  --ink-3: #78807c;
-  --rule: #d3d8d2;
-  --accent: #c8541a;       /* tecla CORRIGE da urna */
-  --accent-ink: #a8430f;
-  --confirma: #17804a;     /* tecla CONFIRMA */
-  --s-2022: #a9b0ac;
-  --s-2026: #256abf;
-  --seq-0: #e3edf9; --seq-1: #b7d3f6; --seq-2: #86b6ef; --seq-3: #5598e7; --seq-4: #2a78d6; --seq-5: #1c5cab; --seq-6: #104281;
-  --div-neg: #2a78d6; --div-mid: #e6e6e1; --div-pos: #d03b3b;
-  --nodata: #cfd3cf;
+  /* papel branco + amarelo e vermelho; tema único, claro por escolha */
+  --ground: #fdfcf9;
+  --panel: #ffffff;
+  --ink: #191714;
+  --ink-2: #4f4a42;
+  --ink-3: #857e72;
+  --rule: #e6e1d6;
+  --accent: #c81e2b;       /* vermelho */
+  --accent-ink: #a3121e;
+  --yellow: #f5c400;       /* marca-texto */
+  --yellow-soft: #fff1b3;
+  --confirma: #1f8a4c;     /* tecla CONFIRMA (só no “Copiado”) */
+  --corrige: #e2632b;      /* tecla CORRIGE */
+  --s-2022: #bdb6a9;
+  --s-2026: #c81e2b;
+  --seq-0: #fff6cc; --seq-1: #ffe27a; --seq-2: #fcc63a; --seq-3: #f59e1b; --seq-4: #e4661f; --seq-5: #c8321f; --seq-6: #8f1515;
+  --div-neg: #2f6f8f; --div-mid: #efece4; --div-pos: #c81e2b;
+  --nodata: #e3dfd5;
   --g1: #2a78d6; --g2: #eb6834; --g3: #1baf7a; --g4: #eda100; --g5: #e87ba4;
   --display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
   --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
   --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --ground: #141716; --panel: #1c201f; --ink: #e8ebe6; --ink-2: #b4bbb6; --ink-3: #8a928d; --rule: #2f3533;
-    --accent: #ec7a3f; --accent-ink: #f08c55; --confirma: #3fae72;
-    --s-2022: #5d6561; --s-2026: #3987e5;
-    --seq-0: #1d2a3a; --seq-1: #1f3c63; --seq-2: #184f95; --seq-3: #256abf; --seq-4: #3987e5; --seq-5: #6da7ec; --seq-6: #b7d3f6;
-    --div-neg: #3987e5; --div-mid: #383835; --div-pos: #e66767; --nodata: #2a2f2d;
-  --g1: #3987e5; --g2: #d95926; --g3: #199e70; --g4: #c98500; --g5: #d55181;
-  }
-}
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --ground: #141716; --panel: #1c201f; --ink: #e8ebe6; --ink-2: #b4bbb6; --ink-3: #8a928d; --rule: #2f3533;
-  --accent: #ec7a3f; --accent-ink: #f08c55; --confirma: #3fae72;
-  --s-2022: #5d6561; --s-2026: #3987e5;
-  --seq-0: #1d2a3a; --seq-1: #1f3c63; --seq-2: #184f95; --seq-3: #256abf; --seq-4: #3987e5; --seq-5: #6da7ec; --seq-6: #b7d3f6;
-  --div-neg: #3987e5; --div-mid: #383835; --div-pos: #e66767; --nodata: #2a2f2d;
-  --g1: #3987e5; --g2: #d95926; --g3: #199e70; --g4: #c98500; --g5: #d55181;
+  color-scheme: light;
 }
 
 * { box-sizing: border-box; }
@@ -117,9 +102,7 @@ td.n, th.n { text-align: right; font-family: var(--mono); font-variant-numeric: 
 blockquote { margin: 0; padding-left: 16px; border-left: 3px solid var(--accent); font-style: italic; color: var(--ink-2); }
 
 /* ============ Design system: componentes (ver DESIGN.md) ============ */
-:root { --g1: #2a78d6; --g2: #eb6834; --g3: #1baf7a; --g4: #eda100; --g5: #e87ba4; --focus: var(--accent); --bar-h: 0px; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --g1: #3987e5; --g2: #d95926; --g3: #199e70; --g4: #c98500; --g5: #d55181; } }
-:root[data-theme="dark"] { --g1: #3987e5; --g2: #d95926; --g3: #199e70; --g4: #c98500; --g5: #d55181; }
+:root { --focus: var(--accent); }
 body { padding-inline: 0; }
 main { padding-inline: 20px; padding-block: 36px 96px; gap: 0; }
 .view { display: grid; gap: 72px; }
@@ -145,6 +128,21 @@ main { padding-inline: 20px; padding-block: 36px 96px; gap: 0; }
 .chipbtn { display: inline-flex; gap: 6px; align-items: center; font: 600 0.74rem/1 var(--mono); color: var(--ink); background: var(--panel); border: 1px solid var(--ink-3); border-radius: 999px; padding: 5px 6px 5px 10px; cursor: pointer; }
 .chipbtn b { font-weight: 600; display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: var(--rule); color: var(--ink); font-size: 0.7rem; }
 .chipbtn:hover b { background: var(--accent); color: var(--ground); }
+
+/* Teclas da urna */
+.btn, .tabs a, .gchoose button { box-shadow: 0 2px 0 rgba(25, 23, 20, 0.28); transition: transform .05s; }
+.btn:active, .tabs a:active, .gchoose button:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(25, 23, 20, 0.28); }
+.tabs a { background: var(--panel); border: 1px solid var(--rule) !important; color: var(--ink); }
+.tabs a[aria-current="page"] { background: #1d1c1a; color: #fff; border-color: #1d1c1a !important; }
+.btn.corrige { background: var(--corrige); border-color: var(--corrige); color: #1d1c1a; }
+.btn.branco, .btn.sm { background: #fff; border-color: #cfc9bc; color: #1d1c1a; }
+.mark { background: linear-gradient(transparent 58%, var(--yellow) 58%, var(--yellow) 92%, transparent 92%); padding-inline: 2px; }
+.src b { background: var(--yellow); color: #1d1c1a; padding: 3px 5px; border-radius: 3px; box-shadow: 0 1px 0 rgba(25, 23, 20, 0.25); }
+.visor { background: #f4f3ee; border: 2px solid #1d1c1a; box-shadow: inset 0 0 0 4px #fff; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(200px, 1fr); gap: 32px; align-items: center; }
+@media (max-width: 720px) { .hero-grid { grid-template-columns: 1fr; } .urna { max-width: 280px; } }
+.urna { width: 100%; height: auto; display: block; }
+.appbar { background: rgba(253, 252, 249, 0.96); border-bottom: 3px solid var(--yellow); }
 
 /* Buttons */
 .btn { font: 600 0.72rem/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; background: transparent; color: var(--ink); border: 1px solid var(--ink-3); border-radius: 5px; padding: 10px 12px; cursor: pointer; }
@@ -258,7 +256,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
       <div class="field f-cidade"><label for="f-cidade">Cidade</label><input id="f-cidade" list="cidades" placeholder="Digite a cidade, ex.: Recife · PE"><datalist id="cidades"></datalist></div>
       <div class="field"><label for="f-uf">Estado</label><select id="f-uf"><option value="">Brasil</option></select></div>
       <div class="field"><label for="f-grupo">Grupo</label><select id="f-grupo"><option value="">Todos os grupos</option></select></div>
-      <button type="button" class="btn" id="f-limpar">Limpar</button>
+      <button type="button" class="btn corrige" id="f-limpar">Corrige</button>
     </form>
     <div class="scope" id="scope" aria-live="polite"></div>
   </div>
@@ -269,8 +267,26 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
   <div class="view" data-view="panorama">
     <header class="hero">
       <div class="src"><b>TSE</b> · 1º turno · 4 de outubro de 2026 · Presidente</div>
-      <h1>Quem não foi votar</h1>
-      <p class="lede prose">Um em cada cinco eleitores aptos não apareceu na seção. Este site mostra quem são, onde vivem e como alcançá-los nas redes antes do 2º turno, em 25 de outubro.</p>
+      <div class="hero-grid">
+        <div style="display:grid;gap:20px">
+          <h1>Quem não foi votar</h1>
+          <p class="lede prose"><span class="mark">Um em cada cinco eleitores</span> aptos não apareceu na seção. Este site mostra quem são, onde vivem e como alcançá-los nas redes antes do 2º turno, em 25 de outubro.</p>
+        </div>
+        <svg class="urna" viewBox="0 0 320 250" role="img" aria-label="Ilustração de uma urna eletrônica mostrando o número de ausentes">
+          <rect x="4" y="18" width="312" height="226" rx="16" fill="#e9e6dd" stroke="#1d1c1a" stroke-width="2"/>
+          <rect x="4" y="18" width="312" height="22" rx="10" fill="#d9d5ca"/>
+          <rect x="22" y="56" width="160" height="112" rx="6" fill="#1d1c1a"/>
+          <rect x="30" y="64" width="144" height="96" rx="3" fill="#f4f3ee"/>
+          <text x="40" y="86" font-family="IBM Plex Mono, monospace" font-size="9" font-weight="600" fill="#857e72" letter-spacing="1">NÃO VOTARAM</text>
+          <text x="40" y="114" font-family="IBM Plex Mono, monospace" font-size="20" font-weight="600" fill="#c81e2b" id="urna-n">32.894.899</text>
+          <rect x="40" y="124" width="122" height="7" fill="#f5c400"/>
+          <text x="40" y="150" font-family="IBM Plex Mono, monospace" font-size="9" fill="#4f4a42">1º TURNO · 2026</text>
+          <g font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" text-anchor="middle">
+            <g id="urna-keys"></g>
+          </g>
+          <rect x="196" y="56" width="104" height="8" rx="2" fill="#d9d5ca"/>
+        </svg>
+      </div>
       <div class="visor" id="visor-br"></div>
       <nav class="steps" aria-label="Como usar">
         <a href="#/explorar"><strong>Escolha uma cidade ou estado</strong><span>Use o filtro no topo. Ele vale para todas as abas.</span></a>
@@ -281,7 +297,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
 
     <section>
       <div class="src"><b>TSE</b> · resultado e comparecimento</div>
-      <h2>A ausência é maior que a diferença</h2>
+      <h2>A ausência é <span class="mark">maior</span> que a diferença</h2>
       <div class="chart"><div class="two" style="align-items:center">
         <div><div class="big-ratio" id="ratio-br"></div><p class="note" id="ratio-br-txt"></p></div>
         <div class="cmp" id="cmp-br"></div>
@@ -469,6 +485,22 @@ function tipFor(container) {
 
 
 
+// ---------- urna illustration keypad ----------
+(function urnaKeys() {
+  const g = $("urna-keys"); if (!g) return;
+  const k = [];
+  "123456789".split("").concat(["", "0", ""]).forEach((n, i) => {
+    if (!n) return;
+    const x = 204 + (i % 3) * 32, y = 76 + Math.floor(i / 3) * 30;
+    k.push(`<rect x="${x}" y="${y}" width="26" height="22" rx="4" fill="#1d1c1a"/><text x="${x + 13}" y="${y + 15}" fill="#fff">${n}</text>`);
+  });
+  [["BRANCO", "#ffffff", "#1d1c1a", 30], ["CORRIGE", "#e2632b", "#1d1c1a", 118], ["CONFIRMA", "#1f8a4c", "#ffffff", 206]].forEach(([t, bg, fg, x]) => {
+    k.push(`<rect x="${x}" y="196" width="84" height="30" rx="5" fill="${bg}" stroke="#1d1c1a" stroke-width="1.2"/><text x="${x + 42}" y="215" font-size="10" fill="${fg}">${t}</text>`);
+  });
+  g.innerHTML = k.join("");
+  $("urna-n").textContent = nf.format(D.total.abst);
+})();
+
 // ---------- state + router ----------
 const S = { view: "panorama", c: null, uf: "", g: "" };
 function readHash() {
@@ -572,7 +604,7 @@ function renderPanorama() {
   $("visor-br").innerHTML = `
     <div><span class="k">Não compareceram</span><span class="v big">${nf.format(T.abst)}</span><span class="d">de ${nf.format(T.aptos)} eleitores aptos no Brasil</span></div>
     <div><span class="k">Taxa de abstenção</span><span class="v">${pf(T.tx_2026, 2)}%</span><span class="d">${pf(T.tx_2022, 2)}% no 1º turno de 2022 (${sign(T.tx_2026 - T.tx_2022, 2)} p.p.)</span></div>
-    <div><span class="k">1º turno, votos válidos</span><span class="v" style="font-size:1.35rem">${CAND.map((c, i) => `${NOMES[c]} ${pf(D.voto_br[i])}%`).join("<br>")}</span><span class="d">2º turno em 25 de outubro</span></div>`;
+    <div><span class="k">1º turno, votos válidos</span><span class="v" style="font-size:1.05rem;line-height:1.4">${CAND.map((c, i) => `${NOMES[c]} <b>${pf(D.voto_br[i])}%</b>`).join("<br>")}</span><span class="d">2º turno em 25 de outubro</span></div>`;
   const rb = ratioBlock(T.abst, D.margem_br, "todo o Brasil");
   $("ratio-br").textContent = rb.big; $("ratio-br-txt").textContent = rb.txt + " Cada voto de diferença corresponde a muitos ausentes."; $("cmp-br").innerHTML = rb.cmp;
 }
@@ -880,8 +912,8 @@ function renderKit() {
   // trends snapshot
   $("trends").innerHTML = TR && TR.itens.length ? `
     <div class="src"><b>Google Trends</b> · buscas do dia no Brasil · coletado em ${esc(TR.coletado_em)}</div>
-    <h3>Assuntos em alta hoje</h3>
-    <p class="note">Conteúdo que conversa com o assunto do dia circula mais. Esta é uma foto do momento da coleta; para o atual, abra o <a href="https://trends.google.com/trending?geo=BR" target="_blank" rel="noopener">Google Trends</a>.</p>
+    <h3>Assuntos brasileiros em alta</h3>
+    <p class="note">Só entram assuntos cujas notícias vêm de veículos brasileiros; jogos e notícias do exterior ficam de fora. Conteúdo que conversa com o assunto do dia circula mais. É uma foto do momento da coleta; para ver o atual, abra o <a href="https://trends.google.com/trending?geo=BR" target="_blank" rel="noopener">Google Trends</a>.</p>
     <ol>${TR.itens.map(i => `<li><strong>${esc(i.termo)}</strong> <span class="q">${esc(i.buscas || "")} buscas</span>${i.noticia ? `<br><span class="note">${i.url ? `<a href="${esc(i.url)}" target="_blank" rel="noopener">${esc(i.noticia)}</a>` : esc(i.noticia)}${i.fonte ? " · " + esc(i.fonte) : ""}</span>` : ""}</li>`).join("")}</ol>` : "";
 }
 $("gchoose").addEventListener("click", ev => { const b = ev.target.closest("[data-g]"); if (b) go({ g: S.g === b.dataset.g ? "" : b.dataset.g }); });

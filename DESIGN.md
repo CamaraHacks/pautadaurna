@@ -1,14 +1,16 @@
 # Design system — Mapa da Abstenção
 
 A small, dependency-free system built for one job: helping organizers find where abstainers are and how to reach them.
-Visual identity borrows from the electronic voting machine (urna): a neutral grey-green case, an LCD-like numeric display,
-and the orange **CORRIGE** key as the single accent. Data-viz rules follow IBM Carbon's data patterns.
+Visual identity: white paper with **red** (accent, abstention numbers) and **yellow** (highlighter, source labels),
+a voting-machine (urna) illustration in the hero, and buttons shaped like urna keys: the black number key marks the
+active tab, the orange **CORRIGE** key clears filters, the white **BRANCO** key copies text. Single light theme by choice.
+The choropleth runs yellow → red. Candidates never get a color. Data-viz rules follow IBM Carbon's data patterns.
 
 ## Tokens (`site/template.html`, `:root`)
 
 | Role | Light | Dark | Use |
 |---|---|---|---|
-| `--ground` | `#eef0ec` | `#141716` | page background |
+| `--ground` | `#fdfcf9` (paper white) | — | page background |
 | `--panel` | `#f8f9f6` | `#1c201f` | cards, charts, inputs |
 | `--ink` / `--ink-2` / `--ink-3` | `#15181a` / `#4a524f` / `#78807c` | `#e8ebe6` / `#b4bbb6` / `#8a928d` | text hierarchy |
 | `--rule` | `#d3d8d2` | `#2f3533` | borders, grid lines |
