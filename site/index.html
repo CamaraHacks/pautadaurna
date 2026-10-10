@@ -336,21 +336,6 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
       </div>
     </section>
 
-    <section id="renda">
-      <div class="src"><b>IBGE</b> · Censo 2022 × <b>TSE</b> · 2022 e 2026</div>
-      <h2>Pela renda do município, quase nada se explica</h2>
-      <p class="prose">Separamos os municípios em cinco faixas pela renda domiciliar per capita mediana do Censo 2022. A abstenção fica entre 19% e 23% em todas. O que mudou foi a direção: nos municípios mais pobres a ausência caiu desde 2022; nos mais ricos, subiu.</p>
-      <div class="chart">
-        <div class="chart-head"><h3>Abstenção por quintil de renda dos municípios</h3>
-          <div class="legend"><span><i style="background:var(--s-2022)"></i>2022</span><span><i style="background:var(--s-2026)"></i>2026</span></div></div>
-        <div id="c-quintis"></div>
-      </div>
-      <div class="two">
-        <div class="chart"><h3>Cada ponto é um município</h3><div id="c-scatter"></div><p class="note">Renda per capita mediana (escala log) × taxa de abstenção 2026. As faixas verticais são municípios cuja mediana cai exatamente em frações do salário mínimo.</p></div>
-        <div class="chart"><h3>Correlação com a abstenção</h3><div class="tbl"><table id="t-corr"></table></div><p class="note">Correlação de Spearman entre municípios. Zero é nenhuma relação, 1 é relação perfeita. A coluna “variação” usa a diferença 2026 − 2022.</p></div>
-      </div>
-    </section>
-
     <section id="motivos">
       <div class="src"><b>Datafolha</b> · 6 e 7 de outubro de 2026 · <span class="tag inf">inferência</span></div>
       <h2>O que as pessoas dizem, e o que os dados sustentam</h2>
@@ -410,7 +395,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
       <div class="src"><b>Método</b> · limites</div>
       <h2>Como ler estes números</h2>
       <div class="prose" style="display:grid;gap:14px">
-        <p><strong>Falácia ecológica.</strong> O cruzamento com o IBGE é feito por município. Ele diz que municípios mais ricos não faltaram mais, e não diz nada sobre se pessoas mais ricas faltaram mais. Para o indivíduo, os únicos dados são os de idade, sexo, estado civil e escolaridade do TSE.</p>
+        <p><strong>Falácia ecológica.</strong> Resultados por município ou zona descrevem lugares, não pessoas. Para o indivíduo, os únicos dados são os de idade, sexo, estado civil e escolaridade do TSE.</p>
         <p><strong>Perfil de <span class="perfil-ano2"></span>.</strong> O TSE ainda não publicou o perfil de comparecimento de 2026 nos dados abertos. Grupos, idade e escolaridade usam o 1º turno de <span class="perfil-ano2"></span> e serão trocados quando o arquivo sair.</p>
         <p><strong>Grupos e classe.</strong> O TSE não registra renda. A escolaridade é usada como aproximação de classe: até o fundamental para D/E, médio para C, superior para A/B.</p>
         <p><strong>Inclinação política.</strong> O voto de quem se absteve não é observável. A estimativa usa o resultado do 1º turno nos municípios onde os ausentes de cada grupo vivem, ponderado pelo número de ausentes, e os cruzamentos do Datafolha por idade e renda.</p>
@@ -1031,69 +1016,6 @@ function perfil() {
   $("perfil-txt").textContent = `A ausência cresce com a idade depois dos 65 anos, quando o voto deixa de ser obrigatório: eleitores com 70 anos ou mais eram ${pf(s70, 0)}% de todos os ausentes em ${ano}. O outro bloco grande é de jovens de 18 a 34 anos, obrigados a votar, que somavam ${pf(jov, 0)}%. Na escolaridade, a diferença é de quatro vezes: ${pf(analf.tx_abst, 0)}% de abstenção entre analfabetos e ${pf(sup.tx_abst, 0)}% entre quem tem superior completo.`;
 }
 
-// ---------- quintis ----------
-function quintis() {
-  const el = $("c-quintis");
-  const w = 900, h = 270, m = { l: 44, r: 10, t: 16, b: 52 };
-  const qs = D.quintis;
-  const x0 = d3.scaleBand(qs.map(q => q.quintil), [m.l, w - m.r]).padding(0.28);
-  const x1 = d3.scaleBand(["2022", "2026"], [0, x0.bandwidth()]).padding(0.06);
-  const y = d3.scaleLinear([0, 25], [h - m.b, m.t]);
-  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${w} ${h}`);
-  const tk = [0, 5, 10, 15, 20, 25];
-  svg.append("g").selectAll("line").data(tk).join("line").attr("class", d => d ? "grid" : "base").attr("x1", m.l).attr("x2", w - m.r).attr("y1", y).attr("y2", y);
-  svg.append("g").selectAll("text").data(tk).join("text").attr("x", m.l - 8).attr("y", d => y(d) + 4).attr("text-anchor", "end").text(d => d + "%");
-  const tip = tipFor(el);
-  const names = ["mais pobres", "", "", "", "mais ricos"];
-  const g = svg.append("g").selectAll("g").data(qs).join("g").attr("transform", q => `translate(${x0(q.quintil)},0)`);
-  const bars = q => [{ k: "2022", v: q.tx_2022, q }, { k: "2026", v: q.tx_2026, q }];
-  g.selectAll("rect").data(bars).join("rect").attr("x", d => x1(d.k)).attr("width", x1.bandwidth())
-    .attr("y", d => y(d.v)).attr("height", d => y(0) - y(d.v)).attr("rx", 3)
-    .attr("fill", d => d.k === "2022" ? css("--s-2022") : css("--s-2026"))
-    .on("mousemove", (ev, d) => tip.show(`<b>${d.q.quintil}º quintil · ${d.k}</b>${pf(d.v, 2)}% de abstenção<br>Renda per capita mediana ${d.q.renda_mediana}<br>${nf.format(d.q.municipios)} municípios`, ev))
-    .on("mouseleave", () => tip.hide());
-  g.selectAll(".val").data(bars).join("text").attr("class", "val").attr("text-anchor", "middle")
-    .attr("x", d => x1(d.k) + x1.bandwidth() / 2).attr("y", d => y(d.v) - 6).text(d => pf(d.v));
-  g.append("text").attr("class", "lbl").attr("x", x0.bandwidth() / 2).attr("y", h - m.b + 20).attr("text-anchor", "middle").text(q => `${q.quintil}º quintil${names[q.quintil - 1] ? " · " + names[q.quintil - 1] : ""}`);
-  g.append("text").attr("x", x0.bandwidth() / 2).attr("y", h - m.b + 38).attr("text-anchor", "middle").text(q => q.renda_mediana);
-}
-
-// ---------- scatter ----------
-function scatter() {
-  const el = $("c-scatter");
-  const w = 440, h = 330, m = { l: 40, r: 10, t: 10, b: 34 };
-  const pts = D.municipios.filter(r => r[6] != null && r[6] > 0);
-  const x = d3.scaleLog([120, 3000], [m.l, w - m.r]).clamp(true);
-  const y = d3.scaleLinear([0, 45], [h - m.b, m.t]).clamp(true);
-  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${w} ${h}`);
-  const yt = [0, 10, 20, 30, 40], xt = [150, 300, 600, 1200, 2400];
-  svg.append("g").selectAll("line").data(yt).join("line").attr("class", d => d ? "grid" : "base").attr("x1", m.l).attr("x2", w - m.r).attr("y1", y).attr("y2", y);
-  svg.append("g").selectAll("text").data(yt).join("text").attr("x", m.l - 6).attr("y", d => y(d) + 4).attr("text-anchor", "end").text(d => d + "%");
-  svg.append("g").selectAll("text").data(xt).join("text").attr("x", x).attr("y", h - m.b + 16).attr("text-anchor", "middle").text(d => "R$ " + nf.format(d));
-  svg.append("line").attr("class", "grid").attr("stroke-dasharray", "4 3").attr("x1", m.l).attr("x2", w - m.r).attr("y1", y(D.total.tx_2026)).attr("y2", y(D.total.tx_2026)).attr("stroke", css("--accent"));
-  svg.append("text").attr("x", w - m.r).attr("y", y(D.total.tx_2026) - 6).attr("text-anchor", "end").style("fill", css("--accent-ink")).text(`Brasil ${pf(D.total.tx_2026)}%`);
-  svg.append("g").selectAll("circle").data(pts).join("circle").attr("cx", r => x(r[6])).attr("cy", r => y(r[4])).attr("r", 2.2)
-    .attr("fill", css("--s-2026")).attr("fill-opacity", 0.35);
-  const tip = tipFor(el);
-  const dl = d3.Delaunay.from(pts, r => x(r[6]), r => y(r[4]));
-  const hl = svg.append("circle").attr("r", 5).attr("fill", "none").attr("stroke", css("--ink")).attr("stroke-width", 1.5).attr("visibility", "hidden");
-  svg.append("rect").attr("x", m.l).attr("y", m.t).attr("width", w - m.l - m.r).attr("height", h - m.t - m.b).attr("fill", "transparent")
-    .on("mousemove", ev => {
-      const [px, py] = d3.pointer(ev); const r = pts[dl.find(px, py)];
-      hl.attr("cx", x(r[6])).attr("cy", y(r[4])).attr("visibility", "visible");
-      tip.show(`<b>${r[1]} · ${r[2]}</b>Abstenção ${pf(r[4])}%<br>Renda per capita mediana R$ ${nf.format(r[6])}`, ev);
-    })
-    .on("mouseleave", () => { tip.hide(); hl.attr("visibility", "hidden"); });
-}
-
-// ---------- correlations ----------
-(function corr() {
-  const names = { renda_pc_mediana: "Renda per capita mediana", alfabetizacao: "Taxa de alfabetização", pct_urbana: "População urbana (%)", pct_ocupadas: "Pessoas ocupadas (%)" };
-  const c = D.correlacoes;
-  $("t-corr").innerHTML = `<thead><tr><th>Indicador IBGE</th><th class="n">Nível 2026</th><th class="n">Variação</th></tr></thead><tbody>` +
-    Object.keys(names).map(k => `<tr><td>${names[k]}</td><td class="n">${pf(c[k].nivel, 2)}</td><td class="n">${pf(c[k].variacao, 2)}</td></tr>`).join("") + "</tbody>";
-})();
-
 // ---------- motivos ----------
 (function motivos() {
   const M = [
@@ -1162,7 +1084,7 @@ function renderCidade(r) {
   $("visor-cidade").innerHTML = `
     <div><span class="k">Não compareceram</span><span class="v big">${nf.format(r[9])}</span><span class="d">de ${nf.format(r[3])} eleitores aptos</span></div>
     <div><span class="k">Taxa de abstenção</span><span class="v">${pf(r[4])}%</span><span class="d">${d22}; Brasil ${pf(D.total.tx_2026)}%</span></div>
-    <div><span class="k">1º turno, votos válidos</span><span class="v" style="font-size:1.2rem">${votos.replace(" · ", "<br>")}</span><span class="d">${r[6] == null ? "" : `Renda per capita mediana R$ ${nf.format(r[6])} (Censo 2022)`}</span></div>`;
+    <div><span class="k">1º turno, votos válidos</span><span class="v" style="font-size:1.2rem">${votos.replace(" · ", "<br>")}</span><span class="d">2º turno em 25 de outubro</span></div>`;
   const rb = ratioBlock(r[9], r[13], r[1]);
   $("ratio-c").textContent = rb.big; $("ratio-c-txt").textContent = rb.txt; $("cmp-c").innerHTML = rb.cmp;
   // pesos dos grupos: cidade × Brasil
@@ -1296,8 +1218,8 @@ function render() {
   if (S.view === "kit") renderKit();
 }
 function drawPanorama() {
-  ["c-idade", "c-escola", "c-quintis", "c-scatter"].forEach(id => $(id).innerHTML = "");
-  renderPanorama(); drawMap(); perfil(); quintis(); scatter();
+  ["c-idade", "c-escola"].forEach(id => $(id).innerHTML = "");
+  renderPanorama(); drawMap(); perfil();
 }
 $("tx-br").textContent = pf(D.total.tx_2026, 2) + "%";
 $("n-inflado").textContent = nf.format(D.mais_aptos_que_habitantes);
