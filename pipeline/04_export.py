@@ -9,7 +9,11 @@ SITE = ROOT / "site"
 
 html = (SITE / "template.html").read_text()
 html = html.replace("/*__DATA__*/null", (SITE / "data.json").read_text())
-html = html.replace("/*__TOPO__*/null", (ROOT / "data" / "raw" / "malha_municipios.topojson").read_text())
+# municipal mesh is versioned in data/ so CI can export without downloading the TSE files
+malha = ROOT / "data" / "malha_municipios.topojson"
+if not malha.exists():
+    malha = ROOT / "data" / "raw" / "malha_municipios.topojson"
+html = html.replace("/*__TOPO__*/null", malha.read_text())
 html = html.replace("/*__GRUPOS__*/null", (SITE / "grupos.json").read_text())
 tg = SITE / "trends_grupos.json"  # optional, from 06_group_trends.py
 html = html.replace("/*__TRENDS_GRUPOS__*/null", tg.read_text() if tg.exists() else "null")

@@ -1,0 +1,78 @@
+# Daily refresh + GitHub Pages deploy for pautadaurna.com.br
+# - schedule / manual run: collect Google Trends (SerpApi, budgeted), rebuild TSE data when the 2026 turnout profile
+#   appears, regenerate site/index.html, commit, publish
+# - push to master: publish the committed page as is
+name: Atualiza e publica
+
+on:
+  schedule:
+    - cron: "0 9 * * *"  # 06:00 Brasília
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        if: github.event_name != 'push'
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Atualiza dados
+        if: github.event_name != 'push'
+        env:
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+        run: |
+          pip install -r requirements.txt
+          ano=$(python -c "import json; print(json.load(open('site/data.json'))['perfil_ano'])")
+          url=https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_comparecimento_abstencao/perfil_comparecimento_abstencao_2026.zip
+          if [ "$ano" != 2026 ] && [ "$(curl -s -o /dev/null -w '%{http_code}' -I "$url")" = 200 ]; then
+            echo "Perfil 2026 publicado: reconstruindo dados do TSE"
+            python pipeline/01_download.py
+            python pipeline/02_build.py
+            python pipeline/03_analyze.py
+          fi
+          python pipeline/06_group_trends.py
+          python pipeline/04_export.py
+
+      - name: Commit
+        if: github.event_name != 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data site
+          if git diff --cached --quiet; then echo "nada mudou"; exit 0; fi
+          git commit -m "Atualização diária $(date -u +%F)"
+          git push
+
+      - name: Monta o site
+        run: mkdir _site && cp site/index.html _site/index.html
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

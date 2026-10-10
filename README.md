@@ -59,7 +59,7 @@ Quando o TSE publicar `perfil_comparecimento_abstencao_2026.zip`, rodar de novo 
 
 ## Publicação
 
-VM na Oracle Cloud com Caddy e atualização diária por cron: veja `deploy/README.md`.
+GitHub Pages com domínio próprio, atualizado todo dia por GitHub Actions: veja `deploy/README.md`. A alternativa com servidor próprio (Oracle Cloud) está em `deploy/OCI.md`.
 
 ## Fontes
 

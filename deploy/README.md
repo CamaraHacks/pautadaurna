@@ -1,46 +1,52 @@
-# Publicação na Oracle Cloud (OCI): pautadaurna.com.br
+# Publicação: GitHub Pages + GitHub Actions (pautadaurna.com.br)
 
-Uma VM do plano Always Free serve a página estática com o Caddy e atualiza as buscas do Google Trends todo dia, via SerpApi.
+O site é um único HTML estático, então não precisa de servidor:
+- **Hospedagem:** o GitHub Pages serve a página com HTTPS e domínio próprio. Nenhum IP pessoal fica exposto.
+- **Atualização:** o workflow `.github/workflows/atualiza.yml` roda todo dia às 06h de Brasília. Ele coleta as buscas (SerpApi), refaz a página, faz commit e publica.
 
-## 1. VM
-- Crie uma instância **Ubuntu 24.04, Ampere A1 (ARM)**. 1 OCPU e 6 GB bastam. Atribua um IP público.
-- Em VCN → Security List, crie regras de entrada para TCP **80** e **443** a partir de `0.0.0.0/0`.
-- As imagens Ubuntu da OCI também bloqueiam portas no iptables:
-  ```sh
-  sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 80 -j ACCEPT
-  sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 443 -j ACCEPT
-  sudo netfilter-persistent save
-  ```
+## Como funciona
+| Evento | O que o workflow faz |
+|---|---|
+| Agendado (diário) ou manual (Actions → "Atualiza e publica" → Run workflow) | Roda `06_group_trends.py` e `04_export.py`, faz commit das mudanças e publica |
+| Perfil de comparecimento 2026 publicado pelo TSE | Na execução diária seguinte, também roda 01→03 e troca os grupos para 2026 |
+| Push no `master` | Publica a página que está no repositório, sem coletar nada |
 
-## 2. Domínio
-No registro.br, no DNS de `pautadaurna.com.br`, crie um registro **A** para `@` e outro para `www`, apontando para o IP público da VM.
-
-## 3. Programas
+## 1. Chave da SerpApi
+Crie a conta em serpapi.com (plano grátis, 100 buscas/mês) e guarde a chave como *secret* do repositório:
 ```sh
-sudo apt update && sudo apt install -y git python3-venv curl debian-keyring debian-archive-keyring apt-transport-https
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
-sudo apt update && sudo apt install -y caddy
-sudo mkdir -p /var/www/pautadaurna && sudo chown "$USER" /var/www/pautadaurna
+gh secret set SERPAPI_KEY --repo CamaraHacks/pautadaurna   # o comando pede a chave sem mostrá-la
+```
+Sem a chave, o workflow continua publicando, só que com as buscas guardadas em `data/trends_store.json`.
+
+O script gasta no máximo 6 buscas por dia (3 temas em rodízio) e 5 aos domingos, e para ao chegar a 95 por mês.
+
+## 2. DNS no registro.br
+No painel do domínio, em **DNS → Editar zona**, crie os registros abaixo:
+
+| Tipo | Nome | Valor |
+|---|---|---|
+| A | (vazio, raiz) | 185.199.108.153 |
+| A | (vazio, raiz) | 185.199.109.153 |
+| A | (vazio, raiz) | 185.199.110.153 |
+| A | (vazio, raiz) | 185.199.111.153 |
+| AAAA | (vazio, raiz) | 2606:50c0:8000::153 |
+| AAAA | (vazio, raiz) | 2606:50c0:8001::153 |
+| AAAA | (vazio, raiz) | 2606:50c0:8002::153 |
+| AAAA | (vazio, raiz) | 2606:50c0:8003::153 |
+| CNAME | www | camarahacks.github.io |
+
+A propagação leva de minutos a algumas horas. Depois, em **Settings → Pages**, marque **Enforce HTTPS**. O certificado é emitido sozinho, quando o DNS já aponta para o GitHub.
+
+**Recomendado:** verificar o domínio em **GitHub → Settings (da conta) → Pages → Add a domain**. O GitHub pede um registro TXT `_github-pages-challenge-camarahacks`. Isso impede que outra conta use o seu domínio se o Pages for desligado um dia.
+
+## 3. Conferência
+```sh
+dig +short pautadaurna.com.br                  # deve listar os 4 IPs 185.199.x.153
+curl -I https://pautadaurna.com.br             # deve responder 200
+gh run list --repo CamaraHacks/pautadaurna -L 3   # últimas execuções do workflow
 ```
 
-## 4. Projeto
-```sh
-git clone https://github.com/CamaraHacks/pautadaurna.git ~/abstencao-2026 && cd ~/abstencao-2026
-python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
-cp deploy/.env.example .env && chmod 600 .env   # coloque a chave da SerpApi no .env
-deploy/atualiza.sh --completo                   # a primeira execução baixa TSE/IBGE (~250 MB) e publica
-sudo cp deploy/Caddyfile /etc/caddy/Caddyfile && sudo systemctl reload caddy
-```
-
-## 5. Atualização diária
-```sh
-crontab -e
-# 06h de Brasília (o relógio da VM está em UTC: 09h)
-0 9 * * * /home/ubuntu/abstencao-2026/deploy/atualiza.sh
-```
-
-## Orçamento e conferência
-- **Orçamento da SerpApi:** `pipeline/06_group_trends.py` gasta no máximo 6 buscas por dia (3 temas, em rodízio) e 5 aos domingos (volumes relativos). Para ao chegar a 95 por mês. Com `--dry-run`, mostra o plano do dia sem gastar.
-- **Perfil de 2026:** quando o TSE publicar o perfil de comparecimento, o `atualiza.sh` percebe e refaz os grupos sozinho.
-- **Logs e checagem:** os logs ficam em `logs/atualiza.log`. Para conferir se o site está no ar: `curl -I https://pautadaurna.com.br`.
+## Observações
+- O GitHub pode atrasar alguns minutos as execuções agendadas.
+- O GitHub desliga workflows agendados depois de 60 dias sem atividade no repo. Até 25/out isso não importa; se o site ficar no ar por mais tempo, confira em Actions se o agendamento continua ativo.
+- Alternativa com servidor próprio: veja `deploy/OCI.md`.
