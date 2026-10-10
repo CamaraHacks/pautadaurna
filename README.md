@@ -35,7 +35,7 @@ Uma página com quatro abas e um filtro global (cidade, estado e grupo) que fica
 - **Onde agir:**
   - ranking de cidades ou de regiões (Regiões Imediatas do IBGE, como a Baixada Santista), com ausentes, mobilizáveis e saldo pró-Lula;
   - visão da cidade, com o peso de cada grupo, os setores (Centro, Norte, Sul, Leste, Oeste) nas cidades com mais de 500 mil eleitores, os locais de votação ordenados por saldo e as zonas eleitorais.
-- **Kit de redes:** por grupo, dores em destaque, pautas que comparam os planos de Lula e Flávio (com fato oficial, página do plano e link para o [Mapa do Segundo Turno](https://mapasegundoturno.com.br)), imagem pronta para post, redes e formatos, mensagens cívicas e um carrossel de temas com buscas do Google Trends.
+- **Kit de redes:** por grupo, dores em destaque, pautas que comparam os planos de Lula e Flávio (com fato oficial e página do plano), imagem pronta para post, redes e formatos, mensagens cívicas e um carrossel de temas com buscas do Google Trends.
 - **Postar:** peças prontas para Instagram, TikTok e WhatsApp, com os números da cidade ou do estado escolhido:
   - imagem do dado local (post e story);
   - carrossel de 5 imagens por pauta;

@@ -550,7 +550,6 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
       <p><strong>Gustavo Câmara</strong> é analista de sistemas e trabalha com infraestrutura, em transição para engenharia de confiabilidade (SRE). Criou o Pauta da Urna em outubro de 2026, entre o 1º e o 2º turno, para transformar os dados abertos do TSE e do IBGE em pauta para quem produz conteúdo.</p>
       <p><strong>Por que este site tem lado.</strong> 33 milhões de pessoas não votaram no 1º turno, e a diferença entre os dois primeiros foi de 2,2 milhões de votos. Defendemos a democracia e apoiamos Lula. Isso não muda os números: cada dado tem fonte oficial com link, e as propostas dos dois candidatos são citadas dos planos registrados no TSE, com página, para você conferir.</p>
       <p><strong>Código aberto.</strong> Todo o código e os dados tratados estão em <a href="https://github.com/CamaraHacks/pautadaurna" target="_blank" rel="noopener">github.com/CamaraHacks/pautadaurna</a>. Achou um erro? Abra uma issue lá ou fale comigo pelo <a href="https://www.linkedin.com/in/camarahacks/" target="_blank" rel="noopener">LinkedIn</a>.</p>
-      <p><strong>Referências.</strong> As pautas conversam com os estudos do <a href="https://mapasegundoturno.com.br" target="_blank" rel="noopener">Mapa do Segundo Turno</a>, de Miro Medeiros, que linkamos em cada tema.</p>
     </section>
   </div>
 </main>
@@ -1028,13 +1027,12 @@ function pautasBlock(g) {
         <button type="button" class="btn sm" data-pauta="${g.id}:${i}:copiar">Copiar texto</button>
         <button type="button" class="btn sm" data-pauta="${g.id}:${i}:imagem">Baixar imagem</button>
         <button type="button" class="btn sm" data-pauta="${g.id}:${i}:compartilhar">Compartilhar</button>
-        <a href="${P.mapa}${pt.mapa_url}" target="_blank" rel="noopener">Aprofunde: ${esc(pt.mapa_titulo)} (Mapa do 2º Turno) ↗</a>
       </div>
     </article>`).join("")}</div></div>`;
 }
 function pautaTexto(pt) {
   const fato = pt.fato ? `\n${pt.fato} (Fonte: ${P.fontes[pt.fonte].nome} – ${P.fontes[pt.fonte].url})` : "";
-  return `${pt.dor}${fato}\n\nLula (plano de governo, p. ${pt.lula_p}): ${pt.lula}\nFlávio (plano de governo${pt.flavio_p ? ", p. " + pt.flavio_p : ""}): ${pt.flavio}\n\nAprofunde: ${P.mapa}${pt.mapa_url}\nMais pautas: https://pautadaurna.com.br`;
+  return `${pt.dor}${fato}\n\nLula (plano de governo, p. ${pt.lula_p}): ${pt.lula}\nFlávio (plano de governo${pt.flavio_p ? ", p. " + pt.flavio_p : ""}): ${pt.flavio}\n\nMais pautas: https://pautadaurna.com.br`;
 }
 function wrapLines(ctx, text, maxW) {
   const out = []; let line = "";
@@ -1229,7 +1227,7 @@ $("kit-body").addEventListener("click", ev => {
 // ---------- postar: pieces per network ----------
 let rede = "instagram";
 const TAGS = "#Eleicoes2026 #SegundoTurno #Vote25";
-const tagTema = pt => "#" + pt.mapa_titulo.normalize("NFD").replace(/[̀-ͯ]/g, "").split(/\s+/).map(w => w[0].toUpperCase() + w.slice(1)).join("").replace(/[^A-Za-z0-9]/g, "");
+const tagTema = pt => "#" + pt.tag.normalize("NFD").replace(/[̀-ͯ]/g, "").split(/\s+/).map(w => w[0].toUpperCase() + w.slice(1)).join("").replace(/[^A-Za-z0-9]/g, "");
 const URL_SITE = "https://pautadaurna.com.br";
 function textoLocal(l, r) {
   const razao = l.margem > 0 ? ` São ${pf(l.abst / l.margem, l.abst / l.margem >= 10 ? 0 : 1)} ausentes para cada voto de diferença.` : "";
