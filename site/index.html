@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pauta da Urna</title>
 <meta name="description" content="Quem não votou no 1º turno de 2026, onde vivem e como alcançá-los: TSE × IBGE, por cidade, zona eleitoral e grupo.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -306,6 +307,48 @@ details.vies[open] summary { margin-bottom: 10px; }
 /* Toast */
 .toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--ground); font: 600 0.8rem var(--mono); padding: 10px 14px; border-radius: 5px; z-index: 50; }
 [hidden] { display: none !important; }
+/* ---------- responsivo: nada empurra a página para os lados; celular com cabeçalho enxuto ---------- */
+.appbar-in > *, .brandrow > *, main > *, .view > *, section > *, .chart > *, .two > *, .cols > *, .visor > *,
+.peca > *, .blk > *, .kit > *, .hero-grid > *, .cmp-row > *, .acv, .tcard { min-width: 0; }
+.tabs { max-width: 100%; }
+.two { grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
+.cols { grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); }
+.visor { grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); }
+.gcards { grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); }
+.steps { grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); }
+.cmp-row .bar { max-width: calc(100% - 90px); flex: none; }
+pre, .note, td, .chip { overflow-wrap: anywhere; }
+#f-toggle { display: none; }
+@media (max-width: 720px) {
+  body { font-size: 1rem; }
+  main { padding-inline: 16px; padding-block: 20px 72px; }
+  .view { gap: 44px; }
+  .appbar { position: static; }
+  .appbar-in { padding: 8px 16px 10px; gap: 8px; }
+  .brandrow { gap: 8px; }
+  .tabs a { padding: 8px 9px; font-size: 0.7rem; }
+  .filterbar { display: none; }
+  .appbar.filtros .filterbar { display: grid; }
+  #f-toggle { display: inline-flex; }
+  .scope { font-size: 0.8rem; }
+  .scope .hint { display: none; }
+  h2 { font-size: 1.55rem; }
+  .hero h1 { font-size: 2.6rem; }
+  .lede { font-size: 1.05rem; }
+  .visor { padding: 14px; gap: 14px; }
+  .visor .v { font-size: 1.6rem; }
+  .chart, .peca, .ficha, .pauta { padding: 12px; }
+  .big-ratio { font-size: 2.2rem; }
+  .cmp-row { grid-template-columns: 1fr !important; }
+  .cmp-row > div, .cmp-row > div > div { flex-wrap: wrap; row-gap: 4px; }
+  .cmp-row .bar { max-width: 100%; }
+  .peca .prev { max-width: 160px; }
+  .acervo { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .car-track { grid-auto-columns: 82%; }
+  .dores { padding: 14px; }
+  .dores ul { font-size: 0.95rem; }
+  .site-foot { padding-inline: 16px; }
+}
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 footer { border-top: 1px solid var(--rule); padding-top: 24px; font-size: 0.88rem; color: var(--ink-2); display: grid; gap: 12px; }
 footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
@@ -1500,9 +1543,10 @@ function renderFilter() {
   else if (S.uf) chips.push(`<button type="button" class="chipbtn" data-clear="uf">${S.uf} <b aria-hidden="true">×</b></button>`);
   if (S.g) chips.push(`<button type="button" class="chipbtn" data-clear="g"><i class="sw" style="background:${gcolor(S.g)}"></i>${esc(GBY[S.g].nome)} <b aria-hidden="true">×</b></button>`);
   const hints = { panorama: "O Panorama mostra o Brasil todo. O filtro vale em Onde agir e Postar.", explorar: "", kit: "", metodo: "" };
-  $("scope").innerHTML = `<span>Você está vendo:</span>${chips.length ? chips.join("") : "<strong>Brasil, todos os grupos</strong>"}<span class="hint">${hints[S.view] || ""}</span>`;
+  $("scope").innerHTML = `<button type="button" class="btn sm" id="f-toggle" aria-expanded="${document.querySelector(".appbar").classList.contains("filtros")}">${document.querySelector(".appbar").classList.contains("filtros") ? "Fechar filtros" : "Filtros"}</button><span>Você está vendo:</span>${chips.length ? chips.join("") : "<strong>Brasil, todos os grupos</strong>"}<span class="hint">${hints[S.view] || ""}</span>`;
 }
 $("scope").addEventListener("click", ev => {
+  if (ev.target.closest("#f-toggle")) { document.querySelector(".appbar").classList.toggle("filtros"); renderFilter(); return; }
   const b = ev.target.closest("[data-clear]"); if (!b) return;
   const k = b.dataset.clear;
   go(k === "r" ? (S.r && S.r.ibge ? { r: null } : { r: null, uf: "" }) : k === "c" ? { c: null, uf: "", r: null } : k === "uf" ? { uf: "", r: null } : { g: "" });
