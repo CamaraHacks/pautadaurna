@@ -222,6 +222,17 @@ main { padding-inline: 20px; padding-block: 36px 96px; gap: 0; }
 .pauta .acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .pauta .acts a { font: 600 0.72rem var(--mono); color: var(--ink-2); }
 
+/* Acervo de terceiros */
+.acervo { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.acv { border: 1px solid var(--rule); border-radius: 6px; background: var(--panel); overflow: hidden; display: grid; align-content: start; font-size: 0.82rem; }
+.acv .cap { aspect-ratio: 1 / 1; background: var(--ground); display: grid; place-items: center; overflow: hidden; }
+.acv .cap img { width: 100%; height: 100%; object-fit: cover; }
+.acv .cap span { font: 600 0.7rem var(--mono); color: var(--ink-3); }
+.acv .bd { padding: 8px; display: grid; gap: 4px; }
+.acv .tp { font: 600 0.62rem var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-ink); }
+.acv .acts { display: flex; gap: 6px; flex-wrap: wrap; }
+.acv .acts a { font: 600 0.66rem var(--mono); color: var(--ink-2); }
+
 /* Postar */
 .pecas { display: grid; gap: 16px; }
 .peca { display: grid; grid-template-columns: 200px 1fr; gap: 18px; border: 1px solid var(--rule); border-radius: 8px; background: var(--panel); padding: 16px; align-items: start; }
@@ -477,6 +488,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
     <section id="postar-local"></section>
     <section id="postar-pautas"></section>
     <section id="postar-videos"></section>
+    <section id="postar-acervo"></section>
     <section id="postar-guia">
       <div class="src"><b>Regras e calendário</b> · Res. TSE 23.610 e 23.755/2026</div>
       <h3>Antes de postar</h3>
@@ -513,6 +525,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
         <p><strong>Cadastro desatualizado.</strong> Em <span class="num" id="n-inflado"></span> municípios há mais eleitores aptos em 2026 do que moradores no Censo 2022, contando inclusive crianças.</p>
         <p><strong>Posição editorial.</strong> O Pauta da Urna apoia Lula no 2º turno, em defesa da democracia. Os fatos vêm de fontes oficiais (IBGE, TSE, Planalto, ministérios, Agência Brasil, ONU/FAO), e as propostas de Lula e Flávio são citadas dos planos de governo registrados no TSE, com o número da página. Quando um plano não trata de um tema, dizemos isso, em vez de atribuir intenção.</p>
         <p><strong>Saldo pró-Lula.</strong> Para cada local de votação: ausentes mobilizáveis (sem os 70+ do perfil do município) × (Lula% − Flávio%) dos votos válidos daquele local no 1º turno. Supõe que quem faltou votaria como os vizinhos de seção. É uma estimativa para priorizar onde agir, não uma previsão.</p>
+        <p><strong>Material de terceiros.</strong> Embaixo de algumas pautas aparecem vídeos e artes do Acervo da Vitória, com link para os arquivos originais. Não editamos esse material. Ficam de fora os conteúdos feitos com IA e as acusações de crime sem condenação. Os selfies do Lula entram como fala de campanha dele.</p>
         <p><strong>Regras.</strong> Tudo é agregado; não há dado de nenhum eleitor individual (LGPD). Impulsionamento pago de conteúdo eleitoral é exclusivo de candidatos, partidos e coligações (Res. TSE 23.610/2019); compartilhar e publicar como cidadão é livre, com autoria identificada e sem desinformação. Oferecer transporte ou qualquer vantagem em troca de voto é crime: ajude a pessoa a planejar como chegar, sem condicionar nada.</p>
         <p><strong>Boa Esperança do Norte (MT)</strong>, instalado em 2025, entra nos totais, mas não tem dados do Censo nem polígono no mapa.</p>
       </div>
@@ -569,7 +582,8 @@ const TG = /*__TRENDS_GRUPOS__*/null;
 const R = /*__REGIOES__*/null;   // regions, city sectors, per-municipality saldo (08_regioes.py)
 const P = /*__PAUTAS__*/null;    // dores -> fatos oficiais + propostas dos planos (site/pautas.json)
 const GC = /*__GC__*/"";
-const V = /*__VIDEOS__*/[];       // short videos sent to the project (09_videos.py)          // GoatCounter site code (no cookies); empty = no tracking
+const V = /*__VIDEOS__*/[];
+const A = /*__ACERVO__*/null;     // curated third-party material (10_acervo.py)       // short videos sent to the project (09_videos.py)          // GoatCounter site code (no cookies); empty = no tracking
 // Theme pictograms (24×24, stroke = currentColor), drawn inline so the page needs no image files
 const ICON = {
   saude: '<path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/><path d="M12 9v5M9.5 11.5h5"/>',
@@ -1028,6 +1042,7 @@ function pautasBlock(g) {
         <button type="button" class="btn sm" data-pauta="${g.id}:${i}:imagem">Baixar imagem</button>
         <button type="button" class="btn sm" data-pauta="${g.id}:${i}:compartilhar">Compartilhar</button>
       </div>
+      ${acervoStrip(`${g.id}:${i}`)}
     </article>`).join("")}</div></div>`;
 }
 function pautaTexto(pt) {
@@ -1039,6 +1054,19 @@ function wrapLines(ctx, text, maxW) {
   for (const w of text.split(" ")) { const t = line ? line + " " + w : w; if (ctx.measureText(t).width > maxW && line) { out.push(line); line = w; } else line = t; }
   if (line) out.push(line); return out;
 }
+// ---------- third-party collection (Acervo da Vitória), curated ----------
+function acervoStrip(chave, titulo) {
+  if (!A) return "";
+  const xs = A.itens.filter(v => v.pautas.includes(chave)); if (!xs.length) return "";
+  return `<div class="blk" style="margin-top:10px"><h3>${titulo || "Do Acervo da Vitória"} <span class="tag inf">material de terceiros</span></h3>
+    <div class="acervo">${xs.map(v => `<div class="acv">
+      <div class="cap">${v.capa ? `<img src="${esc(v.capa)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${esc(v.tipo)}'}))">` : `<span>${esc(v.tipo)}</span>`}</div>
+      <div class="bd"><span class="tp">${esc(v.tipo)} · ${esc(v.selo)}</span><span>${esc(v.titulo)}</span>
+        <span class="acts"><a href="${esc(v.ver)}" target="_blank" rel="noopener" data-acv="${v.id}:ver">Ver</a><a href="${esc(v.baixar)}" target="_blank" rel="noopener" data-acv="${v.id}:baixar">Baixar</a><a href="${waLink(v.titulo + "\n" + v.ver + "\nMais em " + URL_SITE)}" target="_blank" rel="noopener" data-acv="${v.id}:whatsapp">WhatsApp</a></span></div></div>`).join("")}</div>
+    <p class="note">Do <a href="${A.fonte}" target="_blank" rel="noopener">Acervo da Vitória</a>, arquivos no Google Drive. Não editamos este material: ficam de fora conteúdos feitos com IA e acusações de crime sem condenação. Os selfies são falas de campanha do Lula. Confira antes de postar.</p></div>`;
+}
+document.addEventListener("click", ev => { const a = ev.target.closest("[data-acv]"); if (a) { const [id, acao] = a.dataset.acv.split(":"); track(`acervo/${id}/${acao}`); } });
+
 // ---------- canvas pieces: post 1080x1350, story 1080x1920, carousel slides ----------
 const AVISO_IA = "Conteúdo produzido com apoio de IA";
 const FMT = { post: [1080, 1350], story: [1080, 1920] };
@@ -1284,9 +1312,10 @@ async function renderPostar() {
         return `<div class="peca"><img class="prev" alt="Prévia: ${esc(pt.dor)}" src="${thumb(rede === "instagram" ? drawPeca("slide", "post", pt, 1) : drawPeca("pauta", "story", pt))}">
           <div><h4>${esc(pt.dor)}</h4>
           <div class="acts">${acts}<button type="button" class="btn sm" data-copy-t="pauta:${i}">Copiar ${rede === "whatsapp" ? "mensagem" : "legenda"}</button>${rede === "whatsapp" ? `<a class="btn sm" href="${waLink(tx)}" target="_blank" rel="noopener" data-wa="pauta:${i}">Abrir no WhatsApp</a>` : ""}</div>
-          ${rot}<pre>${esc(tx)}</pre></div></div>`;
+          ${rot}<pre>${esc(tx)}</pre>${acervoStrip(`${g.id}:${i}`)}</div></div>`;
       }).join("") + "</div>";
   }
+  $("postar-acervo").innerHTML = acervoStrip("geral", "Mobilização para o 2º turno · Acervo da Vitória");
   // videos sent to the project
   const vids = V.filter(v => !S.g || v.grupo === S.g || v.grupo === "todos");
   $("postar-videos").innerHTML = `<div class="src"><b>Vídeos</b> · gravados por pessoas, com autorização</div><h3>Vídeos curtos${g ? " para " + esc(g.nome.toLowerCase()) : ""}</h3>` +

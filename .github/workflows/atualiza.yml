@@ -47,6 +47,7 @@ jobs:
             python pipeline/03_analyze.py
           fi
           python pipeline/06_group_trends.py
+          python pipeline/10_acervo.py || echo "acervo indisponível; mantém a versão anterior"
           python pipeline/04_export.py
 
       - name: Commit

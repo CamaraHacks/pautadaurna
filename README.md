@@ -81,6 +81,18 @@ O script:
 
 Exige ffmpeg e Pillow. As fontes da cartela (licença OFL) estão em `assets/fonts/`.
 
+## Material de terceiros: Acervo da Vitória
+
+`pipeline/10_acervo.py` lê todo dia o índice aberto do [Acervo da Vitória](https://acervodavitoria.pages.dev). O site linka os arquivos no Drive deles, sem hospedar cópias, e mostra os itens embaixo da pauta do mesmo tema, no Kit e na aba Postar.
+
+Regras de curadoria:
+- entram vídeos, artes, selfies do Lula e guias;
+- ficam de fora os conteúdos feitos com IA ("Novelinha IA", "Memes IA") e as acusações de crime sem condenação;
+- os selfies são reais e entram com o selo "fala de campanha do Lula";
+- cada item leva o selo "material de terceiros".
+
+Para barrar ou aprovar um item específico, inclua uma linha em `acervo/regras.csv` com `id,acao,motivo`, onde a ação é `barrar` ou `aprovar`.
+
 ## Regras para as peças
 
 - As imagens e os textos foram produzidos com apoio de IA, então trazem o aviso exigido pela Res. TSE 23.755/2026.
