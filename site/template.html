@@ -1,0 +1,435 @@
+<title>Mapa da Abstenção 2026</title>
+<meta name="description" content="Quem não votou no 1º turno de 2026: dados do TSE cruzados com o Censo 2022 do IBGE, município por município.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+:root {
+  --ground: #eef0ec;
+  --panel: #f8f9f6;
+  --ink: #15181a;
+  --ink-2: #4a524f;
+  --ink-3: #78807c;
+  --rule: #d3d8d2;
+  --accent: #c8541a;       /* tecla CORRIGE da urna */
+  --accent-ink: #a8430f;
+  --confirma: #17804a;     /* tecla CONFIRMA */
+  --s-2022: #a9b0ac;
+  --s-2026: #256abf;
+  --seq-0: #e3edf9; --seq-1: #b7d3f6; --seq-2: #86b6ef; --seq-3: #5598e7; --seq-4: #2a78d6; --seq-5: #1c5cab; --seq-6: #104281;
+  --div-neg: #2a78d6; --div-mid: #e6e6e1; --div-pos: #d03b3b;
+  --nodata: #cfd3cf;
+  --display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #141716; --panel: #1c201f; --ink: #e8ebe6; --ink-2: #b4bbb6; --ink-3: #8a928d; --rule: #2f3533;
+    --accent: #ec7a3f; --accent-ink: #f08c55; --confirma: #3fae72;
+    --s-2022: #5d6561; --s-2026: #3987e5;
+    --seq-0: #1d2a3a; --seq-1: #1f3c63; --seq-2: #184f95; --seq-3: #256abf; --seq-4: #3987e5; --seq-5: #6da7ec; --seq-6: #b7d3f6;
+    --div-neg: #3987e5; --div-mid: #383835; --div-pos: #e66767; --nodata: #2a2f2d;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #141716; --panel: #1c201f; --ink: #e8ebe6; --ink-2: #b4bbb6; --ink-3: #8a928d; --rule: #2f3533;
+  --accent: #ec7a3f; --accent-ink: #f08c55; --confirma: #3fae72;
+  --s-2022: #5d6561; --s-2026: #3987e5;
+  --seq-0: #1d2a3a; --seq-1: #1f3c63; --seq-2: #184f95; --seq-3: #256abf; --seq-4: #3987e5; --seq-5: #6da7ec; --seq-6: #b7d3f6;
+  --div-neg: #3987e5; --div-mid: #383835; --div-pos: #e66767; --nodata: #2a2f2d;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font: 400 1.0625rem/1.6 var(--serif); padding-inline: 20px; }
+main { max-width: 980px; margin: 0 auto; padding-block: 48px 96px; display: grid; gap: 88px; }
+.prose { max-width: 66ch; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+h2 { font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 800; font-stretch: 78%; line-height: 1.05; letter-spacing: -0.01em; }
+h3 { font-size: 1.05rem; font-weight: 700; font-stretch: 90%; }
+p { margin: 0; }
+section { display: grid; gap: 22px; }
+.src { font: 600 0.72rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.src b { color: var(--accent-ink); font-weight: 600; }
+.tag { font: 600 0.68rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 7px; border: 1px solid currentColor; border-radius: 3px; }
+.tag.inf { color: var(--accent-ink); }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.lede { font-size: 1.2rem; color: var(--ink-2); }
+.note { font-size: 0.9rem; color: var(--ink-2); }
+
+/* hero: visor da urna */
+.hero { display: grid; gap: 28px; }
+.hero h1 { font-size: clamp(2.6rem, 8vw, 5.4rem); font-weight: 900; font-stretch: 68%; line-height: 0.92; letter-spacing: -0.015em; max-width: 14ch; }
+.visor { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 22px 24px; display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.visor div { display: grid; gap: 4px; align-content: start; }
+.visor .k { font: 600 0.7rem/1.3 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.visor .v { font: 500 clamp(1.6rem, 4vw, 2.3rem)/1.1 var(--mono); font-variant-numeric: tabular-nums; }
+.visor .v.big { color: var(--accent); }
+.visor .d { font-size: 0.85rem; color: var(--ink-2); }
+
+/* charts */
+.chart { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 18px; display: grid; gap: 12px; position: relative; align-content: start; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart svg text { fill: var(--ink-2); font: 500 11px var(--mono); }
+.chart svg .lbl { fill: var(--ink); font: 400 12.5px var(--serif); }
+.chart svg .val { fill: var(--ink); font: 600 11.5px var(--mono); }
+.chart svg .grid { stroke: var(--rule); stroke-width: 1; }
+.chart svg .base { stroke: var(--ink-3); stroke-width: 1; }
+.chart-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font: 500 0.75rem/1 var(--mono); color: var(--ink-2); align-items: center; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.two { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 5px; overflow: hidden; }
+.seg button { font: 600 0.72rem/1 var(--mono); letter-spacing: 0.04em; text-transform: uppercase; background: transparent; color: var(--ink-2); border: 0; padding: 8px 12px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--ground); }
+.map-wrap { position: relative; }
+.map-wrap svg { max-width: 760px; margin-inline: auto; }
+.map-wrap svg path { stroke: none; }
+.map-wrap svg path:hover { stroke: var(--ink); stroke-width: 1.2; }
+.ramp { display: flex; align-items: center; gap: 8px; font: 500 0.72rem/1 var(--mono); color: var(--ink-2); flex-wrap: wrap; }
+.ramp span.sw { display: inline-flex; }
+.ramp span.sw i { width: 28px; height: 10px; display: block; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--ground); font: 500 0.78rem/1.45 var(--mono); padding: 8px 10px; border-radius: 4px; max-width: 260px; z-index: 5; }
+.tip b { font-family: var(--display); font-size: 0.95rem; font-weight: 700; display: block; }
+
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+.tbl { overflow-x: auto; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--rule); }
+th { font: 600 0.7rem/1.2 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+td.n, th.n { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.up { color: var(--div-pos); } .dn { color: var(--div-neg); }
+
+/* motivos: matriz motivo -> evidência */
+.motivos { display: grid; gap: 0; border-top: 1px solid var(--rule); }
+.mot { display: grid; grid-template-columns: minmax(120px, 0.9fr) 64px minmax(200px, 2fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--rule); align-items: start; }
+.mot .m { font-family: var(--display); font-weight: 700; font-stretch: 90%; }
+.mot .p { font: 600 1.05rem/1.2 var(--mono); color: var(--accent); text-align: right; }
+.mot .e { font-size: 0.95rem; color: var(--ink-2); }
+@media (max-width: 560px) { .mot { grid-template-columns: 1fr 56px; } .mot .e { grid-column: 1 / -1; } }
+blockquote { margin: 0; padding-left: 16px; border-left: 3px solid var(--accent); font-style: italic; color: var(--ink-2); }
+footer { border-top: 1px solid var(--rule); padding-top: 24px; font-size: 0.88rem; color: var(--ink-2); display: grid; gap: 12px; }
+footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+@media (prefers-reduced-motion: no-preference) { .seg button { transition: background .15s; } }
+</style>
+
+<main>
+  <header class="hero">
+    <div class="src"><b>TSE</b> · 1º turno · 4 de outubro de 2026 · Presidente</div>
+    <h1>Quem não foi votar</h1>
+    <p class="lede prose">No domingo do 1º turno, um em cada cinco eleitores aptos no Brasil não apareceu na seção. Esta página cruza a abstenção de cada um dos 5.571 municípios com o Censo 2022 do IBGE para perguntar quem são essas pessoas, onde vivem e o que as afasta da urna.</p>
+    <div class="visor" id="visor"></div>
+  </header>
+
+  <section id="mapa">
+    <div class="src"><b>TSE</b> · detalhe da votação por município</div>
+    <h2>A abstenção não tem um território óbvio</h2>
+    <p class="prose">A taxa varia de município para município, mas não forma as manchas que se esperaria. O Nordeste, a região mais pobre, faltou menos (18,4%) que o Sudeste (22,7%). A comparação com 2022 mostra onde a ausência cresceu: Sudeste, Sul e as grandes cidades.</p>
+    <div class="chart">
+      <div class="chart-head">
+        <div class="seg" role="group" aria-label="Medida do mapa">
+          <button type="button" id="m-taxa" aria-pressed="true">Taxa 2026</button>
+          <button type="button" id="m-delta" aria-pressed="false">Variação desde 2022</button>
+        </div>
+        <div class="ramp" id="ramp"></div>
+      </div>
+      <div class="map-wrap" id="map"></div>
+    </div>
+    <div class="tbl"><table id="t-regioes"></table></div>
+  </section>
+
+  <section id="perfil">
+    <div class="src"><b>TSE</b> · perfil do comparecimento e abstenção · <span id="perfil-ano"></span></div>
+    <h2>Os ausentes têm idade e escolaridade</h2>
+    <p class="prose" id="perfil-txt"></p>
+    <div class="two">
+      <div class="chart"><h3>Abstenção por faixa etária</h3><div id="c-idade"></div><p class="note">Faixas tracejadas: voto facultativo (16–17 anos e 70 anos ou mais).</p></div>
+      <div class="chart"><h3>Abstenção por escolaridade declarada</h3><div id="c-escola"></div></div>
+    </div>
+  </section>
+
+  <section id="renda">
+    <div class="src"><b>IBGE</b> · Censo 2022 × <b>TSE</b> · 2022 e 2026</div>
+    <h2>Pela renda do município, quase nada se explica</h2>
+    <p class="prose">Separamos os municípios em cinco faixas pela renda domiciliar per capita mediana do Censo 2022. A abstenção fica entre 19% e 23% em todas. O que mudou foi a direção: nos municípios mais pobres a ausência caiu desde 2022; nos mais ricos, subiu.</p>
+    <div class="chart">
+      <div class="chart-head"><h3>Abstenção por quintil de renda dos municípios</h3>
+        <div class="legend"><span><i style="background:var(--s-2022)"></i>2022</span><span><i style="background:var(--s-2026)"></i>2026</span></div></div>
+      <div id="c-quintis"></div>
+    </div>
+    <div class="two">
+      <div class="chart"><h3>Cada ponto é um município</h3><div id="c-scatter"></div><p class="note">Renda per capita mediana (escala log) × taxa de abstenção 2026. As faixas verticais são municípios cuja mediana cai exatamente em frações do salário mínimo. Passe o cursor para ver o município.</p></div>
+      <div class="chart"><h3>Correlação com a abstenção</h3><div class="tbl"><table id="t-corr"></table></div><p class="note">Correlação de Spearman entre municípios. Zero é nenhuma relação, 1 é relação perfeita. A coluna “variação” usa a diferença 2026 − 2022.</p></div>
+    </div>
+  </section>
+
+  <section id="motivos">
+    <div class="src"><b>Datafolha</b> · 6 e 7 de outubro de 2026 · <span class="tag inf">inferência</span></div>
+    <h2>O que as pessoas dizem, e o que os dados sustentam</h2>
+    <p class="prose">O IBGE não pergunta por que alguém deixa de votar. Para isso usamos a pesquisa Datafolha feita logo depois do 1º turno (2.520 entrevistas, margem de 2 pontos, registro BR-02949/2026, respostas múltiplas). Ao lado de cada motivo está o grupo nos dados do TSE e do IBGE que mais combina com ele. Essa ligação é nossa leitura, não um resultado da pesquisa.</p>
+    <div class="motivos" id="motivos-list"></div>
+    <blockquote class="prose">“Jovens tiram o título de eleitor e simplesmente não comparecem.” <span class="note">— Jairo Nicolau, sobre os 7,7 milhões de ausentes de 18 a 29 anos em 2026</span></blockquote>
+  </section>
+
+  <section id="metodo">
+    <div class="src"><b>Método</b> · limites</div>
+    <h2>Como ler estes números</h2>
+    <div class="prose" style="display:grid;gap:14px">
+      <p><strong>Falácia ecológica.</strong> O cruzamento com o IBGE é feito por município. Ele diz que municípios mais ricos não faltaram mais, e não diz nada sobre se pessoas mais ricas faltaram mais. Para o indivíduo, os únicos dados são os de idade, sexo, estado civil e escolaridade do TSE.</p>
+      <p><strong>Perfil de <span class="perfil-ano2"></span>.</strong> O TSE ainda não publicou o perfil de comparecimento de 2026 nos dados abertos. Os gráficos de idade e escolaridade usam o 1º turno de 2022 e serão trocados quando o arquivo sair.</p>
+      <p><strong>Exterior.</strong> As taxas desta página consideram só eleitores no Brasil (<span class="num" id="tx-br"></span>). O número oficial do TSE, com o exterior, é 21,08%.</p>
+      <p><strong>Cadastro desatualizado.</strong> Parte da abstenção é de eleitores que morreram, mudaram de cidade ou nunca transferiram o título. Em <span class="num" id="n-inflado"></span> municípios há mais eleitores aptos em 2026 do que moradores no Censo 2022, contando inclusive crianças.</p>
+      <p><strong>Boa Esperança do Norte (MT)</strong>, instalado em 2025, entra nos totais mas não tem dados do Censo nem polígono no mapa.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Fontes e código. Pipeline reprodutível em Python (DuckDB + pandas); dados extraídos em 10/10/2026.</p>
+    <ul>
+      <li><a href="https://dadosabertos.tse.jus.br/">TSE, Portal de Dados Abertos</a>: detalhe_votacao_munzona 2022 e 2026; perfil_comparecimento_abstencao 2022</li>
+      <li><a href="https://sidra.ibge.gov.br/">IBGE, SIDRA</a>: Censo 2022, tabelas 10295 (renda), 10211 (situação do domicílio), 9543 (alfabetização), 10253 (ocupação); malha municipal</li>
+      <li><a href="https://jornaldebrasilia.com.br/noticias/politica-e-poder/datafolha-13-citam-desinteresse-como-motivo-para-abstencao-no-1o-turno">Datafolha, motivos da abstenção no 1º turno (via Jornal de Brasília)</a></li>
+      <li><a href="https://jaironicolau.substack.com/p/quatro-topicos-sobre-a-abstencao">Jairo Nicolau, “Quatro tópicos sobre a abstenção eleitoral de 2026”</a></li>
+      <li><a href="https://gife.org.br/abstencao-eleitoral-solidao-exaustao-vinculos-comunitarios/">Avaaz e Datafolha, Termômetro do Bem Viver (via GIFE)</a></li>
+      <li><a href="https://github.com/betafcc/Municipios-Brasileiros-TSE">Tabela de correspondência TSE ↔ IBGE</a></li>
+    </ul>
+  </footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+const D = /*__DATA__*/null;
+const TOPO = /*__TOPO__*/null;
+
+const nf = new Intl.NumberFormat("pt-BR");
+const pf = (v, d = 1) => v.toLocaleString("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const $ = id => document.getElementById(id);
+
+// ---------- tooltip ----------
+function tipFor(container) {
+  const t = document.createElement("div");
+  t.className = "tip"; t.hidden = true; container.style.position = "relative"; container.appendChild(t);
+  return {
+    show(html, ev) {
+      t.innerHTML = html; t.hidden = false;
+      const r = container.getBoundingClientRect();
+      let x = ev.clientX - r.left + 14, y = ev.clientY - r.top + 14;
+      if (x + t.offsetWidth > r.width) x = ev.clientX - r.left - t.offsetWidth - 14;
+      t.style.left = Math.max(0, x) + "px"; t.style.top = y + "px";
+    },
+    hide() { t.hidden = true; },
+  };
+}
+
+// ---------- visor ----------
+(function visor() {
+  const T = D.total;
+  const delta = T.tx_2026 - T.tx_2022;
+  $("visor").innerHTML = `
+    <div><span class="k">Não compareceram</span><span class="v big">${nf.format(T.abst)}</span><span class="d">de ${nf.format(T.aptos)} eleitores aptos no Brasil</span></div>
+    <div><span class="k">Taxa de abstenção</span><span class="v">${pf(T.tx_2026, 2)}%</span><span class="d">${pf(T.tx_2022, 2)}% no 1º turno de 2022 (${delta >= 0 ? "+" : ""}${pf(delta, 2)} p.p.)</span></div>
+    <div><span class="k">Mais aptos que moradores</span><span class="v">${nf.format(D.mais_aptos_que_habitantes)}</span><span class="d">municípios, sinal de cadastro desatualizado</span></div>`;
+  $("tx-br").textContent = pf(T.tx_2026, 2) + "%";
+  $("n-inflado").textContent = nf.format(D.mais_aptos_que_habitantes);
+})();
+
+// ---------- map ----------
+const ROWS = new Map(D.municipios.map(r => [String(r[0]), r]));
+let mapMode = "taxa";
+function seqColors() { return [0,1,2,3,4,5,6].map(i => css(`--seq-${i}`)); }
+function drawMap() {
+  const el = $("map"); el.innerHTML = "";
+  const w = 900, h = 860;
+  const geo = topojson.feature(TOPO, TOPO.objects.BRMU);
+  const proj = d3.geoMercator().fitSize([w, h], geo);
+  const path = d3.geoPath(proj);
+  const seq = seqColors();
+  const taxaScale = d3.scaleThreshold().domain([12, 15, 18, 21, 24, 28]).range(seq);
+  const deltaScale = d3.scaleDiverging([-6, 0, 6], t => d3.interpolateRgbBasis([css("--div-neg"), css("--div-mid"), css("--div-pos")])(t)).clamp(true);
+  const fill = r => {
+    if (!r) return css("--nodata");
+    if (mapMode === "taxa") return taxaScale(r[4]);
+    return r[5] == null ? css("--nodata") : deltaScale(r[4] - r[5]);
+  };
+  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${w} ${h}`).attr("role", "img")
+    .attr("aria-label", mapMode === "taxa" ? "Mapa da taxa de abstenção por município, 2026" : "Mapa da variação da abstenção 2022–2026 por município");
+  const tip = tipFor(el);
+  svg.append("g").selectAll("path").data(geo.features).join("path")
+    .attr("d", path).attr("fill", f => fill(ROWS.get(f.properties.codarea)))
+    .on("mousemove", (ev, f) => {
+      const r = ROWS.get(f.properties.codarea); if (!r) return;
+      const d = r[5] == null ? "" : `<br>2022: ${pf(r[5])}% (${r[4] - r[5] >= 0 ? "+" : ""}${pf(r[4] - r[5])} p.p.)`;
+      const renda = r[6] == null ? "" : `<br>Renda per capita mediana: R$ ${nf.format(r[6])}`;
+      tip.show(`<b>${r[1]} · ${r[2]}</b>${nf.format(r[3])} aptos<br>Abstenção 2026: ${pf(r[4])}%${d}${renda}`, ev);
+    })
+    .on("mouseleave", () => tip.hide());
+  // UF outlines
+  const ufs = topojson.mesh(TOPO, TOPO.objects.BRMU, (a, b) => a.properties.codarea.slice(0, 2) !== b.properties.codarea.slice(0, 2));
+  svg.append("path").attr("d", path(ufs)).attr("fill", "none").attr("stroke", css("--ground")).attr("stroke-width", 1.4).style("pointer-events", "none");
+
+  const ramp = $("ramp");
+  if (mapMode === "taxa") {
+    const labels = ["<12", "12", "15", "18", "21", "24", "28+"];
+    ramp.innerHTML = `<span>Abstenção (%)</span>` + seq.map((c, i) => `<span style="display:grid;gap:3px;justify-items:start"><i style="width:30px;height:10px;display:block;background:${c}"></i>${labels[i]}</span>`).join("");
+  } else {
+    const steps = [-6, -3, 0, 3, 6];
+    ramp.innerHTML = `<span>p.p. desde 2022</span>` + steps.map(s => `<span style="display:grid;gap:3px;justify-items:start"><i style="width:30px;height:10px;display:block;background:${deltaScale(s)}"></i>${s > 0 ? "+" + s : String(s).replace("-", "−")}</span>`).join("");
+  }
+}
+function setMode(m) {
+  mapMode = m;
+  $("m-taxa").setAttribute("aria-pressed", m === "taxa");
+  $("m-delta").setAttribute("aria-pressed", m === "delta");
+  drawMap();
+}
+$("m-taxa").onclick = () => setMode("taxa");
+$("m-delta").onclick = () => setMode("delta");
+
+// ---------- regions table ----------
+(function regioes() {
+  const order = ["Norte", "Nordeste", "Centro-Oeste", "Sudeste", "Sul"];
+  const rows = order.map(n => D.regioes.find(r => r.regiao === n));
+  $("t-regioes").innerHTML = `<thead><tr><th>Região</th><th class="n">Aptos</th><th class="n">Ausentes</th><th class="n">2022</th><th class="n">2026</th><th class="n">Variação</th></tr></thead><tbody>` +
+    rows.map(r => { const d = r.tx_2026 - r.tx_2022; return `<tr><td>${r.regiao}</td><td class="n">${nf.format(r.aptos_2026)}</td><td class="n">${nf.format(r.abst_2026)}</td><td class="n">${pf(r.tx_2022)}%</td><td class="n">${pf(r.tx_2026)}%</td><td class="n ${d > 0 ? "up" : "dn"}">${d > 0 ? "▲ +" : "▼ "}${pf(d)} p.p.</td></tr>`; }).join("") + "</tbody>";
+})();
+
+// ---------- horizontal bars ----------
+function hbars(el, items, { max, dashed = () => false, fmt = v => pf(v) + "%", note = () => "" }) {
+  const rowH = 26, lw = 150, w = 440, rw = w - lw - 56;
+  const h = items.length * rowH + 22;
+  const x = d3.scaleLinear([0, max], [0, rw]);
+  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${w} ${h}`);
+  const ticks = x.ticks(4);
+  svg.append("g").selectAll("line").data(ticks).join("line").attr("class", "grid")
+    .attr("x1", d => lw + x(d)).attr("x2", d => lw + x(d)).attr("y1", 0).attr("y2", h - 18);
+  svg.append("g").selectAll("text").data(ticks).join("text").attr("x", d => lw + x(d)).attr("y", h - 4).attr("text-anchor", "middle").text(d => d + "%");
+  const tip = tipFor(el);
+  const g = svg.append("g").selectAll("g").data(items).join("g").attr("transform", (d, i) => `translate(0,${i * rowH})`);
+  g.append("text").attr("class", "lbl").attr("x", lw - 10).attr("y", rowH / 2 + 4).attr("text-anchor", "end").text(d => d.label);
+  g.append("rect").attr("x", lw).attr("y", 5).attr("height", rowH - 10).attr("rx", 2)
+    .attr("width", d => Math.max(1, x(d.value)))
+    .attr("fill", d => dashed(d) ? "url(#hatch)" : css("--s-2026"))
+    .attr("stroke", d => dashed(d) ? css("--s-2026") : "none").attr("stroke-width", 1);
+  g.append("text").attr("class", "val").attr("x", d => lw + x(d.value) + 6).attr("y", rowH / 2 + 4).text(d => fmt(d.value));
+  g.append("rect").attr("x", 0).attr("y", 0).attr("width", w).attr("height", rowH).attr("fill", "transparent")
+    .on("mousemove", (ev, d) => tip.show(`<b>${d.label}</b>${note(d)}`, ev)).on("mouseleave", () => tip.hide());
+  const defs = svg.append("defs").append("pattern").attr("id", "hatch").attr("patternUnits", "userSpaceOnUse").attr("width", 6).attr("height", 6).attr("patternTransform", "rotate(45)");
+  defs.append("rect").attr("width", 6).attr("height", 6).attr("fill", css("--seq-1"));
+  defs.append("line").attr("x1", 0).attr("y1", 0).attr("x2", 0).attr("y2", 6).attr("stroke", css("--s-2026")).attr("stroke-width", 2.5);
+}
+
+// ---------- perfil ----------
+function perfil() {
+  const ano = D.perfil_ano;
+  $("perfil-ano").textContent = ano === 2026 ? "1º turno 2026" : "1º turno 2022 (2026 ainda não publicado)";
+  document.querySelectorAll(".perfil-ano2").forEach(e => e.textContent = ano);
+  const groups = [["16–17", /^1[67] anos/], ["18–24", /^(1[89]|20) anos|^21 a 24/], ["25–34", /^(25|30) a/], ["35–44", /^(35|40) a/], ["45–54", /^(45|50) a/],
+    ["55–64", /^(55|60) a/], ["65–69", /^65 a/], ["70–79", /^(70|75) a/], ["80+", /^(80|85|90|95) a|^100/]];
+  const fa = D.perfil.faixa_etaria;
+  const totalAbst = fa.reduce((s, r) => s + r.abst, 0);
+  const idade = groups.map(([label, re]) => {
+    const rs = fa.filter(r => re.test(r.categoria));
+    const ap = rs.reduce((s, r) => s + r.aptos, 0), ab = rs.reduce((s, r) => s + r.abst, 0);
+    return { label, value: 100 * ab / ap, ap, ab, share: 100 * ab / totalAbst };
+  });
+  const fac = d => d.label === "16–17" || d.label === "70–79" || d.label === "80+";
+  hbars($("c-idade"), idade, { max: 100, dashed: fac, note: d => `${nf.format(Math.round(d.ab))} ausentes de ${nf.format(Math.round(d.ap))} aptos<br>${pf(d.share)}% de todos os ausentes` });
+  const esc = D.perfil.escolaridade.map(r => ({ label: r.categoria.charAt(0) + r.categoria.slice(1).toLowerCase().replace("ensino ", "").replace("lê e escreve", "lê e escreve"), value: r.tx_abst, ab: r.abst, ap: r.aptos, share: r.share_abst }));
+  hbars($("c-escola"), esc, { max: 60, note: d => `${nf.format(d.ab)} ausentes de ${nf.format(d.ap)} aptos<br>${pf(d.share)}% de todos os ausentes` });
+  const s70 = idade.filter(d => d.label === "70–79" || d.label === "80+").reduce((s, d) => s + d.share, 0);
+  const jov = idade.filter(d => ["18–24", "25–34"].includes(d.label)).reduce((s, d) => s + d.share, 0);
+  const analf = D.perfil.escolaridade.find(r => r.categoria === "ANALFABETO"), sup = D.perfil.escolaridade.find(r => r.categoria === "SUPERIOR COMPLETO");
+  $("perfil-txt").textContent = `A ausência cresce com a idade depois dos 65 anos, quando o voto deixa de ser obrigatório: eleitores com 70 anos ou mais eram ${pf(s70, 0)}% de todos os ausentes em ${ano}. O outro bloco grande é de jovens de 18 a 34 anos, obrigados a votar, que somavam ${pf(jov, 0)}%. Na escolaridade, a diferença é de quatro vezes: ${pf(analf.tx_abst, 0)}% de abstenção entre analfabetos e ${pf(sup.tx_abst, 0)}% entre quem tem superior completo.`;
+}
+
+// ---------- quintis ----------
+function quintis() {
+  const el = $("c-quintis");
+  const w = 900, h = 270, m = { l: 44, r: 10, t: 16, b: 52 };
+  const qs = D.quintis;
+  const x0 = d3.scaleBand(qs.map(q => q.quintil), [m.l, w - m.r]).padding(0.28);
+  const x1 = d3.scaleBand(["2022", "2026"], [0, x0.bandwidth()]).padding(0.06);
+  const y = d3.scaleLinear([0, 25], [h - m.b, m.t]);
+  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${w} ${h}`);
+  const tk = [0, 5, 10, 15, 20, 25];
+  svg.append("g").selectAll("line").data(tk).join("line").attr("class", d => d ? "grid" : "base").attr("x1", m.l).attr("x2", w - m.r).attr("y1", y).attr("y2", y);
+  svg.append("g").selectAll("text").data(tk).join("text").attr("x", m.l - 8).attr("y", d => y(d) + 4).attr("text-anchor", "end").text(d => d + "%");
+  const tip = tipFor(el);
+  const names = ["mais pobres", "", "", "", "mais ricos"];
+  const g = svg.append("g").selectAll("g").data(qs).join("g").attr("transform", q => `translate(${x0(q.quintil)},0)`);
+  const bars = q => [{ k: "2022", v: q.tx_2022, q }, { k: "2026", v: q.tx_2026, q }];
+  g.selectAll("rect").data(bars).join("rect").attr("x", d => x1(d.k)).attr("width", x1.bandwidth())
+    .attr("y", d => y(d.v)).attr("height", d => y(0) - y(d.v)).attr("rx", 3)
+    .attr("fill", d => d.k === "2022" ? css("--s-2022") : css("--s-2026"))
+    .on("mousemove", (ev, d) => tip.show(`<b>${d.q.quintil}º quintil · ${d.k}</b>${pf(d.v, 2)}% de abstenção<br>Renda per capita mediana ${d.q.renda_mediana}<br>${nf.format(d.q.municipios)} municípios`, ev))
+    .on("mouseleave", () => tip.hide());
+  g.selectAll(".val").data(bars).join("text").attr("class", "val").attr("text-anchor", "middle")
+    .attr("x", d => x1(d.k) + x1.bandwidth() / 2).attr("y", d => y(d.v) - 6).text(d => pf(d.v));
+  g.append("text").attr("class", "lbl").attr("x", x0.bandwidth() / 2).attr("y", h - m.b + 20).attr("text-anchor", "middle").text(q => `${q.quintil}º quintil${names[q.quintil - 1] ? " · " + names[q.quintil - 1] : ""}`);
+  g.append("text").attr("x", x0.bandwidth() / 2).attr("y", h - m.b + 38).attr("text-anchor", "middle").text(q => q.renda_mediana);
+}
+
+// ---------- scatter ----------
+function scatter() {
+  const el = $("c-scatter");
+  const w = 440, h = 330, m = { l: 40, r: 10, t: 10, b: 34 };
+  const pts = D.municipios.filter(r => r[6] != null && r[6] > 0);
+  const x = d3.scaleLog([120, 3000], [m.l, w - m.r]).clamp(true);
+  const y = d3.scaleLinear([0, 45], [h - m.b, m.t]).clamp(true);
+  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${w} ${h}`);
+  const yt = [0, 10, 20, 30, 40], xt = [150, 300, 600, 1200, 2400];
+  svg.append("g").selectAll("line").data(yt).join("line").attr("class", d => d ? "grid" : "base").attr("x1", m.l).attr("x2", w - m.r).attr("y1", y).attr("y2", y);
+  svg.append("g").selectAll("text").data(yt).join("text").attr("x", m.l - 6).attr("y", d => y(d) + 4).attr("text-anchor", "end").text(d => d + "%");
+  svg.append("g").selectAll("text").data(xt).join("text").attr("x", x).attr("y", h - m.b + 16).attr("text-anchor", "middle").text(d => "R$ " + nf.format(d));
+  svg.append("line").attr("class", "grid").attr("stroke-dasharray", "4 3").attr("x1", m.l).attr("x2", w - m.r).attr("y1", y(D.total.tx_2026)).attr("y2", y(D.total.tx_2026)).attr("stroke", css("--accent"));
+  svg.append("text").attr("x", w - m.r).attr("y", y(D.total.tx_2026) - 6).attr("text-anchor", "end").style("fill", css("--accent-ink")).text(`Brasil ${pf(D.total.tx_2026)}%`);
+  svg.append("g").selectAll("circle").data(pts).join("circle").attr("cx", r => x(r[6])).attr("cy", r => y(r[4])).attr("r", 2.2)
+    .attr("fill", css("--s-2026")).attr("fill-opacity", 0.35);
+  const tip = tipFor(el);
+  const dl = d3.Delaunay.from(pts, r => x(r[6]), r => y(r[4]));
+  const hl = svg.append("circle").attr("r", 5).attr("fill", "none").attr("stroke", css("--ink")).attr("stroke-width", 1.5).attr("visibility", "hidden");
+  svg.append("rect").attr("x", m.l).attr("y", m.t).attr("width", w - m.l - m.r).attr("height", h - m.t - m.b).attr("fill", "transparent")
+    .on("mousemove", ev => {
+      const [px, py] = d3.pointer(ev); const r = pts[dl.find(px, py)];
+      hl.attr("cx", x(r[6])).attr("cy", y(r[4])).attr("visibility", "visible");
+      tip.show(`<b>${r[1]} · ${r[2]}</b>Abstenção ${pf(r[4])}%<br>Renda per capita mediana R$ ${nf.format(r[6])}`, ev);
+    })
+    .on("mouseleave", () => { tip.hide(); hl.attr("visibility", "hidden"); });
+}
+
+// ---------- correlations ----------
+(function corr() {
+  const names = { renda_pc_mediana: "Renda per capita mediana", alfabetizacao: "Taxa de alfabetização", pct_urbana: "População urbana (%)", pct_ocupadas: "Pessoas ocupadas (%)" };
+  const c = D.correlacoes;
+  $("t-corr").innerHTML = `<thead><tr><th>Indicador IBGE</th><th class="n">Nível 2026</th><th class="n">Variação</th></tr></thead><tbody>` +
+    Object.keys(names).map(k => `<tr><td>${names[k]}</td><td class="n">${pf(c[k].nivel, 2)}</td><td class="n">${pf(c[k].variacao, 2)}</td></tr>`).join("") + "</tbody>";
+})();
+
+// ---------- motivos ----------
+(function motivos() {
+  const M = [
+    ["Viagem, fora da cidade", 19, `Combina com o cadastro desatualizado: em ${nf.format(D.mais_aptos_que_habitantes)} municípios há mais eleitores aptos que moradores. Quem migrou e não transferiu o título aparece como ausente todo ano.`],
+    ["Saúde, doença", 18, "Combina com a curva de idade. A abstenção passa de 39% aos 70–74 anos para mais de 90% depois dos 90. Saúde (18%) e idade (4%) juntas são o motivo mais comum depois da viagem."],
+    ["Desinteresse pela eleição ou pelos candidatos", 13, "Combina com os jovens obrigados a votar: 7,7 milhões de ausentes de 18 a 29 anos (Nicolau). A pesquisa Avaaz/Datafolha associa esse afastamento a “exaustão, solidão e perda de vínculos”; 44% dos “desvinculados” têm de 18 a 34 anos."],
+    ["Trabalho", 9, `O cruzamento por município não encontra relação entre a taxa de ocupação do Censo e a abstenção (ρ = ${pf(D.correlacoes.pct_ocupadas.nivel, 2)}). Se o trabalho pesa, pesa na vida de cada eleitor, e não no perfil do lugar.`],
+    ["Falta de documentos", 7, "Sem equivalente direto no TSE ou no IBGE."],
+    ["Distância do local de votação", 6, `Em municípios pequenos, onde se esperaria mais dificuldade de deslocamento, a abstenção não é maior: ${pf(D.portes[0].tx_2026)}% abaixo de 10 mil habitantes contra ${pf(D.portes[D.portes.length - 1].tx_2026)}% acima de 1 milhão.`],
+    ["Outros compromissos, filas, idade", 13, "5% outros compromissos, 4% filas, 4% idade."],
+  ];
+  $("motivos-list").innerHTML = M.map(([m, p, e]) => `<div class="mot"><span class="m">${m}</span><span class="p">${p}%</span><span class="e">${e}</span></div>`).join("");
+})();
+
+function drawAll() {
+  ["c-idade", "c-escola", "c-quintis", "c-scatter"].forEach(id => $(id).innerHTML = "");
+  drawMap(); perfil(); quintis(); scatter();
+}
+drawAll();
+// redraw on theme change so SVG fills follow the tokens
+new MutationObserver(drawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
+</script>
