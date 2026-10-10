@@ -22,7 +22,14 @@ html = html.replace("/*__TRENDS_GRUPOS__*/null", tg.read_text() if tg.exists() e
 html = html.replace("/*__REGIOES__*/null", (SITE / "regioes.json").read_text())
 html = html.replace("/*__PAUTAS__*/null", (SITE / "pautas.json").read_text())
 acv = SITE / "acervo.json"  # from 10_acervo.py
-html = html.replace("/*__ACERVO__*/null", acv.read_text() if acv.exists() else "null")
+acervo = json.loads(acv.read_text()) if acv.exists() else None
+midia = SITE / "midia" / "index.json"  # from 11_midia.py: local, WhatsApp-ready copies of the acervo files
+if acervo and midia.exists():
+    loc = json.loads(midia.read_text())
+    for it in acervo["itens"]:
+        if it["id"] in loc:
+            it.update(loc[it["id"]])
+html = html.replace("/*__ACERVO__*/null", json.dumps(acervo, ensure_ascii=False, separators=(",", ":")) if acervo else "null")
 vids = SITE / "videos.json"  # from 09_videos.py
 html = html.replace("/*__VIDEOS__*/[]", vids.read_text() if vids.exists() else "[]")
 # GoatCounter site code (e.g. "pautadaurna"), from the environment; empty disables measurement

@@ -120,8 +120,8 @@ main { padding-inline: 20px; padding-block: 36px 96px; gap: 0; }
 .tabs a { font: 600 0.78rem/1 var(--mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-2); text-decoration: none; padding: 9px 12px; border-radius: 5px; white-space: nowrap; border: 1px solid transparent; }
 .tabs a:hover { color: var(--ink); border-color: var(--rule); }
 .tabs a[aria-current="page"] { background: var(--ink); color: var(--ground); }
-.filterbar { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr) minmax(0, 1.4fr) auto; gap: 8px; align-items: end; }
-@media (max-width: 720px) { .filterbar { grid-template-columns: 1fr 1fr; } .filterbar .f-cidade { grid-column: 1 / -1; } }
+.filterbar { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.8fr) minmax(0, 0.8fr) minmax(0, 1.3fr) auto; gap: 8px; align-items: end; }
+@media (max-width: 720px) { .filterbar { grid-template-columns: 1fr 1fr; } .filterbar .f-cidade, .filterbar .f-regiao { grid-column: 1 / -1; } }
 .field { display: grid; gap: 4px; }
 .field label { font: 600 0.64rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
 .field input, .field select { width: 100%; font: 400 0.95rem var(--serif); color: var(--ink); background: var(--panel); border: 1px solid var(--rule); border-radius: 5px; padding: 8px 10px; }
@@ -323,7 +323,6 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
       <nav class="tabs" aria-label="Seções">
         <a href="#/panorama" data-tab="panorama">Panorama</a>
         <a href="#/explorar" data-tab="explorar">Onde agir</a>
-        <a href="#/kit" data-tab="kit">Kit de redes</a>
         <a href="#/postar" data-tab="postar">Postar</a>
         <a href="#/metodo" data-tab="metodo">Método</a>
         <a href="#/sobre" data-tab="sobre">Sobre</a>
@@ -331,6 +330,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
     </div>
     <form class="filterbar" id="filtro" autocomplete="off">
       <div class="field f-cidade"><label for="f-cidade">Cidade</label><input id="f-cidade" list="cidades" placeholder="Digite a cidade, ex.: Recife · PE"><datalist id="cidades"></datalist></div>
+      <div class="field f-regiao"><label for="f-regiao">Região</label><input id="f-regiao" list="regioes-lista" placeholder="Ex.: Baixada Fluminense, Zona Sul"><datalist id="regioes-lista"></datalist></div>
       <div class="field"><label for="f-uf">Estado</label><select id="f-uf"><option value="">Brasil</option></select></div>
       <div class="field"><label for="f-grupo">Grupo</label><select id="f-grupo"><option value="">Todos os grupos</option></select></div>
       <button type="button" class="btn corrige" id="f-limpar">Corrige</button>
@@ -348,7 +348,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
         <div style="display:grid;gap:20px">
           <h1>Quem não foi votar</h1>
           <p class="lede prose"><span class="mark">Um em cada cinco eleitores</span> aptos não apareceu na seção. Este site mostra quem são, onde vivem e como alcançá-los nas redes antes do 2º turno, em 25 de outubro.</p>
-          <p class="posicao"><b>Este site tem lado.</b> Defendemos a democracia e, por isso, apoiamos Lula no 2º turno. Os números não mudam por isso: cada dado tem fonte oficial com link, e as propostas dos dois candidatos são citadas dos planos registrados no TSE, com página.</p>
+          <p class="posicao"><b>Este site tem lado.</b> Defendemos a democracia e, por isso, apoiamos Lula no 2º turno. Os números não mudam por isso: cada dado tem fonte oficial, e as propostas dos dois candidatos vêm dos planos de governo de cada um.</p>
         </div>
         <svg class="urna" viewBox="0 0 320 250" role="img" aria-label="Ilustração de uma urna eletrônica mostrando o número de ausentes">
           <rect x="4" y="18" width="312" height="226" rx="16" fill="#e9e6dd" stroke="#1d1c1a" stroke-width="2"/>
@@ -369,7 +369,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
       <nav class="steps" aria-label="Como usar">
         <a href="#/explorar"><strong>Escolha uma cidade ou estado</strong><span>Use o filtro no topo. Ele vale para todas as abas.</span></a>
         <a href="#/explorar"><strong>Veja onde a ausência pesa</strong><span>Ranking de cidades, zonas eleitorais e grupos acima da média.</span></a>
-        <a href="#/kit"><strong>Pegue o kit do grupo</strong><span>Redes, formatos, palavras-chave e mensagens prontas para copiar.</span></a>
+        <a href="#/postar"><strong>Pegue as peças do grupo</strong><span>Imagens, legendas, roteiros e mensagens prontas para TikTok, Instagram e WhatsApp.</span></a>
       </nav>
     </header>
 
@@ -436,7 +436,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
       <div id="setores-wrap" hidden>
         <h3 style="margin-bottom:10px">Setores da cidade</h3>
         <div class="dtable"><table id="t-setores"></table></div>
-        <p class="note" style="margin-top:8px">Setores aproximados pela posição de cada local de votação em relação ao centro da cidade (sede municipal). Não são as divisões oficiais da prefeitura. Clique num setor para filtrar os locais.</p>
+        <p class="note" style="margin-top:8px" id="setores-nota"></p>
       </div>
       <div id="locais-wrap">
         <h3 style="margin-bottom:10px" id="locais-h">Locais de votação com maior saldo</h3>
@@ -463,16 +463,6 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
   </div>
 
   <!-- ================= KIT ================= -->
-  <div class="view" data-view="kit" hidden>
-    <section>
-      <div class="src"><b>Kit de redes</b> · <span class="tag inf">hipóteses para testar</span></div>
-      <h2>Como chegar em cada grupo nas redes</h2>
-      <p class="prose">Escolha um grupo para ver as dores dele, as pautas que comparam os planos de governo de Lula e Flávio, redes, formatos e mensagens prontas. As mensagens cívicas explicam como e onde votar; as pautas são o nosso lado, sempre com fonte oficial. Com uma cidade no filtro, os números são da cidade.</p>
-      <div class="gchoose" id="gchoose" role="group" aria-label="Grupo"></div>
-    </section>
-    <div id="kit-body"></div>
-  </div>
-
   <!-- ================= POSTAR ================= -->
   <div class="view" data-view="postar" hidden>
     <section>
@@ -484,8 +474,10 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
         <button type="button" data-rede="tiktok" aria-pressed="false">TikTok</button>
         <button type="button" data-rede="whatsapp" aria-pressed="false">WhatsApp</button>
       </div>
+      <div class="gchoose" id="gchoose" role="group" aria-label="Grupo"></div>
     </section>
     <section id="postar-local"></section>
+    <div id="kit-body"></div>
     <section id="postar-pautas"></section>
     <section id="postar-videos"></section>
     <section id="postar-acervo"></section>
@@ -523,7 +515,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
         <p><strong>Zonas.</strong> A tabela de zonas aparece em <span class="num" id="n-zonas"></span> municípios com mais de uma zona. Como o TSE redesenhou zonas entre 2022 e 2026, não comparamos zonas entre eleições.</p>
         <p><strong>Exterior.</strong> As taxas consideram só eleitores no Brasil (<span class="num" id="tx-br"></span>). O número oficial do TSE, com o exterior, é 21,08%.</p>
         <p><strong>Cadastro desatualizado.</strong> Em <span class="num" id="n-inflado"></span> municípios há mais eleitores aptos em 2026 do que moradores no Censo 2022, contando inclusive crianças.</p>
-        <p><strong>Posição editorial.</strong> O Pauta da Urna apoia Lula no 2º turno, em defesa da democracia. Os fatos vêm de fontes oficiais (IBGE, TSE, Planalto, ministérios, Agência Brasil, ONU/FAO), e as propostas de Lula e Flávio são citadas dos planos de governo registrados no TSE, com o número da página. Quando um plano não trata de um tema, dizemos isso, em vez de atribuir intenção.</p>
+        <p><strong>Posição editorial.</strong> O Pauta da Urna apoia Lula no 2º turno, em defesa da democracia. Os fatos vêm de fontes oficiais (IBGE, TSE, Planalto, ministérios, Agência Brasil, ONU/FAO), e as propostas de Lula e Flávio vêm dos planos de governo de cada um. Quando um plano não trata de um tema, dizemos isso, em vez de atribuir intenção.</p>
         <p><strong>Saldo pró-Lula.</strong> Para cada local de votação: ausentes mobilizáveis (sem os 70+ do perfil do município) × (Lula% − Flávio%) dos votos válidos daquele local no 1º turno. Supõe que quem faltou votaria como os vizinhos de seção. É uma estimativa para priorizar onde agir, não uma previsão.</p>
         <p><strong>Material de terceiros.</strong> Embaixo de algumas pautas aparecem vídeos e artes do Acervo da Vitória, com link para os arquivos originais. Não editamos esse material. Ficam de fora os conteúdos feitos com IA e as acusações de crime sem condenação. Os selfies do Lula entram como fala de campanha dele.</p>
         <p><strong>Regras.</strong> Tudo é agregado; não há dado de nenhum eleitor individual (LGPD). Impulsionamento pago de conteúdo eleitoral é exclusivo de candidatos, partidos e coligações (Res. TSE 23.610/2019); compartilhar e publicar como cidadão é livre, com autoria identificada e sem desinformação. Oferecer transporte ou qualquer vantagem em troca de voto é crime: ajude a pessoa a planejar como chegar, sem condicionar nada.</p>
@@ -560,8 +552,8 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
     <section class="prose" style="display:grid;gap:16px">
       <div class="src"><b>Sobre</b> · quem fez</div>
       <h2>Quem fez o Pauta da Urna</h2>
-      <p><strong>Gustavo Câmara</strong> é analista de sistemas e trabalha com infraestrutura, em transição para engenharia de confiabilidade (SRE). Criou o Pauta da Urna em outubro de 2026, entre o 1º e o 2º turno, para transformar os dados abertos do TSE e do IBGE em pauta para quem produz conteúdo.</p>
-      <p><strong>Por que este site tem lado.</strong> 33 milhões de pessoas não votaram no 1º turno, e a diferença entre os dois primeiros foi de 2,2 milhões de votos. Defendemos a democracia e apoiamos Lula. Isso não muda os números: cada dado tem fonte oficial com link, e as propostas dos dois candidatos são citadas dos planos registrados no TSE, com página, para você conferir.</p>
+      <p><strong>Gustavo Câmara</strong> é engenheiro de software. Criou o Pauta da Urna em outubro de 2026, entre o 1º e o 2º turno, para transformar os dados abertos do TSE e do IBGE em pauta para quem produz conteúdo.</p>
+      <p><strong>Por que este site tem lado.</strong> 33 milhões de pessoas não votaram no 1º turno, e a diferença entre os dois primeiros foi de 2,2 milhões de votos. Defendemos a democracia e apoiamos Lula. Isso não muda os números: cada dado tem fonte oficial com link, e as propostas dos dois candidatos vêm dos planos de governo de cada um.</p>
       <p><strong>Código aberto.</strong> Todo o código e os dados tratados estão em <a href="https://github.com/CamaraHacks/pautadaurna" target="_blank" rel="noopener">github.com/CamaraHacks/pautadaurna</a>. Achou um erro? Abra uma issue lá ou fale comigo pelo <a href="https://www.linkedin.com/in/camarahacks/" target="_blank" rel="noopener">LinkedIn</a>.</p>
     </section>
   </div>
@@ -672,23 +664,50 @@ const track = (path, title) => { try { window.goatcounter && window.goatcounter.
 const viewPath = () => `/${S.view}${S.g ? "/" + S.g : ""}${S.c ? "/" + S.c[0] : S.uf ? "/" + S.uf : ""}`;
 
 // ---------- state + router ----------
-const S = { view: "panorama", c: null, uf: "", g: "" };
+const S = { view: "panorama", c: null, uf: "", g: "", r: null };
+// regions: curated groups of municipalities, official intra-city regions, approximate sectors, IBGE regions
+const REG = R && R.filtro ? R.filtro : [];
+const REG_BY_ID = new Map(REG.map(x => [x.id, x]));
+const ARTIGO = { "ABC Paulista": "no", "Grande Recife": "no" };
+const regLabel = x => x.ibge ? `${x.nome}${x.tipo === "aproximado" ? " (aprox.)" : ""} · ${x.cidade}` : `${x.nome} · ${x.uf}`;
+function regPrep(x) {
+  if (x.ibge) {
+    if (/^Zona /.test(x.nome)) return `na ${x.nome} de ${x.cidade}`;
+    if (x.nome === "Centro") return `no Centro de ${x.cidade}`;
+    if (x.tipo === "aproximado") return `na região ${x.nome} de ${x.cidade}`;
+    return `em ${x.nome}, ${x.cidade}`;
+  }
+  if (x.tipo === "ibge") return `na ${x.nome[0].toLowerCase() + x.nome.slice(1)}`;
+  return `${ARTIGO[x.nome] || "na"} ${x.nome}`;
+}
 function readHash() {
   const [path, qs] = location.hash.replace(/^#\/?/, "").split("?");
   const p = new URLSearchParams(qs || "");
-  S.view = ["panorama", "explorar", "kit", "postar", "metodo", "sobre"].includes(path) ? path : (/^\d{7}$/.test(path) ? "explorar" : "panorama");
+  S.view = path === "kit" ? "postar" : ["panorama", "explorar", "postar", "metodo", "sobre"].includes(path) ? path : (/^\d{7}$/.test(path) ? "explorar" : "panorama");
   S.c = ROWS.get(p.get("c") || (/^\d{7}$/.test(path) ? path : "")) || null;
   S.uf = S.c ? S.c[2] : (UFS.includes(p.get("uf")) ? p.get("uf") : "");
   S.g = GIDS.includes(p.get("g")) ? p.get("g") : "";
+  S.r = REG_BY_ID.get(p.get("r")) || null;
+  if (S.r && S.r.ibge) { S.c = ROWS.get(String(S.r.ibge)) || S.c; S.uf = S.r.uf; }
+  else if (S.r) { S.c = null; S.uf = S.r.uf; }
 }
 function writeHash() {
   const p = new URLSearchParams();
-  if (S.c) p.set("c", S.c[0]); else if (S.uf) p.set("uf", S.uf);
+  if (S.r) p.set("r", S.r.id); else if (S.c) p.set("c", S.c[0]); else if (S.uf) p.set("uf", S.uf);
   if (S.g) p.set("g", S.g);
   const h = `#/${S.view}${p.toString() ? "?" + p : ""}`;
   if (location.hash !== h) history.replaceState(null, "", h);
 }
-function go(patch) { Object.assign(S, patch); if ("c" in patch && patch.c) S.uf = patch.c[2]; writeHash(); render(); }
+function go(patch) {
+  // a city or state change drops a region that no longer fits; an intra-city region keeps its city
+  if ("c" in patch && !("r" in patch) && S.r && !(patch.c && S.r.ibge === patch.c[0])) patch.r = null;
+  if ("uf" in patch && !("r" in patch) && !("c" in patch) && S.r) patch.r = null;
+  Object.assign(S, patch);
+  if (S.r && S.r.ibge) { S.c = ROWS.get(String(S.r.ibge)) || S.c; S.uf = S.r.uf; }
+  else if (S.r) { S.c = null; S.uf = S.r.uf; }
+  else if ("c" in patch && patch.c) S.uf = patch.c[2];
+  writeHash(); render();
+}
 window.addEventListener("hashchange", () => { readHash(); render(); });
 document.querySelectorAll(".tabs a, .steps a, .brand").forEach(a => a.addEventListener("click", ev => {
   ev.preventDefault(); go({ view: a.getAttribute("href").replace("#/", "") }); window.scrollTo({ top: 0 });
@@ -698,6 +717,16 @@ document.querySelectorAll(".tabs a, .steps a, .brand").forEach(a => a.addEventLi
 const BY_LABEL = new Map(D.municipios.map(r => [`${r[1]} · ${r[2]}`, r]));
 $("cidades").innerHTML = [...BY_LABEL.keys()].sort((a, b) => a.localeCompare(b, "pt-BR")).map(k => `<option value="${esc(k)}"></option>`).join("");
 $("f-uf").innerHTML += UFS.map(u => `<option value="${u}">${u}</option>`).join("");
+const REG_LABEL = new Map(REG.map(x => [regLabel(x), x]));
+const ordemTipo = { municipios: 0, oficial: 1, aproximado: 2, ibge: 3 };
+$("regioes-lista").innerHTML = [...REG].sort((a, b) => ordemTipo[a.tipo] - ordemTipo[b.tipo] || regLabel(a).localeCompare(regLabel(b), "pt-BR")).map(x => `<option value="${esc(regLabel(x))}"></option>`).join("");
+function pickRegion() {
+  const v = $("f-regiao").value.trim();
+  const x = REG_LABEL.get(v) || REG.find(y => y.nome.toLowerCase() === v.toLowerCase());
+  if (x) { go({ r: x, view: S.view === "panorama" || S.view === "metodo" || S.view === "sobre" ? "explorar" : S.view }); track(`regiao/${x.id}`); }
+  else if (v) toast(`Não encontramos a região “${v}”. Escolha um nome da lista.`);
+}
+$("f-regiao").addEventListener("change", () => { if (REG_LABEL.has($("f-regiao").value)) pickRegion(); });
 $("f-grupo").innerHTML += G.grupos.map(g => `<option value="${g.id}">${esc(g.nome)}</option>`).join("");
 function pickCity() {
   const v = $("f-cidade").value.trim();
@@ -706,24 +735,27 @@ function pickCity() {
   else if (v) toast(`Não encontramos “${v}”. Escolha um nome da lista.`);
 }
 $("f-cidade").addEventListener("change", () => { if (BY_LABEL.has($("f-cidade").value)) pickCity(); });
-$("filtro").addEventListener("submit", ev => { ev.preventDefault(); pickCity(); });
+$("filtro").addEventListener("submit", ev => { ev.preventDefault(); if (document.activeElement === $("f-regiao")) pickRegion(); else pickCity(); });
 $("f-uf").addEventListener("change", () => go({ uf: $("f-uf").value, c: null }));
 $("f-grupo").addEventListener("change", () => go({ g: $("f-grupo").value }));
-$("f-limpar").onclick = () => go({ c: null, uf: "", g: "" });
+$("f-limpar").onclick = () => go({ c: null, uf: "", g: "", r: null });
 function renderFilter() {
   $("f-cidade").value = S.c ? `${S.c[1]} · ${S.c[2]}` : "";
+  $("f-regiao").value = S.r ? regLabel(S.r) : "";
   $("f-uf").value = S.uf; $("f-grupo").value = S.g;
   const chips = [];
-  if (S.c) chips.push(`<button type="button" class="chipbtn" data-clear="c">${esc(S.c[1])} · ${S.c[2]} <b aria-hidden="true">×</b><span class="sr">remover cidade</span></button>`);
+  if (S.r) chips.push(`<button type="button" class="chipbtn" data-clear="r">${esc(regLabel(S.r))} <b aria-hidden="true">×</b><span class="sr">remover região</span></button>`);
+  if (S.r && !S.r.ibge) { /* a region of municipalities already names the place */ }
+  else if (S.c) chips.push(`<button type="button" class="chipbtn" data-clear="c">${esc(S.c[1])} · ${S.c[2]} <b aria-hidden="true">×</b><span class="sr">remover cidade</span></button>`);
   else if (S.uf) chips.push(`<button type="button" class="chipbtn" data-clear="uf">${S.uf} <b aria-hidden="true">×</b></button>`);
   if (S.g) chips.push(`<button type="button" class="chipbtn" data-clear="g"><i class="sw" style="background:${gcolor(S.g)}"></i>${esc(GBY[S.g].nome)} <b aria-hidden="true">×</b></button>`);
-  const hints = { panorama: "O Panorama mostra o Brasil todo. O filtro vale em Onde agir e Kit de redes.", explorar: "", kit: "", metodo: "" };
-  $("scope").innerHTML = `<span>Você está vendo:</span>${chips.length ? chips.join("") : "<strong>Brasil, todos os grupos</strong>"}<span class="hint">${hints[S.view]}</span>`;
+  const hints = { panorama: "O Panorama mostra o Brasil todo. O filtro vale em Onde agir e Postar.", explorar: "", kit: "", metodo: "" };
+  $("scope").innerHTML = `<span>Você está vendo:</span>${chips.length ? chips.join("") : "<strong>Brasil, todos os grupos</strong>"}<span class="hint">${hints[S.view] || ""}</span>`;
 }
 $("scope").addEventListener("click", ev => {
   const b = ev.target.closest("[data-clear]"); if (!b) return;
   const k = b.dataset.clear;
-  go(k === "c" ? { c: null, uf: "" } : k === "uf" ? { uf: "" } : { g: "" });
+  go(k === "r" ? (S.r && S.r.ibge ? { r: null } : { r: null, uf: "" }) : k === "c" ? { c: null, uf: "", r: null } : k === "uf" ? { uf: "", r: null } : { g: "" });
 });
 
 // ---------- toast + copy ----------
@@ -766,6 +798,9 @@ function groupSizes(row, uf) {
   });
 }
 const BR_SIZES = groupSizes(null);
+function groupSizesRows(rows) {
+  return GIDS.map((id, i) => { const rs = rows.filter(r => r[11]); const ap = rs.reduce((s, r) => s + r[11][2 * i], 0), ab = rs.reduce((s, r) => s + r[11][2 * i + 1], 0); return { id, ap, ab, tx: ap ? 100 * ab / ap : 0 }; });
+}
 const BR_TOT = BR_SIZES.reduce((s, x) => s + x.ab, 0);
 
 // ---------- panorama ----------
@@ -900,7 +935,7 @@ let lastCity = null;
 function renderCidade(r) {
   if (lastCity !== r) { locSetor = null; locLimit = 20; lastCity = r; }
   renderSetores(r); renderLocais(r);
-  $("exp-h").textContent = `${r[1]} · ${r[2]}`;
+  $("exp-h").textContent = S.r && S.r.ibge === r[0] ? `${S.r.nome} · ${r[1]}` : `${r[1]} · ${r[2]}`;
   $("exp-src").textContent = "1º turno 2026";
   const d22 = r[5] == null ? "sem dado de 2022" : `${pf(r[5])}% em 2022 (${sign(r[4] - r[5])} p.p.)`;
   const votos = r[12] ? `<span style="display:grid">${CAND.map((c, i) => candLbl(i, r[12][i])).join("")}</span>${voteBar(r[12])}` : "sem dado";
@@ -935,7 +970,7 @@ function renderCidade(r) {
   }
 }
 $("zonas-more").onclick = () => { zonasAll = !zonasAll; renderCidade(S.c); };
-$("c-pesos").addEventListener("click", ev => { const b = ev.target.closest("[data-kit]"); if (b) { go({ g: b.dataset.kit, view: "kit" }); window.scrollTo({ top: 0 }); } });
+$("c-pesos").addEventListener("click", ev => { const b = ev.target.closest("[data-kit]"); if (b) { go({ g: b.dataset.kit, view: "postar" }); window.scrollTo({ top: 0 }); } });
 
 const RANK_COLS = [
   { key: "nome", label: "Cidade", get: r => r[1], fmt: (v, r) => `<button type="button" class="linkbtn" data-city="${r[0]}">${esc(v)}</button>`, n: false },
@@ -960,16 +995,18 @@ const REG_COLS = [
 ];
 let rkMode = "cid";
 function renderRanking() {
-  const scope = S.uf ? S.uf : "Brasil";
+  const scope = S.r && !S.r.ibge ? S.r.nome : S.uf ? S.uf : "Brasil";
   const gname = S.g ? GBY[S.g].nome.toLowerCase() : "";
   $("rank-h").textContent = `Onde agir · ${scope}${S.g ? " · " + GBY[S.g].nome : ""}`;
   $("rank-txt").textContent = S.g
     ? `Cidades com mais ausentes do grupo “${gname}” (perfil ${D.perfil_ano}). Mais ausentes significa mais gente para alcançar com a mesma campanha.`
     : `Cidades ordenadas pelo número de eleitores que não votaram. A última coluna compara os ausentes com a diferença de votos entre os dois primeiros: quanto maior, mais a ausência pesa ali.`;
+  if (S.r && !S.r.ibge) $("rank-txt").textContent = `${regLabel(S.r)}: ${nf.format(S.r.abst)} pessoas não votaram no 1º turno, ${nf.format(S.r.mob)} mobilizáveis. Lula ${pf(S.r.pl)}% × Flávio ${pf(S.r.pf)}%; saldo pró-Lula de ${S.r.saldo > 0 ? "+" : ""}${nf.format(S.r.saldo)}. Abaixo, os municípios da região.`;
   const COLS = rkMode === "reg" && R ? REG_COLS : RANK_COLS;
   if (!COLS.some(c => c.key === rankSort.key)) rankSort = { key: "saldo", dir: -1 };
   const col = COLS.find(c => c.key === rankSort.key);
-  const base = rkMode === "reg" && R ? Object.values(R.regioes).filter(x => !S.uf || x.uf === S.uf) : D.municipios.filter(r => !S.uf || r[2] === S.uf);
+  const membros = S.r && S.r.municipios ? new Set(S.r.municipios) : null;
+  const base = rkMode === "reg" && R ? Object.values(R.regioes).filter(x => !S.uf || x.uf === S.uf) : D.municipios.filter(r => membros ? membros.has(r[0]) : !S.uf || r[2] === S.uf);
   const list = base.map(r => ({ r, v: COLS.map(c => c.get(r)) }))
     .sort((a, b) => { const i = COLS.indexOf(col); const x = a.v[i], y = b.v[i]; return (typeof x === "string" ? x.localeCompare(y, "pt-BR") : x - y) * rankSort.dir; });
   const shown = list.slice(0, rankLimit);
@@ -999,15 +1036,18 @@ function renderSetores(r) {
   const st = R && R.setores[String(r[0])];
   $("setores-wrap").hidden = !st;
   if (!st) return;
-  const ordem = ["Centro", "Norte", "Sul", "Leste", "Oeste"].filter(k => st[k]);
+  const ordem = Object.keys(st).sort((a, b) => st[b].abst - st[a].abst);
+  const oficial = { 3550308: "Zonas da Prefeitura de São Paulo, pelos distritos e subprefeituras (GeoSampa).", 3304557: "Áreas de Planejamento da Prefeitura do Rio, pelos limites de bairros (Data.Rio).", 2927408: "Prefeituras-Bairro de Salvador, pela lista oficial de bairros de cada uma." }[r[0]];
+  $("setores-nota").textContent = (oficial || "Setores aproximados pela posição de cada local de votação em relação ao centro da cidade (sede municipal); não são divisões oficiais da prefeitura.") + " Clique numa região para filtrar os locais, ou escolha-a no filtro Região.";
   $("t-setores").innerHTML = `<thead><tr><th>Setor</th><th class="n">Ausentes</th><th class="n">Mobilizáveis</th><th class="n">Lula</th><th class="n">Flávio</th><th class="n">Saldo pró-Lula</th></tr></thead><tbody>` +
     ordem.map(k => { const x = st[k]; return `<tr${locSetor === k ? ' style="background:var(--yellow-soft)"' : ""}><td><button type="button" class="linkbtn" data-setor="${k}">${k}</button></td><td class="n">${nf.format(x.abst)}</td><td class="n">${nf.format(x.mob)}</td><td class="n">${pf(x.pl)}%</td><td class="n">${pf(x.pf)}%</td><td class="n">${saldoFmt(x.saldo)}</td></tr>`; }).join("") + "</tbody>";
 }
 async function renderLocais(r) {
-  $("locais-h").textContent = `Locais de votação com maior saldo${locSetor ? " · " + locSetor : ""}`;
+  $("locais-h").textContent = `Locais de votação com maior saldo${S.r && S.r.ibge === r[0] ? " · " + S.r.nome : locSetor ? " · " + locSetor : ""}`;
   $("t-locais").innerHTML = `<tbody><tr><td class="note">Carregando os locais de ${esc(r[1])}…</td></tr></tbody>`;
   let rows;
-  try { rows = (await locaisUF(r[2])).filter(x => x[0] === r[0] && (!locSetor || x[2] === locSetor)); }
+  const rf = S.r && S.r.ibge === r[0] ? S.r : null;
+  try { rows = (await locaisUF(r[2])).filter(x => x[0] === r[0] && (rf ? (rf.campo === "sub" ? x[10] : x[2]) === rf.valor : !locSetor || x[2] === locSetor)); }
   catch {
     $("t-locais").innerHTML = `<tbody><tr><td class="note">A lista de locais de votação carrega no site publicado (pautadaurna.com.br); nesta prévia ela não está disponível.</td></tr></tbody>`;
     $("locais-count").textContent = ""; $("locais-more").hidden = true; return;
@@ -1024,30 +1064,9 @@ $("t-setores").addEventListener("click", ev => { const b = ev.target.closest("[d
 $("locais-more").onclick = () => { locLimit += 20; renderLocais(S.c); };
 
 // ---------- kit: pautas (dor -> fato oficial -> o que dizem os planos) ----------
-const pagLink = (who, n) => n ? `<a href="${P.planos[who].url}#page=${n}" target="_blank" rel="noopener">plano registrado no TSE, p. ${n} ↗</a>` : `<a href="${P.planos[who].url}" target="_blank" rel="noopener">plano registrado no TSE (busca no documento) ↗</a>`;
-function pautasBlock(g) {
-  const lst = P && P.grupos[g.id]; if (!lst) return "";
-  return `<div class="blk"><h3>Pautas para este grupo <span class="tag inf">nosso lado · fontes oficiais</span></h3>
-    <p class="note">O que os planos de governo registrados no TSE dizem sobre cada dor. Copie o texto, baixe a imagem pronta para post ou compartilhe.</p>
-    <div class="pautas">${lst.map((pt, i) => `
-    <article class="pauta">
-      <h4>${esc(pt.dor)}</h4>
-      ${pt.fato ? `<div class="fato">${esc(pt.fato)} <a href="${P.fontes[pt.fonte].url}" target="_blank" rel="noopener">Fonte: ${esc(P.fontes[pt.fonte].nome)} ↗</a></div>` : ""}
-      <div class="vs">
-        <div class="cand-box" style="border-top-color:var(--cand-2)"><b><span class="cand"><i style="background:var(--cand-2)"></i>Lula</span></b><span>${esc(pt.lula)}</span>${pagLink("lula", pt.lula_p)}</div>
-        <div class="cand-box" style="border-top-color:var(--cand-1)"><b><span class="cand"><i style="background:var(--cand-1)"></i>Flávio</span></b><span>${esc(pt.flavio)}</span>${pagLink("flavio", pt.flavio_p)}</div>
-      </div>
-      <div class="acts">
-        <button type="button" class="btn sm" data-pauta="${g.id}:${i}:copiar">Copiar texto</button>
-        <button type="button" class="btn sm" data-pauta="${g.id}:${i}:imagem">Baixar imagem</button>
-        <button type="button" class="btn sm" data-pauta="${g.id}:${i}:compartilhar">Compartilhar</button>
-      </div>
-      ${acervoStrip(`${g.id}:${i}`)}
-    </article>`).join("")}</div></div>`;
-}
 function pautaTexto(pt) {
   const fato = pt.fato ? `\n${pt.fato} (Fonte: ${P.fontes[pt.fonte].nome} – ${P.fontes[pt.fonte].url})` : "";
-  return `${pt.dor}${fato}\n\nLula (plano de governo, p. ${pt.lula_p}): ${pt.lula}\nFlávio (plano de governo${pt.flavio_p ? ", p. " + pt.flavio_p : ""}): ${pt.flavio}\n\nMais pautas: https://pautadaurna.com.br`;
+  return `${pt.dor}${fato}\n\nLula: ${pt.lula}\nFlávio: ${pt.flavio}\n\nMais pautas: https://pautadaurna.com.br`;
 }
 function wrapLines(ctx, text, maxW) {
   const out = []; let line = "";
@@ -1057,26 +1076,67 @@ function wrapLines(ctx, text, maxW) {
 // ---------- third-party collection (Acervo da Vitória), curated ----------
 function acervoStrip(chave, titulo) {
   if (!A) return "";
-  const xs = A.itens.filter(v => v.pautas.includes(chave)); if (!xs.length) return "";
+  const xs = A.itens.filter(v => v.pautas.includes(chave) && v.arquivo); if (!xs.length) return "";
   return `<div class="blk" style="margin-top:10px"><h3>${titulo || "Do Acervo da Vitória"} <span class="tag inf">material de terceiros</span></h3>
     <div class="acervo">${xs.map(v => `<div class="acv">
       <div class="cap">${v.capa ? `<img src="${esc(v.capa)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${esc(v.tipo)}'}))">` : `<span>${esc(v.tipo)}</span>`}</div>
       <div class="bd"><span class="tp">${esc(v.tipo)} · ${esc(v.selo)}</span><span>${esc(v.titulo)}</span>
-        <span class="acts"><a href="${esc(v.ver)}" target="_blank" rel="noopener" data-acv="${v.id}:ver">Ver</a><a href="${esc(v.baixar)}" target="_blank" rel="noopener" data-acv="${v.id}:baixar">Baixar</a><a href="${waLink(v.titulo + "\n" + v.ver + "\nMais em " + URL_SITE)}" target="_blank" rel="noopener" data-acv="${v.id}:whatsapp">WhatsApp</a></span></div></div>`).join("")}</div>
-    <p class="note">Do <a href="${A.fonte}" target="_blank" rel="noopener">Acervo da Vitória</a>, arquivos no Google Drive. Não editamos este material: ficam de fora conteúdos feitos com IA e acusações de crime sem condenação. Os selfies são falas de campanha do Lula. Confira antes de postar.</p></div>`;
+        <span class="acts"><a href="${esc(v.arquivo)}" target="_blank" rel="noopener" data-acv="${v.id}:ver">Ver</a><a href="${esc(v.arquivo)}" download data-acv="${v.id}:baixar">Baixar</a><button type="button" class="btn sm primary" data-enviar="acv:${v.id}">Enviar</button></span></div></div>`).join("")}</div>
+    <p class="note">Do <a href="${A.fonte}" target="_blank" rel="noopener">Acervo da Vitória</a>. “Enviar” manda o próprio arquivo (vídeo ou imagem) pelo WhatsApp ou outra rede. Não editamos este material: ficam de fora conteúdos feitos com IA e acusações de crime sem condenação. Os selfies são falas de campanha do Lula. Confira antes de postar.</p></div>`;
 }
 document.addEventListener("click", ev => { const a = ev.target.closest("[data-acv]"); if (a) { const [id, acao] = a.dataset.acv.split(":"); track(`acervo/${id}/${acao}`); } });
+
+// ---------- send the raw file (Web Share API with files); desktop falls back to download + WhatsApp Web ----------
+const PRONTOS = new Map();  // files prepared on a first tap when the browser asked for a second one
+const toBlobP = cv => new Promise(r => cv.toBlob(r, "image/png"));
+function baixarBlob(blob, nome) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nome; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
+async function enviarArquivos(chave, montar, texto, btn) {
+  let files = PRONTOS.get(chave);
+  if (!files) {
+    const rotulo = btn.textContent; btn.disabled = true; btn.textContent = "Preparando…";
+    try { files = await montar(); } catch { btn.disabled = false; btn.textContent = rotulo; toast("Não foi possível preparar o arquivo. Tente de novo."); return; }
+    btn.disabled = false; btn.textContent = rotulo;
+  }
+  if (navigator.canShare && navigator.canShare({ files })) {
+    try { await navigator.share({ files, text: texto }); PRONTOS.delete(chave); toast("Enviado"); }
+    catch (e) {
+      if (e.name === "NotAllowedError") { PRONTOS.set(chave, files); btn.textContent = "Toque de novo para enviar"; }
+    }
+    return;
+  }
+  files.forEach((f, k) => setTimeout(() => baixarBlob(f, f.name), k * 400));
+  window.open(waLink(texto), "_blank", "noopener");
+  toast(files.length > 1 ? "Arquivos baixados. Anexe-os na conversa do WhatsApp que abriu." : "Arquivo baixado. Anexe-o na conversa do WhatsApp que abriu.");
+}
+async function arquivoDoSite(url, nome) {
+  const r = await fetch(url); if (!r.ok) throw new Error(r.status);
+  const b = await r.blob(); return new File([b], nome, { type: b.type || (nome.endsWith(".mp4") ? "video/mp4" : "image/jpeg") });
+}
+document.addEventListener("click", async ev => {
+  const b = ev.target.closest("[data-enviar]"); if (!b) return;
+  try { await document.fonts.ready; } catch { }
+  const [k, a, f] = b.dataset.enviar.split(":");
+  const l = lugarAtual(), lst = S.g ? P.grupos[S.g] : [], grp = S.g || "geral";
+  const png = async (cv, nome) => new File([await toBlobP(cv)], nome, { type: "image/png" });
+  if (k === "local") enviarArquivos(`local:${a}:${l.nome}`, async () => [await png(drawPeca("local", a, l), `pauta-da-urna-${slug(l.nome)}.png`)], textoLocal(l, rede), b);
+  if (k === "pauta") enviarArquivos(`pauta:${grp}:${a}:${f}`, async () => [await png(drawPeca("pauta", f, lst[+a]), `pauta-${grp}-${+a + 1}.png`)], textoPauta(lst[+a], rede), b);
+  if (k === "carrossel") enviarArquivos(`carrossel:${grp}:${a}`, async () => Promise.all([1, 2, 3, 4, 5].map(n => png(drawPeca("slide", "post", lst[+a], n), `carrossel-${grp}-${+a + 1}-${n}.png`))), textoPauta(lst[+a], rede), b);
+  if (k === "video") { const v = V.find(x => x.id === a); enviarArquivos(`video:${a}`, async () => [await arquivoDoSite(v.arquivo, v.arquivo.split("/").pop())], `${v.titulo}\nVídeo: ${v.autor}\n${URL_SITE}`, b); }
+  if (k === "acv") { const v = A.itens.find(x => x.id === a); enviarArquivos(`acv:${a}`, async () => [await arquivoDoSite(v.arquivo, v.arquivo.split("/").pop())], `${v.titulo}\nMais em ${URL_SITE}`, b); }
+  track(`enviar/${k}/${k === "acv" || k === "video" ? a : grp}/${rede}`);
+});
 
 // ---------- canvas pieces: post 1080x1350, story 1080x1920, carousel slides ----------
 const AVISO_IA = "Conteúdo produzido com apoio de IA";
 const FMT = { post: [1080, 1350], story: [1080, 1920] };
 function lugarAtual() {
+  if (S.r) return { nome: S.r.nome, prep: regPrep(S.r), abst: S.r.abst, margem: S.r.margem || 0, mob: S.r.mob, saldo: S.r.saldo };
   if (S.c) { const r = S.c, m = R && R.mun[r[0]]; return { nome: r[1], abst: r[9], margem: r[13], mob: m ? m[0] : 0, saldo: m ? m[1] : 0 }; }
   if (S.uf) { const rs = D.municipios.filter(r => r[2] === S.uf); return { nome: S.uf, abst: rs.reduce((a, r) => a + r[9], 0), margem: D.ufs[S.uf].margem,
     mob: rs.reduce((a, r) => a + (R && R.mun[r[0]] ? R.mun[r[0]][0] : 0), 0), saldo: rs.reduce((a, r) => a + (R && R.mun[r[0]] ? R.mun[r[0]][1] : 0), 0) }; }
   return { nome: "Brasil", abst: D.total.abst, margem: D.margem_br, mob: R ? Object.values(R.mun).reduce((a, m) => a + m[0], 0) : 0, saldo: R ? Object.values(R.mun).reduce((a, m) => a + m[1], 0) : 0 };
 }
-const noLugar = l => l.nome === "Brasil" ? "no Brasil" : l.nome.length === 2 ? `em ${l.nome}` : `em ${l.nome}`;
+const noLugar = l => l.prep || (l.nome === "Brasil" ? "no Brasil" : `em ${l.nome}`);
 function novaTela(fmt) {
   const [W, H] = FMT[fmt], cv = document.createElement("canvas"); cv.width = W; cv.height = H;
   const c = cv.getContext("2d");
@@ -1098,17 +1158,17 @@ function caixa(t, str, lh = 42) {
 function candBloco(t, quem, txt, pg, cor) {
   t.c.fillStyle = css(cor); t.c.fillRect(t.M, t.y, t.W - 2 * t.M, 8); t.y += 52;
   t.c.beginPath(); t.c.arc(t.M + 12, t.y - 12, 12, 0, 7); t.c.fill();
-  t.c.fillStyle = "#191714"; t.c.font = '700 34px "IBM Plex Mono", monospace'; t.c.fillText(`Plano de ${quem}${pg ? " · p. " + pg : ""}`, t.M + 36, t.y);
+  t.c.fillStyle = "#191714"; t.c.font = '700 34px "IBM Plex Mono", monospace'; t.c.fillText(quem, t.M + 36, t.y);
   t.y += 52; texto(t, txt, '400 32px "Source Serif 4", Georgia, serif', "#191714", 44); t.y += 26;
 }
 function rodape(t, fonte) {
   const { c, W, H, M } = t;
   c.fillStyle = "#4f4a42"; c.font = '500 22px "IBM Plex Mono", monospace';
-  const ls = wrapLines(c, `Fonte: ${fonte}`, W - 2 * M); ls.forEach((l, k) => c.fillText(l, M, H - 150 - (ls.length - 1 - k) * 30));
+  const ls = fonte ? wrapLines(c, `Fonte: ${fonte}`, W - 2 * M) : []; ls.forEach((l, k) => c.fillText(l, M, H - 150 - (ls.length - 1 - k) * 30));
   c.fillText(AVISO_IA, M, H - 100);
   c.fillStyle = css("--accent"); c.font = '800 34px "Archivo", sans-serif'; c.fillText("pautadaurna.com.br", M, H - 44);
 }
-const fonteDe = pt => `planos de governo registrados no TSE${pt.fato ? " · " + P.fontes[pt.fonte].nome.split(":")[0] : ""}`;
+const fonteDe = pt => pt.fato ? P.fontes[pt.fonte].nome.split(":")[0] : "";
 function drawPeca(tipo, fmt, d, n) {
   const t = novaTela(fmt), story = fmt === "story";
   if (tipo === "local") {
@@ -1132,11 +1192,11 @@ function drawPeca(tipo, fmt, d, n) {
     rodape(t, fonteDe(pt)); return t.cv;
   }
   // carousel slide n = 1..5
-  if (n === 1) { t.y += 120; texto(t, pt.gancho, '900 92px "Archivo", sans-serif', "#191714", 100); t.y += 30; texto(t, `${pt.dor}: o que dizem os planos de Lula e Flávio registrados no TSE.`, '400 40px "Source Serif 4", Georgia, serif', "#4f4a42", 54); texto(t, "Arraste para o lado →", '700 34px "IBM Plex Mono", monospace', css("--accent"), 60); }
-  if (n === 2) { texto(t, pt.fato ? "O fato" : "O que está em jogo", '800 66px "Archivo", sans-serif', "#191714", 90); if (pt.fato) caixa(t, pt.fato); else texto(t, `${pt.dor}. Compare o que cada plano registrado no TSE propõe.`, '400 40px "Source Serif 4", Georgia, serif', "#191714", 54); }
+  if (n === 1) { t.y += 120; texto(t, pt.gancho, '900 92px "Archivo", sans-serif', "#191714", 100); t.y += 30; texto(t, `${pt.dor}: o que propõem Lula e Flávio.`, '400 40px "Source Serif 4", Georgia, serif', "#4f4a42", 54); texto(t, "Arraste para o lado →", '700 34px "IBM Plex Mono", monospace', css("--accent"), 60); }
+  if (n === 2) { texto(t, pt.fato ? "O fato" : "O que está em jogo", '800 66px "Archivo", sans-serif', "#191714", 90); if (pt.fato) caixa(t, pt.fato); else texto(t, `${pt.dor}. Compare o que cada um propõe.`, '400 40px "Source Serif 4", Georgia, serif', "#191714", 54); }
   if (n === 3) { texto(t, pt.dor, '800 56px "Archivo", sans-serif', "#191714", 66); t.y += 30; candBloco(t, "Lula", pt.lula, pt.lula_p, "--cand-2"); }
   if (n === 4) { texto(t, pt.dor, '800 56px "Archivo", sans-serif', "#191714", 66); t.y += 30; candBloco(t, "Flávio", pt.flavio, pt.flavio_p, "--cand-1"); }
-  if (n === 5) { t.y += 120; texto(t, "Dia 25/10 tem 2º turno.", '900 80px "Archivo", sans-serif', "#191714", 90); t.y += 20; texto(t, "Confira os planos completos e onde votar no e-Título. Mais pautas para a sua cidade em pautadaurna.com.br", '400 40px "Source Serif 4", Georgia, serif', "#191714", 54); }
+  if (n === 5) { t.y += 120; texto(t, "Dia 25/10 tem 2º turno.", '900 80px "Archivo", sans-serif', "#191714", 90); t.y += 20; texto(t, "Veja onde votar no e-Título. Mais pautas para a sua cidade em pautadaurna.com.br", '400 40px "Source Serif 4", Georgia, serif', "#191714", 54); }
   rodape(t, fonteDe(pt)); return t.cv;
 }
 function baixar(cv, nome) {
@@ -1150,7 +1210,7 @@ document.addEventListener("click", ev => {
   if (acao === "copiar") copyText(pautaTexto(pt));
   if (acao === "imagem") pautaImagem(pt, `pauta-${gid}-${+i + 1}.png`);
   if (acao === "compartilhar") {
-    const url = location.href.split("#")[0] + `#/kit?g=${gid}${S.c ? "&c=" + S.c[0] : ""}`;
+    const url = location.href.split("#")[0] + `#/postar?g=${gid}${S.c ? "&c=" + S.c[0] : ""}`;
     if (navigator.share) navigator.share({ title: pt.dor, text: pautaTexto(pt), url }).catch(() => { });
     else copyText(url);
   }
@@ -1200,8 +1260,9 @@ function wireCarousel(root) {
 // ---------- kit ----------
 function renderKit() {
   $("gchoose").innerHTML = G.grupos.map(g => `<button type="button" aria-pressed="${S.g === g.id}" data-g="${g.id}"><i class="sw" style="background:${gcolor(g.id)}"></i>${esc(g.nome)}</button>`).join("");
-  const sz = groupSizes(S.c, S.uf), tot = sz.reduce((s, x) => s + x.ab, 0) || 1;
-  const onde = S.c ? `${S.c[1]} · ${S.c[2]}` : S.uf || "Brasil";
+  const sz = S.r && S.r.municipios ? groupSizesRows(D.municipios.filter(r => S.r.municipios.includes(r[0]))) : groupSizes(S.c, S.uf), tot = sz.reduce((s, x) => s + x.ab, 0) || 1;
+  // group sizes exist per municipality: an intra-city region shows its city's numbers, labeled as the city
+  const onde = S.r && !S.r.ibge ? regLabel(S.r) : S.c ? `${S.c[1]} · ${S.c[2]}` : S.uf || "Brasil";
   if (!S.g) {
     $("kit-body").innerHTML = `<section><div class="gcards">${G.grupos.map((g, i) => `
       <button type="button" class="gcard" data-g="${g.id}">
@@ -1234,7 +1295,6 @@ function renderKit() {
       <div class="blk"><h3>Mensagens cívicas prontas</h3>
         ${g.mensagens.map(m => `<div class="msg"><span>${esc(m)}</span><span><button type="button" class="btn sm" data-copy="${esc(m)}">Copiar</button></span></div>`).join("")}</div>
       <div class="dores"><h3>Dores deste grupo</h3><ul>${g.dores.map(d => `<li>${esc(d)}</li>`).join("")}</ul></div>
-      ${pautasBlock(g)}
       ${temasCarousel(g)}
       <details class="vies"><summary>Inclinação política estimada</summary>
         <p class="note">No Brasil, resultado do 1º turno nos municípios onde vivem os ausentes deste grupo (média ponderada): ${CAND.map((c, j) => candLbl(j, pcts[j])).join(" · ")}</p>
@@ -1265,24 +1325,24 @@ function textoLocal(l, r) {
   return `${base}\n\nDia 25/10 tem 2º turno. Seu voto decide: veja onde votar no e-Título.\n\nFonte: TSE, 1º turno 2026. Mais dados da sua cidade em ${URL_SITE}\n\n${TAGS}\n${AVISO_IA}`;
 }
 function textoPauta(pt, r) {
-  const fonteF = pt.fato ? ` (Fonte: ${P.fontes[pt.fonte].nome} – ${P.fontes[pt.fonte].url})` : "";
-  const fl = `plano de governo${pt.flavio_p ? ", p. " + pt.flavio_p : ""}`;
-  if (r === "whatsapp") return `*${pt.dor}*\n${pt.fato ? pt.fato + "\n" : ""}\n*Lula* (plano, p. ${pt.lula_p}): ${pt.lula}\n*Flávio* (${fl}): ${pt.flavio}\n\nFonte: planos registrados no TSE.${fonteF}\nDia 25/10 tem 2º turno. ${URL_SITE}\n_${AVISO_IA}_`;
-  if (r === "tiktok") return `${pt.gancho} ${pt.dor}: Lula e Flávio nos planos registrados no TSE. Dia 25 tem 2º turno. ${TAGS} ${tagTema(pt)} · ${AVISO_IA}`;
-  return `${pt.gancho}\n\n${pt.fato ? pt.fato + fonteF + "\n\n" : ""}Lula (plano de governo, p. ${pt.lula_p}): ${pt.lula}\n\nFlávio (${fl}): ${pt.flavio}\n\nPlanos completos registrados no TSE. Mais pautas para a sua cidade em ${URL_SITE}\n\n${TAGS} ${tagTema(pt)}\n${AVISO_IA}`;
+  const fonteF = pt.fato ? ` (Fonte: ${P.fontes[pt.fonte].nome.split(":")[0]})` : "";
+  if (r === "whatsapp") return `*${pt.dor}*\n${pt.fato ? pt.fato + fonteF + "\n" : ""}\n*Lula*: ${pt.lula}\n*Flávio*: ${pt.flavio}\n\nDia 25/10 tem 2º turno. ${URL_SITE}\n_${AVISO_IA}_`;
+  if (r === "tiktok") return `${pt.gancho} ${pt.dor}: o que propõem Lula e Flávio. Dia 25 tem 2º turno. ${TAGS} ${tagTema(pt)} · ${AVISO_IA}`;
+  return `${pt.gancho}\n\n${pt.fato ? pt.fato + fonteF + "\n\n" : ""}Lula: ${pt.lula}\n\nFlávio: ${pt.flavio}\n\nMais pautas para a sua cidade em ${URL_SITE}\n\n${TAGS} ${tagTema(pt)}\n${AVISO_IA}`;
 }
 function roteiro(pt, l) {
   const abre = l.nome !== "Brasil" ? `${noLugar(l)[0].toUpperCase() + noLugar(l).slice(1)}, ${nf.format(l.abst)} pessoas não votaram no 1º turno. ` : "";
   return [
     ["0–3 s", `${abre}${pt.gancho}`, pt.gancho],
-    ["3–10 s", pt.fato || `Vamos ver o que os planos de governo dizem sobre ${pt.dor.toLowerCase()}.`, pt.fato ? "Fonte: " + P.fontes[pt.fonte].nome.split(":")[0] : pt.dor],
-    ["10–25 s", `No plano registrado no TSE, Lula propõe: ${pt.lula} Já o plano do Flávio: ${pt.flavio}`, `Lula, p. ${pt.lula_p} · Flávio${pt.flavio_p ? ", p. " + pt.flavio_p : ""}`],
+    ["3–10 s", pt.fato || `Vamos ver o que cada um propõe para ${pt.dor.toLowerCase()}.`, pt.fato ? "Fonte: " + P.fontes[pt.fonte].nome.split(":")[0] : pt.dor],
+    ["10–25 s", `Lula propõe: ${pt.lula} Já o Flávio: ${pt.flavio}`, "Lula × Flávio"],
     ["25–30 s", pt.cta, "Dia 25/10 · pautadaurna.com.br"],
   ];
 }
 const thumb = cv => { const t = document.createElement("canvas"); t.width = 200; t.height = Math.round(200 * cv.height / cv.width); t.getContext("2d").drawImage(cv, 0, 0, t.width, t.height); return t.toDataURL("image/png"); };
 const waLink = txt => `https://wa.me/?text=${encodeURIComponent(txt)}`;
 async function renderPostar() {
+  renderKit();
   document.querySelectorAll("#redes [data-rede]").forEach(b => b.setAttribute("aria-pressed", b.dataset.rede === rede));
   try { await document.fonts.ready; } catch { }
   const l = lugarAtual(), fmtPrev = rede === "instagram" ? "post" : "story";
@@ -1294,15 +1354,15 @@ async function renderPostar() {
   $("postar-local").innerHTML = `<div class="src"><b>Dado local</b> · TSE · ${esc(l.nome)}</div><h3>Quantos faltaram ${esc(noLugar(l))}</h3>
     <div class="pecas"><div class="peca"><img class="prev" alt="Prévia da imagem do dado local" src="${thumb(drawPeca("local", fmtPrev, l))}">
       <div><h4>${nf.format(l.abst)} ausentes ${esc(noLugar(l))}</h4>
-        <div class="acts">${actsLocal}<button type="button" class="btn sm" data-copy-t="local">Copiar ${rede === "whatsapp" ? "mensagem" : "legenda"}</button>${rede === "whatsapp" ? `<a class="btn sm" href="${waLink(tl)}" target="_blank" rel="noopener" data-wa="local">Abrir no WhatsApp</a>` : ""}</div>
+        <div class="acts">${actsLocal}<button type="button" class="btn sm" data-copy-t="local">Copiar ${rede === "whatsapp" ? "mensagem" : "legenda"}</button><button type="button" class="btn sm primary" data-enviar="local:${fmtPrev}">${rede === "whatsapp" ? "Enviar pelo WhatsApp" : "Enviar imagem"}</button></div>
         <pre>${esc(tl)}</pre></div></div></div>`;
   // pautas of the group
   const g = S.g ? GBY[S.g] : null;
   if (!g) {
-    $("postar-pautas").innerHTML = `<div class="src"><b>Pautas</b></div><h3>Escolha um grupo para ver as pautas</h3><div class="gchoose">${G.grupos.map(x => `<button type="button" data-g="${x.id}"><i class="sw" style="background:${gcolor(x.id)}"></i>${esc(x.nome)}</button>`).join("")}</div>`;
+    $("postar-pautas").innerHTML = "";
   } else {
     const lst = P.grupos[g.id];
-    $("postar-pautas").innerHTML = `<div class="src"><b>Pautas</b> · ${esc(g.nome)} · planos registrados no TSE</div><h3>Pautas para ${esc(g.nome.toLowerCase())}</h3><div class="pecas">` +
+    $("postar-pautas").innerHTML = `<div class="src"><b>Pautas</b> · ${esc(g.nome)}</div><h3>Pautas para ${esc(g.nome.toLowerCase())}</h3><div class="pecas">` +
       lst.map((pt, i) => {
         const tx = textoPauta(pt, rede);
         const acts = rede === "instagram"
@@ -1311,7 +1371,12 @@ async function renderPostar() {
         const rot = rede === "tiktok" ? `<div class="roteiro"><b style="font:600 .72rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)">Roteiro para gravar (30 s)</b>${roteiro(pt, l).map(([tm, fala, tela]) => `<div><span>${tm}</span><span>${esc(fala)}<br><span class="note">Na tela: ${esc(tela)}</span></span></div>`).join("")}<span><button type="button" class="btn sm" data-copy-t="roteiro:${i}">Copiar roteiro</button></span></div>` : "";
         return `<div class="peca"><img class="prev" alt="Prévia: ${esc(pt.dor)}" src="${thumb(rede === "instagram" ? drawPeca("slide", "post", pt, 1) : drawPeca("pauta", "story", pt))}">
           <div><h4>${esc(pt.dor)}</h4>
-          <div class="acts">${acts}<button type="button" class="btn sm" data-copy-t="pauta:${i}">Copiar ${rede === "whatsapp" ? "mensagem" : "legenda"}</button>${rede === "whatsapp" ? `<a class="btn sm" href="${waLink(tx)}" target="_blank" rel="noopener" data-wa="pauta:${i}">Abrir no WhatsApp</a>` : ""}</div>
+          ${pt.fato ? `<div class="pauta" style="padding:0;border:0"><div class="fato">${esc(pt.fato)} <a href="${P.fontes[pt.fonte].url}" target="_blank" rel="noopener">Fonte: ${esc(P.fontes[pt.fonte].nome.split(":")[0])} ↗</a></div></div>` : ""}
+          <div class="pauta" style="padding:0;border:0;margin-top:8px"><div class="vs">
+            <div class="cand-box" style="border-top-color:var(--cand-2)"><b><span class="cand"><i style="background:var(--cand-2)"></i>Lula</span></b><span>${esc(pt.lula)}</span></div>
+            <div class="cand-box" style="border-top-color:var(--cand-1)"><b><span class="cand"><i style="background:var(--cand-1)"></i>Flávio</span></b><span>${esc(pt.flavio)}</span></div>
+          </div></div>
+          <div class="acts">${acts}<button type="button" class="btn sm" data-copy-t="pauta:${i}">Copiar ${rede === "whatsapp" ? "mensagem" : "legenda"}</button><button type="button" class="btn sm primary" data-enviar="${rede === "instagram" ? "carrossel:" + i : "pauta:" + i + ":story"}">${rede === "whatsapp" ? "Enviar pelo WhatsApp" : rede === "instagram" ? "Enviar carrossel" : "Enviar imagem"}</button></div>
           ${rot}<pre>${esc(tx)}</pre>${acervoStrip(`${g.id}:${i}`)}</div></div>`;
       }).join("") + "</div>";
   }
@@ -1323,7 +1388,7 @@ async function renderPostar() {
       const tx = rede === "whatsapp" ? `*${v.titulo}*\nVídeo: ${v.autor}\nDia 25/10 tem 2º turno. ${URL_SITE}` : `${v.titulo}\n\nVídeo: ${v.autor}. Mais em ${URL_SITE}\n\n${TAGS}`;
       return `<div class="peca"><video controls preload="none" poster="${esc(v.capa)}" src="${esc(v.arquivo)}"></video>
         <div><h4>${esc(v.titulo)}</h4><p class="note">Vídeo: ${esc(v.autor)} · ${pf(v.duracao, 0)} s · ${pf(v.mb, 1)} MB${v.fontes.length ? " · fontes: " + v.fontes.map((f, k) => `<a href="${esc(f)}" target="_blank" rel="noopener">${k + 1}</a>`).join(", ") : ""}</p>
-        <div class="acts"><a class="btn sm" href="${esc(v.arquivo)}" download data-vid="${esc(v.id)}">Baixar vídeo</a><button type="button" class="btn sm" data-copy="${esc(tx)}">Copiar ${rede === "whatsapp" ? "mensagem" : "legenda"}</button>${rede === "whatsapp" ? `<a class="btn sm" href="${waLink(tx)}" target="_blank" rel="noopener">Abrir no WhatsApp</a>` : ""}</div></div></div>`;
+        <div class="acts"><a class="btn sm" href="${esc(v.arquivo)}" download data-vid="${esc(v.id)}">Baixar vídeo</a><button type="button" class="btn sm" data-copy="${esc(tx)}">Copiar ${rede === "whatsapp" ? "mensagem" : "legenda"}</button><button type="button" class="btn sm primary" data-enviar="video:${esc(v.id)}">${rede === "whatsapp" ? "Enviar pelo WhatsApp" : "Enviar vídeo"}</button></div></div></div>`;
     }).join("")}</div>` : `<p class="note">Os vídeos curtos enviados ao projeto aparecem aqui, com crédito ao autor.</p>`);
 }
 document.getElementById("redes").addEventListener("click", ev => { const b = ev.target.closest("[data-rede]"); if (!b) return; rede = b.dataset.rede; renderPostar(); track(`postar/rede/${rede}`); });
@@ -1354,7 +1419,6 @@ function render() {
   const vp = viewPath(); if (vp !== render.last) { render.last = vp; track(vp); }
   if (S.view === "panorama" && !drawn) { drawPanorama(); drawn = true; }
   if (S.view === "explorar") renderExplorar();
-  if (S.view === "kit") renderKit();
   if (S.view === "postar") renderPostar();
 }
 function drawPanorama() {

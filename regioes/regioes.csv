@@ -1,0 +1,7 @@
+nome,uf,municipios
+# Regiões formadas por municípios. Separe os municípios por ";" com o nome igual ao do IBGE. Acrescente linhas à vontade.
+Baixada Santista,SP,Bertioga;Cubatão;Guarujá;Itanhaém;Mongaguá;Peruíbe;Praia Grande;Santos;São Vicente
+ABC Paulista,SP,Santo André;São Bernardo do Campo;São Caetano do Sul;Diadema;Mauá;Ribeirão Pires;Rio Grande da Serra
+Baixada Fluminense,RJ,Belford Roxo;Duque de Caxias;Guapimirim;Itaguaí;Japeri;Magé;Mesquita;Nilópolis;Nova Iguaçu;Paracambi;Queimados;São João de Meriti;Seropédica
+Grande Recife,PE,Recife;Olinda;Paulista;Igarassu;Abreu e Lima;Camaragibe;Cabo de Santo Agostinho;São Lourenço da Mata;Araçoiaba;Ilha de Itamaracá;Ipojuca;Moreno;Itapissuma;Jaboatão dos Guararapes;Goiana
+Grande Salvador,BA,Salvador;Camaçari;Lauro de Freitas;Simões Filho;Candeias;Dias d'Ávila;Itaparica;Madre de Deus;Mata de São João;Pojuca;São Francisco do Conde;São Sebastião do Passé;Vera Cruz

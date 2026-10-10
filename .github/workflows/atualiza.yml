@@ -60,12 +60,27 @@ jobs:
           git commit -m "Atualização diária $(date -u +%F)"
           git push
 
+      - name: Cache da mídia do acervo
+        uses: actions/cache@v4
+        with:
+          path: |
+            data/raw/acervo
+            site/midia
+          key: midia-${{ hashFiles('site/acervo.json') }}
+          restore-keys: midia-
+
+      - name: Mídia do acervo (arquivos para enviar pelo WhatsApp)
+        run: |
+          command -v ffmpeg >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
+          python3 -m pip install -q requests
+          python3 pipeline/11_midia.py
+
       - name: Monta o site
         env:
           GOATCOUNTER: ${{ vars.GOATCOUNTER }}
         run: |
           python3 pipeline/04_export.py   # stdlib only; bakes the GoatCounter code into the page
-          mkdir _site && cp site/index.html _site/index.html && cp -r site/locais _site/locais && cp -r site/videos _site/videos
+          mkdir _site && cp site/index.html _site/index.html && cp -r site/locais _site/locais && cp -r site/videos _site/videos && cp -r site/midia _site/midia
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

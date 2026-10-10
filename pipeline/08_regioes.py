@@ -26,6 +26,85 @@ CIDADE_GRANDE = 500_000  # registered voters; these cities get Centro/Norte/Sul/
 APELIDOS = {"Santos": "Baixada Santista"}
 
 
+SP_ZONAS = {
+    "Norte": ["PERUS", "PIRITUBA-JARAGUA", "FREGUESIA-BRASILANDIA", "CASA VERDE-CACHOEIRINHA", "SANTANA-TUCURUVI",
+              "JACANA-TREMEMBE", "VILA MARIA-VILA GUILHERME"],
+    "Sul": ["SANTO AMARO", "CIDADE ADEMAR", "CAMPO LIMPO", "M'BOI MIRIM", "CAPELA DO SOCORRO", "PARELHEIROS",
+            "VILA MARIANA", "JABAQUARA", "IPIRANGA"],
+    "Leste": ["MOOCA", "ARICANDUVA-FORMOSA-CARRAO", "VILA PRUDENTE", "SAPOPEMBA", "PENHA", "ERMELINO MATARAZZO",
+              "SAO MIGUEL", "ITAIM PAULISTA", "GUAIANASES", "ITAQUERA", "CIDADE TIRADENTES", "SAO MATEUS"],
+    "Oeste": ["LAPA", "BUTANTA", "PINHEIROS"],
+    "Centro": ["SE"],
+}
+RIO_AP = {"1": "Centro", "2": "Zona Sul e Tijuca", "3": "Zona Norte", "4": "Barra e Jacarepaguá", "5": "Zona Oeste"}
+SAO_PAULO, RIO, SALVADOR = 3550308, 3304557, 2927408
+
+
+def norm(t):
+    import unicodedata
+    t = unicodedata.normalize("NFKD", str(t)).encode("ascii", "ignore").decode().upper()
+    return " ".join(t.replace("-", " ").replace("'", " ").split())
+
+
+def titulo_sub(t):
+    return " ".join(w.capitalize() if w not in ("DE", "DA", "DO") else w.lower() for w in t.replace("-", " - ").split()).replace(" - ", "-")
+
+
+def por_poligono(loc, mask, geojson, campo):
+    """Assign each polling place (lat/lon) to the feature that contains it; returns a Series of feature values."""
+    from shapely.geometry import Point, shape
+    from shapely.strtree import STRtree
+    feats = json.loads(Path(geojson).read_text())["features"]
+    geoms = [shape(f["geometry"]) for f in feats]
+    tree = STRtree(geoms)
+    vals = {}
+    for idx, la, lo in zip(loc.index[mask], loc.loc[mask, "lat"], loc.loc[mask, "lon"]):
+        pt = Point(lo, la)
+        hit = [i for i in tree.query(pt) if geoms[i].contains(pt)]
+        if not hit:  # on the border or slightly outside (coastline): nearest polygon
+            hit = [min(range(len(geoms)), key=lambda i: geoms[i].distance(pt))]
+        vals[idx] = campo(feats[hit[0]]["properties"])
+    return pd.Series(vals, dtype=object)
+
+
+def sub_regioes(loc):
+    """Official intra-city regions where open data exists; the compass sector stays elsewhere."""
+    loc["sub"] = None
+    sp = loc.cd_ibge == SAO_PAULO
+    zona_de = {sub: z for z, subs in SP_ZONAS.items() for sub in subs}
+    subp = por_poligono(loc, sp, RAW / "regioes" / "sp_distritos.geojson", lambda pr: pr["ds_subpref"])
+    loc.loc[sp, "setor"] = ["Zona " + zona_de[v] if zona_de[v] != "Centro" else "Centro" for v in subp]
+    loc.loc[sp, "sub"] = [titulo_sub(v) for v in subp]
+    rio = loc.cd_ibge == RIO
+    ap = por_poligono(loc, rio, RAW / "regioes" / "rio_bairros.geojson", lambda pr: (pr["area_plane"], pr["rp"]))
+    loc.loc[rio, "setor"] = [RIO_AP[a] for a, _ in ap]
+    loc.loc[rio, "sub"] = [r for _, r in ap]
+    pb = json.loads((ROOT / "regioes" / "salvador_prefeituras_bairro.json").read_text())["prefeituras_bairro"]
+    bairro_pb = {}
+    for nome, bairros in pb.items():
+        for b in bairros:
+            for alias in [b] + b.split("/"):
+                bairro_pb[norm(alias)] = nome
+    # TSE spellings and sub-areas that are not in the Prefeitura-Bairro lists (ambiguous ones such as "Campinas" stay out)
+    alias = {"CAJAZEIRAS": "Cajazeiras", "JARDIM CAJAZEIRA": "Pau da Lima", "MUSSURUNGA I": "Itapuã / Ipitanga",
+             "MUSSURUNGA II": "Itapuã / Ipitanga", "PARQUE SAO CRISTOVAO": "Itapuã / Ipitanga", "PRAIA DO FLAMENGO": "Itapuã / Ipitanga",
+             "ARMACAO": "Barra / Pituba", "CHAME CHAME": "Barra / Pituba", "CAMPINAS DE BROTAS": "Centro / Brotas",
+             "PELOURINHO": "Centro / Brotas", "CAMPO GRANDE": "Centro / Brotas", "PIEDADE": "Centro / Brotas", "SAO PEDRO": "Centro / Brotas",
+             "MERCES": "Centro / Brotas", "AFLITOS": "Centro / Brotas", "ALTO DE COUTOS": "Subúrbio / Ilhas",
+             "BOM JESUS DOS PASSOS": "Subúrbio / Ilhas", "TUBARAO": "Subúrbio / Ilhas", "SAO GONCALO DO RETIRO": "Cabula / Tancredo Neves",
+             "CAPELINHA DE SAO CAETANO": "Liberdade / São Caetano", "SAN MARTIN": "Liberdade / São Caetano",
+             "BOA VISTA DO LOBATO": "Cidade Baixa", "VILA RUI BARBOSA": "Cidade Baixa"}
+    bairro_pb.update(alias)
+    for k in [b for b in loc.loc[loc.cd_ibge == SALVADOR, "bairro"].fillna("").map(norm).unique() if b.startswith("CASTELO BRANCO")]:
+        bairro_pb[k] = "Cajazeiras"
+    ssa = loc.cd_ibge == SALVADOR
+    loc.loc[ssa, "setor"] = [bairro_pb.get(norm(b), "Outros bairros") for b in loc.loc[ssa, "bairro"].fillna("")]
+    for cid, nome in ((SAO_PAULO, "São Paulo"), (RIO, "Rio de Janeiro"), (SALVADOR, "Salvador")):
+        m = loc.cd_ibge == cid
+        print(f"  {nome}: {loc.loc[m, 'setor'].value_counts().to_dict()}")
+    return loc
+
+
 def fetch(name, url):
     f = RAW / name
     if not f.exists():
@@ -49,6 +128,7 @@ def agrega(g):
     pf = 100 * g.v_flavio.sum() / max(1, g.validos.sum())
     mob = g.mob.sum()
     return {"aptos": int(g.aptos.sum()), "abst": int(g.abst.sum()), "mob": int(round(mob)),
+            "margem": int(abs(g.v_lula.sum() - g.v_flavio.sum())),
             "pl": round(pl, 1), "pf": round(pf, 1), "saldo": int(round(g.saldo.sum()))}
 
 
@@ -84,12 +164,43 @@ def main():
         raio = max(3.0, 0.18 * pd.Series(d).quantile(0.9))
         loc.loc[m, "setor"] = [setor(la, lo, lat0, lon0, raio) for la, lo in zip(loc.loc[m, "lat"], loc.loc[m, "lon"])]
 
+    loc = sub_regioes(loc)
+
     regioes = {}
     for (rid, nome, uf), g in loc.groupby(["rgi", "rgi_nome", "rgi_uf"]):
         regioes[str(int(rid))] = {"nome": APELIDOS.get(nome, nome), "nome_ibge": nome, "uf": uf,
                                   "municipios": int(g.cd_ibge.nunique()), **agrega(g)}
     setores = {str(cid): {s: agrega(g) for s, g in loc[loc.cd_ibge == cid].groupby("setor")} for cid in grandes}
-    out = {"regioes": regioes, "mun_rgi": {str(k): str(v) for k, v in rgi.set_index("cd_ibge").rgi.items()},
+    # region filter: curated groups of municipalities, official intra-city regions, compass sectors, IBGE regions
+    import csv
+    import unicodedata
+    slug = lambda t: "-".join(unicodedata.normalize("NFKD", t).encode("ascii", "ignore").decode().lower().replace("/", " ").split())
+    nome_ibge = {(m["municipio-nome"], m["UF-sigla"]): m["municipio-id"] for m in ibge}
+    nome_mun = {m["municipio-id"]: m["municipio-nome"] for m in ibge}
+    filtro = []
+    with open(ROOT / "regioes" / "regioes.csv", newline="", encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            if not r["nome"] or r["nome"].startswith("#"):
+                continue
+            cods = [nome_ibge[(n.strip(), r["uf"])] for n in r["municipios"].split(";") if (n.strip(), r["uf"]) in nome_ibge]
+            g = loc[loc.cd_ibge.isin(cods)]
+            filtro.append({"id": slug(r["nome"]), "nome": r["nome"], "uf": r["uf"], "tipo": "municipios", "municipios": cods, **agrega(g)})
+    for cid in sorted(grandes):
+        g0 = loc[loc.cd_ibge == cid]
+        cidade, uf = nome_mun[cid], g0.uf.iloc[0]
+        tipo = "oficial" if cid in (SAO_PAULO, RIO, SALVADOR) else "aproximado"
+        for setor_nome, g in g0.groupby("setor"):
+            filtro.append({"id": f"{slug(cidade)}-{slug(setor_nome)}", "nome": setor_nome, "cidade": cidade, "uf": uf, "ibge": int(cid),
+                           "tipo": tipo, "campo": "setor", "valor": setor_nome, **agrega(g)})
+        for sub_nome, g in g0[g0["sub"].notna()].groupby("sub"):
+            filtro.append({"id": f"{slug(cidade)}-{slug(sub_nome)}", "nome": sub_nome, "cidade": cidade, "uf": uf, "ibge": int(cid),
+                           "tipo": "oficial", "campo": "sub", "valor": sub_nome, **agrega(g)})
+    for rid, x in regioes.items():
+        filtro.append({"id": f"rgi-{rid}", "nome": f"Região de {x['nome']}" if x["nome"] == x["nome_ibge"] else x["nome"], "uf": x["uf"], "tipo": "ibge",
+                       "municipios": [int(k) for k, v in rgi.set_index("cd_ibge").rgi.items() if str(v) == rid],
+                       **{k: x[k] for k in ("aptos", "abst", "mob", "pl", "pf", "saldo")}})
+
+    out = {"regioes": regioes, "filtro": filtro, "mun_rgi": {str(k): str(v) for k, v in rgi.set_index("cd_ibge").rgi.items()},
            "setores": setores, "cidade_grande": CIDADE_GRANDE,
            # per municipality: [mobilizáveis, saldo, Lula%, Flávio%]
            "mun": {str(int(k)): [int(round(g.mob.sum())), int(round(g.saldo.sum())),
@@ -122,7 +233,7 @@ def main():
     for uf, g in loc.groupby("uf"):
         rows = [[int(r.cd_ibge), int(r.zona), r.setor, tit(r.nome),
                  tit(r.bairro) if isinstance(r.bairro, str) else "", int(r.aptos), int(r.abst), round(r.pl, 1), round(r.pf, 1),
-                 int(round(r.saldo))] for r in g.sort_values("saldo", ascending=False).itertuples()]
+                 int(round(r.saldo)), r.sub if isinstance(r.sub, str) else None] for r in g.sort_values("saldo", ascending=False).itertuples()]
         (pasta / f"{uf}.json").write_text(json.dumps(rows, ensure_ascii=False, separators=(",", ":")))
 
     print(f"{len(regioes)} immediate regions · {len(grandes)} large cities with sectors · {len(loc):,} places")

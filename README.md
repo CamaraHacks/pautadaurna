@@ -35,8 +35,7 @@ Uma página com quatro abas e um filtro global (cidade, estado e grupo) que fica
 - **Onde agir:**
   - ranking de cidades ou de regiões (Regiões Imediatas do IBGE, como a Baixada Santista), com ausentes, mobilizáveis e saldo pró-Lula;
   - visão da cidade, com o peso de cada grupo, os setores (Centro, Norte, Sul, Leste, Oeste) nas cidades com mais de 500 mil eleitores, os locais de votação ordenados por saldo e as zonas eleitorais.
-- **Kit de redes:** por grupo, dores em destaque, pautas que comparam os planos de Lula e Flávio (com fato oficial e página do plano), imagem pronta para post, redes e formatos, mensagens cívicas e um carrossel de temas com buscas do Google Trends.
-- **Postar:** peças prontas para Instagram, TikTok e WhatsApp, com os números da cidade ou do estado escolhido:
+- **Postar:** tudo para quem cria conteúdo, com os números da cidade, região ou estado escolhido. Por grupo: dores em destaque, pautas que comparam as propostas de Lula e Flávio (com fato oficial), carrossel de temas com buscas do Google Trends, redes e formatos, palavras-chave e mensagens cívicas. Peças prontas para Instagram, TikTok e WhatsApp, com botão **Enviar** que manda o próprio arquivo (imagem ou vídeo) pela tela de compartilhar do celular:
   - imagem do dado local (post e story);
   - carrossel de 5 imagens por pauta;
   - imagem 9:16;
@@ -83,7 +82,9 @@ Exige ffmpeg e Pillow. As fontes da cartela (licença OFL) estão em `assets/fon
 
 ## Material de terceiros: Acervo da Vitória
 
-`pipeline/10_acervo.py` lê todo dia o índice aberto do [Acervo da Vitória](https://acervodavitoria.pages.dev). O site linka os arquivos no Drive deles, sem hospedar cópias, e mostra os itens embaixo da pauta do mesmo tema, no Kit e na aba Postar.
+`pipeline/10_acervo.py` lê todo dia o índice aberto do [Acervo da Vitória](https://acervodavitoria.pages.dev) e mostra os itens embaixo da pauta do mesmo tema, na aba Postar.
+
+`pipeline/11_midia.py` copia os itens selecionados para o site, no tamanho do WhatsApp: vídeos em 720p com até cerca de 15 MB e imagens JPG. O botão "Enviar" manda o próprio arquivo, e não um link. Os arquivos não vão para o git: o GitHub Actions os gera com cache e publica junto com o site.
 
 Regras de curadoria:
 - entram vídeos, artes, selfies do Lula e guias;
@@ -125,6 +126,19 @@ GitHub Pages com domínio próprio, atualizado todo dia por GitHub Actions: veja
 - **Uso de redes:** Reuters Institute, Digital News Report 2025, Brasil.
 - **Análise de contexto:** Jairo Nicolau.
 - **Buscas:** Google Trends, via SerpApi.
+
+### Filtro de região
+
+O filtro Região, no topo do site, aceita quatro tipos de região:
+- **Regiões de municípios curadas** em `regioes/regioes.csv`: Baixada Santista, Baixada Fluminense, ABC Paulista, Grande Recife e Grande Salvador. Para acrescentar outra, inclua uma linha com o nome, a UF e os municípios separados por `;`.
+- **Regiões oficiais dentro das cidades:**
+  - São Paulo: zonas e subprefeituras, pelos distritos do GeoSampa;
+  - Rio: Áreas de Planejamento e regiões, pelos limites de bairros do Data.Rio;
+  - Salvador: as 10 Prefeituras-Bairro, como a Cidade Baixa, pelas listas oficiais de bairros (`regioes/salvador_prefeituras_bairro.json`).
+- **Setores aproximados** (Centro, Norte, Sul, Leste, Oeste) nas demais cidades com mais de 500 mil eleitores.
+- **Regiões Imediatas do IBGE.**
+
+Cada local de votação entra na região pela coordenada ou pelo bairro.
 
 ### Saldo pró-Lula
 
