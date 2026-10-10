@@ -49,10 +49,36 @@
         "Entre as idosas analfabetas ou só alfabetizadas, 76% não votaram (2,5 milhões de mulheres)"
       ],
       "temas": [
-        "Saúde pública e filas do SUS",
-        "Aposentadoria e INSS",
-        "Custo de remédios e de alimentos",
-        "Segurança no bairro"
+        {
+          "tema": "SUS e filas",
+          "termo": "SUS",
+          "icone": "saude"
+        },
+        {
+          "tema": "Aposentadoria",
+          "termo": "aposentadoria",
+          "icone": "moeda"
+        },
+        {
+          "tema": "INSS e benefícios",
+          "termo": "INSS",
+          "icone": "documento"
+        },
+        {
+          "tema": "Preço dos remédios",
+          "termo": "remédio",
+          "icone": "pilula"
+        },
+        {
+          "tema": "Prova de vida",
+          "termo": "prova de vida",
+          "icone": "digital"
+        },
+        {
+          "tema": "Segurança no bairro",
+          "termo": null,
+          "icone": "escudo"
+        }
       ],
       "vies": "Datafolha 2–3/out, 60 anos ou mais: Lula 47%, Flávio 38%.",
       "vies_fontes": [
@@ -102,6 +128,13 @@
           "formato": "Spot de serviço, entrevista em rádio local",
           "exemplo": "Horário da votação, prioridade na fila, documento com foto."
         }
+      ],
+      "termos_busca": [
+        "INSS",
+        "aposentadoria",
+        "SUS",
+        "remédio",
+        "prova de vida"
       ]
     },
     {
@@ -115,11 +148,36 @@
         "Exaustão e desconexão: 44% dos “desvinculados” da pesquisa Avaaz têm de 18 a 34 anos"
       ],
       "temas": [
-        "Primeiro emprego e renda",
-        "Custo de vida e aluguel",
-        "Educação (mais citada entre os jovens)",
-        "Violência e abordagem policial",
-        "Saúde mental"
+        {
+          "tema": "Primeiro emprego",
+          "termo": "emprego",
+          "icone": "maleta"
+        },
+        {
+          "tema": "Jovem aprendiz",
+          "termo": "jovem aprendiz",
+          "icone": "capelo"
+        },
+        {
+          "tema": "Aluguel e custo de vida",
+          "termo": "aluguel",
+          "icone": "casa"
+        },
+        {
+          "tema": "Educação e ENEM",
+          "termo": "ENEM",
+          "icone": "livro"
+        },
+        {
+          "tema": "Saúde mental",
+          "termo": "ansiedade",
+          "icone": "mente"
+        },
+        {
+          "tema": "Violência e abordagem policial",
+          "termo": null,
+          "icone": "escudo"
+        }
       ],
       "vies": "Datafolha 2–3/out: 16–24 anos, Lula 46% e Flávio 32%; 25–34 anos, Flávio 43% e Lula 38%. O grupo é dividido por idade.",
       "vies_fontes": [
@@ -168,6 +226,13 @@
           "formato": "Status e grupo da turma ou do trabalho",
           "exemplo": "Print do e-Título com a seção e “e você, já sabe onde vota?”"
         }
+      ],
+      "termos_busca": [
+        "emprego",
+        "jovem aprendiz",
+        "aluguel",
+        "ENEM",
+        "ansiedade"
       ]
     },
     {
@@ -181,11 +246,36 @@
         "Logística: trabalho (9%), falta de documentos (7%) e distância da seção (6%)"
       ],
       "temas": [
-        "Preço da comida e do gás",
-        "Bolsa Família e programas sociais",
-        "Emprego e bico",
-        "Saúde: posto e remédio",
-        "Segurança"
+        {
+          "tema": "Bolsa Família",
+          "termo": "Bolsa Família",
+          "icone": "familia"
+        },
+        {
+          "tema": "CadÚnico",
+          "termo": "CadÚnico",
+          "icone": "documento"
+        },
+        {
+          "tema": "BPC",
+          "termo": "BPC",
+          "icone": "moeda"
+        },
+        {
+          "tema": "Preço do gás",
+          "termo": "gás",
+          "icone": "chama"
+        },
+        {
+          "tema": "Comida e cesta básica",
+          "termo": "cesta básica",
+          "icone": "cesta"
+        },
+        {
+          "tema": "Saúde: posto e remédio",
+          "termo": null,
+          "icone": "saude"
+        }
       ],
       "vies": "Datafolha 2–3/out, renda até 2 salários mínimos: Lula 50%, Flávio 32%. Usamos renda como aproximação, porque a pesquisa não divulgou o recorte por escolaridade.",
       "vies_fontes": [
@@ -232,6 +322,13 @@
           "formato": "Vídeo curto com gente do bairro, em lugar conhecido",
           "exemplo": "Liderança comunitária explicando como achar a seção."
         }
+      ],
+      "termos_busca": [
+        "Bolsa Família",
+        "CadÚnico",
+        "BPC",
+        "gás",
+        "cesta básica"
       ]
     },
     {
@@ -245,11 +342,36 @@
         "Violência, o problema número 1 na Quaest de agosto"
       ],
       "temas": [
-        "Segurança pública",
-        "Emprego com carteira",
-        "Endividamento e juros",
-        "Transporte e mobilidade",
-        "Corrupção"
+        {
+          "tema": "Dívidas",
+          "termo": "dívida",
+          "icone": "porcento"
+        },
+        {
+          "tema": "Juros",
+          "termo": "juros",
+          "icone": "grafico"
+        },
+        {
+          "tema": "Segurança pública",
+          "termo": "assalto",
+          "icone": "escudo"
+        },
+        {
+          "tema": "Transporte",
+          "termo": "ônibus",
+          "icone": "onibus"
+        },
+        {
+          "tema": "Carteira assinada",
+          "termo": "carteira assinada",
+          "icone": "maleta"
+        },
+        {
+          "tema": "Corrupção",
+          "termo": null,
+          "icone": "balanca"
+        }
       ],
       "vies": "Datafolha 2–3/out, renda de 2 a 5 salários mínimos: Flávio 47%, Lula 35%. É uma aproximação, porque renda e escolaridade não coincidem.",
       "vies_fontes": [
@@ -295,6 +417,13 @@
           "formato": "Post com serviço local (transporte, horário)",
           "exemplo": "“Sua cidade tem ônibus de graça no dia 25? Confira.”"
         }
+      ],
+      "termos_busca": [
+        "dívida",
+        "juros",
+        "assalto",
+        "ônibus",
+        "carteira assinada"
       ]
     },
     {
@@ -308,10 +437,36 @@
         "Desconfiança da política e sensação de que “tanto faz”"
       ],
       "temas": [
-        "Economia, impostos e gasto público",
-        "Corrupção",
-        "Segurança",
-        "Educação"
+        {
+          "tema": "Imposto de renda",
+          "termo": "imposto de renda",
+          "icone": "recibo"
+        },
+        {
+          "tema": "Economia e dólar",
+          "termo": "dólar",
+          "icone": "grafico"
+        },
+        {
+          "tema": "Corrupção",
+          "termo": "corrupção",
+          "icone": "balanca"
+        },
+        {
+          "tema": "Concursos",
+          "termo": "concurso",
+          "icone": "livro"
+        },
+        {
+          "tema": "Passaporte e viagem",
+          "termo": "passaporte",
+          "icone": "aviao"
+        },
+        {
+          "tema": "Educação",
+          "termo": null,
+          "icone": "capelo"
+        }
       ],
       "vies": "Datafolha 2–3/out, renda acima de 5 salários mínimos: Flávio 49%, Lula 35%.",
       "vies_fontes": [
@@ -355,7 +510,21 @@
           "formato": "Nota curta com link para o e-Título",
           "exemplo": "“Viajando no dia 25? Justifique pelo e-Título em minutos.”"
         }
+      ],
+      "termos_busca": [
+        "imposto de renda",
+        "dólar",
+        "corrupção",
+        "concurso",
+        "passaporte"
       ]
     }
+  ],
+  "termos_civicos": [
+    "onde votar",
+    "e-título",
+    "justificar voto",
+    "segundo turno",
+    "título de eleitor"
   ]
 }

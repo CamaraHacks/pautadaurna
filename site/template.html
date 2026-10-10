@@ -204,6 +204,26 @@ main { padding-inline: 20px; padding-block: 36px 96px; gap: 0; }
 .blk { display: grid; gap: 8px; align-content: start; }
 .blk h3 { font-size: 0.72rem; font-family: var(--mono); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .blk ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; font-size: 0.94rem; }
+/* Carrossel de temas */
+.carousel { display: grid; gap: 10px; }
+.car-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.car-nav { display: flex; gap: 8px; align-items: center; font: 600 0.75rem var(--mono); color: var(--ink-2); }
+.car-nav .btn { width: 40px; padding: 8px 0; font-size: 1rem; }
+.car-track { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(250px, 31%); gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 2px 12px; scrollbar-width: thin; }
+@media (max-width: 720px) { .car-track { grid-auto-columns: 84%; } }
+.car-track:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.tcard { scroll-snap-align: start; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 16px; display: grid; gap: 10px; align-content: start; box-shadow: 0 2px 0 rgba(25, 23, 20, 0.12); transition: transform .15s, box-shadow .15s; }
+.tcard:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(25, 23, 20, 0.1); }
+.tcard .ic { width: 64px; height: 64px; border-radius: 14px; display: grid; place-items: center; background: var(--yellow-soft); color: var(--accent-ink); border: 1px solid var(--yellow); }
+.tcard h4 { margin: 0; font: 800 1.15rem/1.15 var(--display); font-stretch: 85%; }
+.tcard .k { font: 600 0.64rem/1.2 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.tcard .vol { height: 8px; background: var(--rule); border-radius: 2px; overflow: hidden; }
+.tcard .vol i { display: block; height: 100%; background: var(--accent); }
+.tcard ul { margin: 0; padding-left: 16px; font-size: 0.86rem; color: var(--ink-2); display: grid; gap: 3px; }
+.tcard .acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 2px; }
+.tcard .acts a { font: 600 0.7rem var(--mono); color: var(--ink-2); }
+.tcard .none { font-size: 0.84rem; color: var(--ink-3); }
+
 /* Dores: o único bloco com fundo cheio no kit */
 .dores { background: var(--yellow); color: #191714; border-radius: 6px; padding: 18px 20px 20px; display: grid; gap: 12px; box-shadow: 0 2px 0 rgba(25, 23, 20, 0.28); }
 .dores h3 { justify-self: start; font: 700 0.78rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: var(--accent); padding: 6px 9px; border-radius: 3px; }
@@ -427,7 +447,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
         <li><a href="https://reutersinstitute.politics.ox.ac.uk/es/digital-news-report/2025/brasil">Reuters Institute, Digital News Report 2025, Brasil</a></li>
         <li><a href="https://jaironicolau.substack.com/p/quatro-topicos-sobre-a-abstencao">Jairo Nicolau, “Quatro tópicos sobre a abstenção eleitoral de 2026”</a></li>
         <li><a href="https://gife.org.br/abstencao-eleitoral-solidao-exaustao-vinculos-comunitarios/">Avaaz e Datafolha, Termômetro do Bem Viver</a></li>
-        <li><a href="https://trends.google.com/trending?geo=BR">Google Trends, buscas do dia no Brasil</a></li>
+        <li><a href="https://trends.google.com/trending?geo=BR">Google Trends</a>: buscas do dia no Brasil e, por grupo, volume, estados e buscas em alta dos termos de cada tema (últimos 30 dias)</li>
         <li><a href="https://github.com/betafcc/Municipios-Brasileiros-TSE">Tabela de correspondência TSE ↔ IBGE</a></li>
       </ul>
     </footer>
@@ -442,6 +462,32 @@ const D = /*__DATA__*/null;
 const TOPO = /*__TOPO__*/null;
 const G = /*__GRUPOS__*/null;
 const TR = /*__TRENDS__*/null;
+const TG = /*__TRENDS_GRUPOS__*/null;
+// Theme pictograms (24×24, stroke = currentColor), drawn inline so the page needs no image files
+const ICON = {
+  saude: '<path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/><path d="M12 9v5M9.5 11.5h5"/>',
+  moeda: '<circle cx="12" cy="12" r="8"/><path d="M14.5 9.5c-.5-1-1.5-1.5-2.5-1.5-1.5 0-2.5.8-2.5 2s1 1.6 2.5 2 2.5.8 2.5 2-1 2-2.5 2c-1 0-2-.5-2.5-1.5M12 6.5V8M12 16v1.5"/>',
+  documento: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 15.5h5M10 9h2"/>',
+  pilula: '<rect x="3.5" y="9" width="17" height="6" rx="3" transform="rotate(-35 12 12)"/><path d="M10.2 9.4l3.6 5.2"/>',
+  digital: '<path d="M8 20c-1-2-1.5-4-1.5-7a5.5 5.5 0 0 1 11 0c0 2-.3 4-1 6"/><path d="M12 13c0 3 .3 5 1 7M9.5 13a2.5 2.5 0 0 1 5 0c0 1.5-.1 3-.5 4.5"/>',
+  escudo: '<path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/>',
+  maleta: '<rect x="3.5" y="7.5" width="17" height="12" rx="2"/><path d="M9 7.5V5.5h6v2M3.5 12.5h17"/>',
+  capelo: '<path d="M2.5 9.5L12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4c1.5 1.5 3.5 2 5.5 2s4-.5 5.5-2v-4M21.5 9.5v5"/>',
+  casa: '<path d="M4 11l8-6.5 8 6.5"/><path d="M6 9.5V20h12V9.5M10 20v-5h4v5"/>',
+  livro: '<path d="M4 5.5c2.5-1 5.5-1 8 .5v13c-2.5-1.5-5.5-1.5-8-.5zM20 5.5c-2.5-1-5.5-1-8 .5v13c2.5-1.5 5.5-1.5 8-.5z"/>',
+  mente: '<path d="M9 20v-3H7a2 2 0 0 1-2-2v-2l-1.5-1L5 9a7 7 0 0 1 14 1c0 2.5-1 4-2 5v5"/><path d="M10 9.5c.5-1 1.5-1.5 2.5-1 1 .4 1.2 1.6.5 2.4"/>',
+  familia: '<circle cx="8" cy="7" r="2.3"/><circle cx="16" cy="7" r="2.3"/><circle cx="12" cy="12.5" r="1.8"/><path d="M4 20v-5a4 4 0 0 1 4-4M20 20v-5a4 4 0 0 0-4-4M9.5 20v-2.5a2.5 2.5 0 0 1 5 0V20"/>',
+  chama: '<path d="M12 21c-3.5 0-6-2.3-6-5.5 0-3 2-4.5 3-7 .5 1.5 1.5 2.5 2.5 3 0-3 1-5.5 3-7.5.5 3 3.5 5.5 3.5 10 0 4-2.5 7-6 7z"/>',
+  cesta: '<path d="M3.5 10h17l-2 9.5h-13z"/><path d="M7.5 10l4-6M16.5 10l-4-6M9 13.5v3M12 13.5v3M15 13.5v3"/>',
+  porcento: '<circle cx="7.5" cy="7.5" r="2.3"/><circle cx="16.5" cy="16.5" r="2.3"/><path d="M18 6L6 18"/>',
+  grafico: '<path d="M4 20h16M4 20V4"/><path d="M7 15l4-4 3 3 5-6"/><path d="M15.5 8H19v3.5"/>',
+  onibus: '<rect x="5" y="3.5" width="14" height="14" rx="2.5"/><path d="M5 11h14M8 17.5V20M16 17.5V20"/><circle cx="8.5" cy="14.2" r=".9"/><circle cx="15.5" cy="14.2" r=".9"/>',
+  balanca: '<path d="M12 4v16M8 20h8M5 7h14"/><path d="M5 7l-2.5 6a2.5 2.5 0 0 0 5 0zM19 7l-2.5 6a2.5 2.5 0 0 0 5 0z"/>',
+  recibo: '<path d="M6 3h12v18l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5L6 21z"/><path d="M9 8h6M9 11.5h6M9 15h4"/>',
+  aviao: '<path d="M3 13.5l7-1.5 4.5-7.5c.8-1.3 2.8-.9 2.6.7L16 12l4.5 1.5-.5 2-5-.5-3 4.5H10l1-4.5-7-.5z"/>',
+};
+const icon = (k, size = 40) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k] || ICON.documento}</svg>`;
+const hashtag = t => "#" + t.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join("");
 
 const nf = new Intl.NumberFormat("pt-BR");
 const pf = (v, d = 1) => v.toLocaleString("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -786,6 +832,59 @@ $("t-rank").addEventListener("click", ev => {
 });
 $("rank-more").onclick = () => { rankLimit += 50; renderRanking(); };
 
+// ---------- kit: themes carousel + group × searches cross ----------
+function temasCarousel(g) {
+  const tg = TG && TG.grupos[g.id];
+  const vols = tg ? Object.values(tg.termos).map(t => t.volume) : [];
+  const vmax = Math.max(1, ...vols);
+  const cards = g.temas.map((t, i) => {
+    const d = tg && t.termo ? tg.termos[t.termo] : null;
+    const tag = hashtag(t.termo || t.tema);
+    const trendsUrl = `https://trends.google.com/trends/explore?geo=${S.uf ? "BR-" + S.uf : "BR"}&date=today%201-m&q=${encodeURIComponent(t.termo || t.tema)}`;
+    return `<article class="tcard" aria-roledescription="slide" aria-label="${i + 1} de ${g.temas.length}: ${esc(t.tema)}">
+      <span class="ic">${icon(t.icone)}</span>
+      <h4>${esc(t.tema)}</h4>
+      ${d ? `<span class="k">Busca no Google · “${esc(t.termo)}”</span>
+        <div class="vol" title="Volume relativo entre os temas do grupo"><i style="width:${100 * d.volume / vmax}%"></i></div>
+        <span class="k">Onde vivem os ausentes do grupo: <b style="color:var(--ink)">${pf(d.indice, 2)}×</b> ${d.indice >= 1.03 ? '<span class="badge up">▲ mais buscado</span>' : d.indice <= 0.97 ? '<span class="badge dn">▼ menos buscado</span>' : '<span class="badge eq">● na média</span>'}</span>
+        ${d.em_alta_uf.length ? `<span class="k">Em alta em ${tg.uf_grupo}, onde o grupo mais pesa</span><ul>${d.em_alta_uf.slice(0, 3).map(q => `<li>${esc(q)}</li>`).join("")}</ul>`
+          : d.em_alta.length ? `<span class="k">Em alta no Brasil</span><ul>${d.em_alta.slice(0, 3).map(q => `<li>${esc(q)}</li>`).join("")}</ul>` : `<span class="none">Nenhuma busca relacionada em alta no período.</span>`}`
+      : `<span class="none">Tema das pesquisas de opinião, sem termo medido no Google Trends.</span>`}
+      <div class="acts"><button type="button" class="btn sm" data-copy="${esc(tag)}">Copiar ${esc(tag)}</button><a href="${trendsUrl}" target="_blank" rel="noopener">Trends ↗</a></div>
+    </article>`;
+  }).join("");
+  return `<div class="blk carousel" data-car>
+    <div class="car-head"><h3>Temas que pesam ${TG ? `<span class="tag inf">Google Trends · ${esc(TG.periodo)}</span>` : ""}</h3>
+      <div class="car-nav"><button type="button" class="btn" data-car-step="-1" aria-label="Tema anterior">‹</button><span data-car-pos>1 de ${g.temas.length}</span><button type="button" class="btn" data-car-step="1" aria-label="Próximo tema">›</button></div></div>
+    <div class="car-track" tabindex="0" role="region" aria-label="Temas que pesam, use as setas para navegar">${cards}</div>
+    ${tg ? `<p class="note">O Google Trends não separa buscas por idade, escolaridade ou classe. Para ler as buscas <b>deste grupo</b>, usamos onde os ausentes dele vivem: o índice pondera o interesse de cada estado pelo número de ausentes do grupo ali e compara com todos os ausentes. As buscas em alta vêm de ${tg.uf_grupo}, o estado em que o grupo pesa mais (${pf(tg.peso_uf_grupo, 2)}× a média). Os índices ficam perto de 1× porque os ausentes de cada grupo estão espalhados pelo país: o que separa os grupos é idade e escolaridade, não o lugar. A barra compara o volume dos temas do grupo entre si.</p>` : ""}
+  </div>`;
+}
+function cruzamento(g) {
+  const tg = TG && TG.grupos[g.id]; if (!tg) return "";
+  const ufs = Object.entries(tg.uf).slice(0, 6);
+  return `<div class="blk"><h3>Onde o grupo e os temas se cruzam <span class="tag inf">estimativa</span></h3>
+    <p class="note">Estados em que este grupo pesa mais entre os ausentes do que no Brasil e em que os temas dele são mais buscados no Google.</p>
+    <div class="dtable"><table style="min-width:0"><thead><tr><th>UF</th><th class="n">Peso do grupo</th><th class="n">Interesse de busca (0–100)</th><th></th></tr></thead><tbody>
+    ${ufs.map(([u, x]) => `<tr><td>${u}</td><td class="n">${pf(x.peso, 2)}×</td><td class="n">${pf(x.interesse, 0)}</td><td>${x.prioridade ? '<span class="badge up">▲ cruzamento forte</span>' : ""}</td></tr>`).join("")}
+    </tbody></table></div>
+    ${tg.hashtags.length ? `<div class="chips" style="margin-top:6px">${tg.hashtags.map(h => `<span class="chip">${esc(h)}</span>`).join("")}<button type="button" class="btn sm" data-copy="${esc(tg.hashtags.join(" "))}">Copiar hashtags</button></div>
+    <p class="note">Hashtags montadas a partir de buscas em alta perto dos temas do grupo. Buscas que citam candidatos ou políticos foram retiradas para manter o kit apartidário. Confira o uso real na rede antes de publicar.</p>` : ""}
+  </div>`;
+}
+function wireCarousel(root) {
+  root.querySelectorAll("[data-car]").forEach(car => {
+    const track = car.querySelector(".car-track"), pos = car.querySelector("[data-car-pos]");
+    const cards = [...track.children];
+    const current = () => Math.round(track.scrollLeft / (cards[0].offsetWidth + 14));
+    const update = () => { pos.textContent = `${Math.min(cards.length, current() + 1)} de ${cards.length}`; };
+    const step = d => track.scrollBy({ left: d * (cards[0].offsetWidth + 14), behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    car.querySelectorAll("[data-car-step]").forEach(b => b.onclick = () => step(+b.dataset.carStep));
+    track.addEventListener("keydown", ev => { if (ev.key === "ArrowRight") { step(1); ev.preventDefault(); } if (ev.key === "ArrowLeft") { step(-1); ev.preventDefault(); } });
+    track.addEventListener("scroll", update, { passive: true });
+  });
+}
+
 // ---------- kit ----------
 function renderKit() {
   $("gchoose").innerHTML = G.grupos.map(g => `<button type="button" aria-pressed="${S.g === g.id}" data-g="${g.id}"><i class="sw" style="background:${gcolor(g.id)}"></i>${esc(g.nome)}</button>`).join("");
@@ -825,7 +924,8 @@ function renderKit() {
       <div class="blk"><h3>Mensagens cívicas prontas</h3>
         ${g.mensagens.map(m => `<div class="msg"><span>${esc(m)}</span><span><button type="button" class="btn sm" data-copy="${esc(m)}">Copiar</button></span></div>`).join("")}</div>
       <div class="dores"><h3>Dores deste grupo</h3><ul>${g.dores.map(d => `<li>${esc(d)}</li>`).join("")}</ul></div>
-      <div class="blk"><h3>Temas que pesam</h3><div class="chips">${g.temas.map(t => `<span class="chip">${esc(t)}</span>`).join("")}</div></div>
+      ${temasCarousel(g)}
+      ${cruzamento(g)}
       <details class="vies"><summary>Inclinação política estimada</summary>
         <p class="note">No Brasil, resultado do 1º turno nos municípios onde vivem os ausentes deste grupo (média ponderada): ${CAND.map((c, j) => `${NOMES[c]} <b class="num">${pf(pcts[j])}%</b>`).join(" · ")}</p>
         <div class="leanbar" aria-hidden="true">${pcts.map((p, j) => `<div style="flex:${p} 1 0;background:${css(j ? "--ink-3" : "--ink-2")}"></div>`).join("")}<div style="flex:${Math.max(0, 100 - pcts[0] - pcts[1])} 1 0;background:var(--rule)"></div></div>
@@ -834,6 +934,7 @@ function renderKit() {
       <p class="fontes-g">Fontes: ${[...new Set([...g.vies_fontes, ...g.fontes])].map(link).join("; ")}.</p>
     </section>`;
   }
+  wireCarousel($("kit-body"));
   // trends snapshot
   $("trends").innerHTML = TR && TR.itens.length ? `
     <div class="src"><b>Google Trends</b> · buscas do dia no Brasil · coletado em ${esc(TR.coletado_em)}</div>

@@ -204,6 +204,26 @@ main { padding-inline: 20px; padding-block: 36px 96px; gap: 0; }
 .blk { display: grid; gap: 8px; align-content: start; }
 .blk h3 { font-size: 0.72rem; font-family: var(--mono); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .blk ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; font-size: 0.94rem; }
+/* Carrossel de temas */
+.carousel { display: grid; gap: 10px; }
+.car-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.car-nav { display: flex; gap: 8px; align-items: center; font: 600 0.75rem var(--mono); color: var(--ink-2); }
+.car-nav .btn { width: 40px; padding: 8px 0; font-size: 1rem; }
+.car-track { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(250px, 31%); gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 2px 12px; scrollbar-width: thin; }
+@media (max-width: 720px) { .car-track { grid-auto-columns: 84%; } }
+.car-track:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.tcard { scroll-snap-align: start; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 16px; display: grid; gap: 10px; align-content: start; box-shadow: 0 2px 0 rgba(25, 23, 20, 0.12); transition: transform .15s, box-shadow .15s; }
+.tcard:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(25, 23, 20, 0.1); }
+.tcard .ic { width: 64px; height: 64px; border-radius: 14px; display: grid; place-items: center; background: var(--yellow-soft); color: var(--accent-ink); border: 1px solid var(--yellow); }
+.tcard h4 { margin: 0; font: 800 1.15rem/1.15 var(--display); font-stretch: 85%; }
+.tcard .k { font: 600 0.64rem/1.2 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.tcard .vol { height: 8px; background: var(--rule); border-radius: 2px; overflow: hidden; }
+.tcard .vol i { display: block; height: 100%; background: var(--accent); }
+.tcard ul { margin: 0; padding-left: 16px; font-size: 0.86rem; color: var(--ink-2); display: grid; gap: 3px; }
+.tcard .acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 2px; }
+.tcard .acts a { font: 600 0.7rem var(--mono); color: var(--ink-2); }
+.tcard .none { font-size: 0.84rem; color: var(--ink-3); }
+
 /* Dores: o único bloco com fundo cheio no kit */
 .dores { background: var(--yellow); color: #191714; border-radius: 6px; padding: 18px 20px 20px; display: grid; gap: 12px; box-shadow: 0 2px 0 rgba(25, 23, 20, 0.28); }
 .dores h3 { justify-self: start; font: 700 0.78rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: var(--accent); padding: 6px 9px; border-radius: 3px; }
@@ -427,7 +447,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
         <li><a href="https://reutersinstitute.politics.ox.ac.uk/es/digital-news-report/2025/brasil">Reuters Institute, Digital News Report 2025, Brasil</a></li>
         <li><a href="https://jaironicolau.substack.com/p/quatro-topicos-sobre-a-abstencao">Jairo Nicolau, “Quatro tópicos sobre a abstenção eleitoral de 2026”</a></li>
         <li><a href="https://gife.org.br/abstencao-eleitoral-solidao-exaustao-vinculos-comunitarios/">Avaaz e Datafolha, Termômetro do Bem Viver</a></li>
-        <li><a href="https://trends.google.com/trending?geo=BR">Google Trends, buscas do dia no Brasil</a></li>
+        <li><a href="https://trends.google.com/trending?geo=BR">Google Trends</a>: buscas do dia no Brasil e, por grupo, volume, estados e buscas em alta dos termos de cada tema (últimos 30 dias)</li>
         <li><a href="https://github.com/betafcc/Municipios-Brasileiros-TSE">Tabela de correspondência TSE ↔ IBGE</a></li>
       </ul>
     </footer>
@@ -491,10 +511,36 @@ const G = {
         "Entre as idosas analfabetas ou só alfabetizadas, 76% não votaram (2,5 milhões de mulheres)"
       ],
       "temas": [
-        "Saúde pública e filas do SUS",
-        "Aposentadoria e INSS",
-        "Custo de remédios e de alimentos",
-        "Segurança no bairro"
+        {
+          "tema": "SUS e filas",
+          "termo": "SUS",
+          "icone": "saude"
+        },
+        {
+          "tema": "Aposentadoria",
+          "termo": "aposentadoria",
+          "icone": "moeda"
+        },
+        {
+          "tema": "INSS e benefícios",
+          "termo": "INSS",
+          "icone": "documento"
+        },
+        {
+          "tema": "Preço dos remédios",
+          "termo": "remédio",
+          "icone": "pilula"
+        },
+        {
+          "tema": "Prova de vida",
+          "termo": "prova de vida",
+          "icone": "digital"
+        },
+        {
+          "tema": "Segurança no bairro",
+          "termo": null,
+          "icone": "escudo"
+        }
       ],
       "vies": "Datafolha 2–3/out, 60 anos ou mais: Lula 47%, Flávio 38%.",
       "vies_fontes": [
@@ -544,6 +590,13 @@ const G = {
           "formato": "Spot de serviço, entrevista em rádio local",
           "exemplo": "Horário da votação, prioridade na fila, documento com foto."
         }
+      ],
+      "termos_busca": [
+        "INSS",
+        "aposentadoria",
+        "SUS",
+        "remédio",
+        "prova de vida"
       ]
     },
     {
@@ -557,11 +610,36 @@ const G = {
         "Exaustão e desconexão: 44% dos “desvinculados” da pesquisa Avaaz têm de 18 a 34 anos"
       ],
       "temas": [
-        "Primeiro emprego e renda",
-        "Custo de vida e aluguel",
-        "Educação (mais citada entre os jovens)",
-        "Violência e abordagem policial",
-        "Saúde mental"
+        {
+          "tema": "Primeiro emprego",
+          "termo": "emprego",
+          "icone": "maleta"
+        },
+        {
+          "tema": "Jovem aprendiz",
+          "termo": "jovem aprendiz",
+          "icone": "capelo"
+        },
+        {
+          "tema": "Aluguel e custo de vida",
+          "termo": "aluguel",
+          "icone": "casa"
+        },
+        {
+          "tema": "Educação e ENEM",
+          "termo": "ENEM",
+          "icone": "livro"
+        },
+        {
+          "tema": "Saúde mental",
+          "termo": "ansiedade",
+          "icone": "mente"
+        },
+        {
+          "tema": "Violência e abordagem policial",
+          "termo": null,
+          "icone": "escudo"
+        }
       ],
       "vies": "Datafolha 2–3/out: 16–24 anos, Lula 46% e Flávio 32%; 25–34 anos, Flávio 43% e Lula 38%. O grupo é dividido por idade.",
       "vies_fontes": [
@@ -610,6 +688,13 @@ const G = {
           "formato": "Status e grupo da turma ou do trabalho",
           "exemplo": "Print do e-Título com a seção e “e você, já sabe onde vota?”"
         }
+      ],
+      "termos_busca": [
+        "emprego",
+        "jovem aprendiz",
+        "aluguel",
+        "ENEM",
+        "ansiedade"
       ]
     },
     {
@@ -623,11 +708,36 @@ const G = {
         "Logística: trabalho (9%), falta de documentos (7%) e distância da seção (6%)"
       ],
       "temas": [
-        "Preço da comida e do gás",
-        "Bolsa Família e programas sociais",
-        "Emprego e bico",
-        "Saúde: posto e remédio",
-        "Segurança"
+        {
+          "tema": "Bolsa Família",
+          "termo": "Bolsa Família",
+          "icone": "familia"
+        },
+        {
+          "tema": "CadÚnico",
+          "termo": "CadÚnico",
+          "icone": "documento"
+        },
+        {
+          "tema": "BPC",
+          "termo": "BPC",
+          "icone": "moeda"
+        },
+        {
+          "tema": "Preço do gás",
+          "termo": "gás",
+          "icone": "chama"
+        },
+        {
+          "tema": "Comida e cesta básica",
+          "termo": "cesta básica",
+          "icone": "cesta"
+        },
+        {
+          "tema": "Saúde: posto e remédio",
+          "termo": null,
+          "icone": "saude"
+        }
       ],
       "vies": "Datafolha 2–3/out, renda até 2 salários mínimos: Lula 50%, Flávio 32%. Usamos renda como aproximação, porque a pesquisa não divulgou o recorte por escolaridade.",
       "vies_fontes": [
@@ -674,6 +784,13 @@ const G = {
           "formato": "Vídeo curto com gente do bairro, em lugar conhecido",
           "exemplo": "Liderança comunitária explicando como achar a seção."
         }
+      ],
+      "termos_busca": [
+        "Bolsa Família",
+        "CadÚnico",
+        "BPC",
+        "gás",
+        "cesta básica"
       ]
     },
     {
@@ -687,11 +804,36 @@ const G = {
         "Violência, o problema número 1 na Quaest de agosto"
       ],
       "temas": [
-        "Segurança pública",
-        "Emprego com carteira",
-        "Endividamento e juros",
-        "Transporte e mobilidade",
-        "Corrupção"
+        {
+          "tema": "Dívidas",
+          "termo": "dívida",
+          "icone": "porcento"
+        },
+        {
+          "tema": "Juros",
+          "termo": "juros",
+          "icone": "grafico"
+        },
+        {
+          "tema": "Segurança pública",
+          "termo": "assalto",
+          "icone": "escudo"
+        },
+        {
+          "tema": "Transporte",
+          "termo": "ônibus",
+          "icone": "onibus"
+        },
+        {
+          "tema": "Carteira assinada",
+          "termo": "carteira assinada",
+          "icone": "maleta"
+        },
+        {
+          "tema": "Corrupção",
+          "termo": null,
+          "icone": "balanca"
+        }
       ],
       "vies": "Datafolha 2–3/out, renda de 2 a 5 salários mínimos: Flávio 47%, Lula 35%. É uma aproximação, porque renda e escolaridade não coincidem.",
       "vies_fontes": [
@@ -737,6 +879,13 @@ const G = {
           "formato": "Post com serviço local (transporte, horário)",
           "exemplo": "“Sua cidade tem ônibus de graça no dia 25? Confira.”"
         }
+      ],
+      "termos_busca": [
+        "dívida",
+        "juros",
+        "assalto",
+        "ônibus",
+        "carteira assinada"
       ]
     },
     {
@@ -750,10 +899,36 @@ const G = {
         "Desconfiança da política e sensação de que “tanto faz”"
       ],
       "temas": [
-        "Economia, impostos e gasto público",
-        "Corrupção",
-        "Segurança",
-        "Educação"
+        {
+          "tema": "Imposto de renda",
+          "termo": "imposto de renda",
+          "icone": "recibo"
+        },
+        {
+          "tema": "Economia e dólar",
+          "termo": "dólar",
+          "icone": "grafico"
+        },
+        {
+          "tema": "Corrupção",
+          "termo": "corrupção",
+          "icone": "balanca"
+        },
+        {
+          "tema": "Concursos",
+          "termo": "concurso",
+          "icone": "livro"
+        },
+        {
+          "tema": "Passaporte e viagem",
+          "termo": "passaporte",
+          "icone": "aviao"
+        },
+        {
+          "tema": "Educação",
+          "termo": null,
+          "icone": "capelo"
+        }
       ],
       "vies": "Datafolha 2–3/out, renda acima de 5 salários mínimos: Flávio 49%, Lula 35%.",
       "vies_fontes": [
@@ -797,11 +972,51 @@ const G = {
           "formato": "Nota curta com link para o e-Título",
           "exemplo": "“Viajando no dia 25? Justifique pelo e-Título em minutos.”"
         }
+      ],
+      "termos_busca": [
+        "imposto de renda",
+        "dólar",
+        "corrupção",
+        "concurso",
+        "passaporte"
       ]
     }
+  ],
+  "termos_civicos": [
+    "onde votar",
+    "e-título",
+    "justificar voto",
+    "segundo turno",
+    "título de eleitor"
   ]
 };
 const TR = {"coletado_em": "10/10/2026 12:41", "itens": [{"termo": "oktoberfest", "buscas": "500+", "noticia": "JA tira dúvidas dos telespectadores sobre a Oktoberfest Blumenau", "fonte": "G1", "url": "https://g1.globo.com/sc/santa-catarina/videos-jornal-do-almoco-sc-blumenau/video/ja-tira-duvidas-dos-telespectadores-sobre-a-oktoberfest-blumenau-15044478.ghtml"}, {"termo": "rodovia marechal rondon", "buscas": "100+", "noticia": "Motorista morre após bater caminhão em carreta e um dos veículo pegar fogo no interior de SP", "fonte": "G1", "url": "https://g1.globo.com/sp/bauru-marilia/noticia/2026/10/09/motorista-morre-apos-bater-caminhao-em-carreta-e-um-dos-veiculo-pegar-fogo-no-interior-de-sp.ghtml"}, {"termo": "bpc", "buscas": "200+", "noticia": "Mãe de Eduarda Campopiano, crítica de políticas sociais, recebe benefício assistencial há pelo menos 8 anos", "fonte": "O GLOBO", "url": "https://oglobo.globo.com/blogs/lauro-jardim/post/2026/10/mae-de-eduarda-campopiano-critica-de-politicas-sociais-recebe-beneficio-assistencial-ha-pelo-menos-8-anos.ghtml"}]};
+const TG = {"coletado_em": "10/10/2026", "periodo": "últimos 30 dias", "grupos": {"idosos": {"volume": {"INSS": 65.2, "aposentadoria": 15.3, "SUS": 25.8, "remédio": 57.2, "prova de vida": 2.3}, "uf": {"RJ": {"peso": 1.35, "interesse": 73.4, "prioridade": true}, "BA": {"peso": 0.94, "interesse": 81.8, "prioridade": false}, "PB": {"peso": 1.0, "interesse": 73.2, "prioridade": true}, "PI": {"peso": 0.89, "interesse": 91.0, "prioridade": false}, "PE": {"peso": 0.98, "interesse": 72.6, "prioridade": false}, "SE": {"peso": 0.89, "interesse": 77.4, "prioridade": false}, "CE": {"peso": 1.09, "interesse": 68.2, "prioridade": true}, "RN": {"peso": 0.96, "interesse": 69.2, "prioridade": false}, "MG": {"peso": 1.11, "interesse": 66.2, "prioridade": false}, "RS": {"peso": 1.2, "interesse": 64.2, "prioridade": false}, "MA": {"peso": 0.78, "interesse": 75.0, "prioridade": false}, "ES": {"peso": 0.9, "interesse": 66.6, "prioridade": false}, "SP": {"peso": 1.09, "interesse": 56.4, "prioridade": false}, "PA": {"peso": 0.81, "interesse": 68.4, "prioridade": false}, "AL": {"peso": 0.7, "interesse": 69.4, "prioridade": false}, "TO": {"peso": 0.7, "interesse": 66.0, "prioridade": false}, "PR": {"peso": 0.88, "interesse": 55.0, "prioridade": false}, "RO": {"peso": 0.6, "interesse": 67.8, "prioridade": false}, "AC": {"peso": 0.6, "interesse": 66.2, "prioridade": false}, "SC": {"peso": 0.87, "interesse": 53.0, "prioridade": false}, "AM": {"peso": 0.61, "interesse": 62.6, "prioridade": false}, "GO": {"peso": 0.66, "interesse": 62.4, "prioridade": false}, "MS": {"peso": 0.76, "interesse": 54.6, "prioridade": false}, "MT": {"peso": 0.61, "interesse": 55.8, "prioridade": false}, "AP": {"peso": 0.49, "interesse": 57.4, "prioridade": false}, "RR": {"peso": 0.48, "interesse": 49.8, "prioridade": false}}, "uf_grupo": "RJ", "peso_uf_grupo": 1.35, "termos": {"INSS": {"volume": 65.2, "indice": 1.0, "top_uf": ["PI", "SE", "MA"], "em_alta": ["prova de vida inss"], "em_alta_uf": ["prova de vida inss"]}, "aposentadoria": {"volume": 15.3, "indice": 1.01, "top_uf": ["BA", "RS", "MG"], "em_alta": [], "em_alta_uf": ["tipos de aposentadoria"]}, "SUS": {"volume": 25.8, "indice": 0.98, "top_uf": ["PI", "BA", "PB"], "em_alta": [], "em_alta_uf": []}, "remédio": {"volume": 57.2, "indice": 0.98, "top_uf": ["MA", "PA", "BA"], "em_alta": [], "em_alta_uf": ["remédio para enxaqueca forte"]}, "prova de vida": {"volume": 2.3, "indice": 1.04, "top_uf": ["RJ", "PI", "MA"], "em_alta": ["voto prova de vida"], "em_alta_uf": ["votar prova de vida", "voto prova de vida", "prova de vida eleição", "eleição prova de vida"]}}, "hashtags": ["#TiposDeAposentadoria"]}, "jovens": {"volume": {"emprego": 44.0, "jovem aprendiz": 9.5, "aluguel": 85.3, "ENEM": 51.6, "ansiedade": 27.9}, "uf": {"AL": {"peso": 1.22, "interesse": 69.4, "prioridade": true}, "SE": {"peso": 1.09, "interesse": 75.4, "prioridade": true}, "PI": {"peso": 1.19, "interesse": 68.4, "prioridade": true}, "MA": {"peso": 1.3, "interesse": 61.4, "prioridade": true}, "BA": {"peso": 1.05, "interesse": 71.2, "prioridade": true}, "AP": {"peso": 1.38, "interesse": 56.6, "prioridade": false}, "GO": {"peso": 1.19, "interesse": 64.0, "prioridade": true}, "PA": {"peso": 1.2, "interesse": 62.6, "prioridade": true}, "MT": {"peso": 1.21, "interesse": 58.4, "prioridade": false}, "RO": {"peso": 1.23, "interesse": 56.8, "prioridade": false}, "AM": {"peso": 1.34, "interesse": 55.6, "prioridade": false}, "TO": {"peso": 1.35, "interesse": 52.6, "prioridade": false}, "RN": {"peso": 0.96, "interesse": 71.0, "prioridade": false}, "PB": {"peso": 1.01, "interesse": 68.2, "prioridade": true}, "AC": {"peso": 1.37, "interesse": 45.0, "prioridade": false}, "CE": {"peso": 1.01, "interesse": 65.2, "prioridade": true}, "PE": {"peso": 0.99, "interesse": 66.8, "prioridade": false}, "RJ": {"peso": 0.74, "interesse": 71.8, "prioridade": false}, "SC": {"peso": 1.09, "interesse": 58.0, "prioridade": false}, "RR": {"peso": 1.3, "interesse": 43.8, "prioridade": false}, "MS": {"peso": 1.13, "interesse": 51.2, "prioridade": false}, "MG": {"peso": 0.91, "interesse": 61.2, "prioridade": false}, "ES": {"peso": 0.95, "interesse": 57.0, "prioridade": false}, "PR": {"peso": 1.09, "interesse": 52.0, "prioridade": false}, "RS": {"peso": 0.92, "interesse": 56.6, "prioridade": false}, "SP": {"peso": 0.91, "interesse": 56.6, "prioridade": false}}, "uf_grupo": "AM", "peso_uf_grupo": 1.34, "termos": {"emprego": {"volume": 44.0, "indice": 1.0, "top_uf": ["DF", "MT", "GO"], "em_alta": [], "em_alta_uf": ["gupy vagas de emprego", "emprego home office"]}, "jovem aprendiz": {"volume": 9.5, "indice": 0.98, "top_uf": ["RJ", "SE", "BA"], "em_alta": [], "em_alta_uf": ["iel jovem aprendiz", "jovem aprendiz itau", "ciee vagas jovem aprendiz"]}, "aluguel": {"volume": 85.3, "indice": 0.97, "top_uf": ["DF", "RJ", "SC"], "em_alta": [], "em_alta_uf": ["chaves na mão aluguel"]}, "ENEM": {"volume": 51.6, "indice": 1.02, "top_uf": ["PI", "PB", "SE"], "em_alta": ["simulado enem sed", "cartilha enem 2026", "local de prova enem"], "em_alta_uf": ["enem ppl", "local de prova enem", "enem pagina do participante"]}, "ansiedade": {"volume": 27.9, "indice": 1.01, "top_uf": ["PI", "PB", "BA"], "em_alta": ["menos foco mais ansiedade"], "em_alta_uf": ["ansiedade generalizada", "escitalopram", "calmante natural para ansiedade", "remedio de ansiedade"]}}, "hashtags": ["#AnsiedadeGeneralizada", "#CartilhaEnem2026", "#EmpregoHomeOffice", "#EnemPpl", "#Escitalopram", "#IelJovemAprendiz", "#JovemAprendizItau", "#RemedioDeAnsiedade", "#SimuladoEnemSed"]}, "base": {"volume": {"Bolsa Família": 37.5, "CadÚnico": 1.4, "BPC": 6.5, "gás": 20.7, "cesta básica": 1.1}, "uf": {"PE": {"peso": 1.21, "interesse": 77.6, "prioridade": true}, "MA": {"peso": 1.22, "interesse": 73.0, "prioridade": true}, "PA": {"peso": 1.17, "interesse": 80.2, "prioridade": true}, "AL": {"peso": 1.44, "interesse": 61.6, "prioridade": true}, "BA": {"peso": 1.11, "interesse": 84.4, "prioridade": true}, "PB": {"peso": 1.22, "interesse": 69.4, "prioridade": true}, "PI": {"peso": 1.17, "interesse": 75.8, "prioridade": true}, "CE": {"peso": 1.1, "interesse": 76.6, "prioridade": true}, "AC": {"peso": 1.23, "interesse": 52.6, "prioridade": false}, "SE": {"peso": 1.17, "interesse": 64.6, "prioridade": true}, "RO": {"peso": 1.24, "interesse": 44.2, "prioridade": false}, "AM": {"peso": 1.04, "interesse": 72.0, "prioridade": true}, "RN": {"peso": 1.07, "interesse": 59.2, "prioridade": true}, "ES": {"peso": 1.1, "interesse": 53.6, "prioridade": false}, "MS": {"peso": 1.16, "interesse": 48.6, "prioridade": false}, "AP": {"peso": 0.98, "interesse": 69.0, "prioridade": false}, "MT": {"peso": 1.19, "interesse": 35.8, "prioridade": false}, "MG": {"peso": 1.04, "interesse": 49.2, "prioridade": false}, "GO": {"peso": 1.02, "interesse": 49.2, "prioridade": false}, "RR": {"peso": 1.04, "interesse": 44.2, "prioridade": false}, "RJ": {"peso": 0.85, "interesse": 60.0, "prioridade": false}, "TO": {"peso": 0.96, "interesse": 48.4, "prioridade": false}, "RS": {"peso": 0.9, "interesse": 43.6, "prioridade": false}, "PR": {"peso": 0.93, "interesse": 36.4, "prioridade": false}, "SC": {"peso": 0.94, "interesse": 33.0, "prioridade": false}, "SP": {"peso": 0.82, "interesse": 42.0, "prioridade": false}}, "uf_grupo": "AL", "peso_uf_grupo": 1.44, "termos": {"Bolsa Família": {"volume": 37.5, "indice": 1.07, "top_uf": ["BA", "MA", "PI"], "em_alta": ["reajuste do bolsa família", "reajuste bolsa família"], "em_alta_uf": ["o bolsa família aumentou", "bolsa família vai aumentar", "bolsa família outubro 2026", "calendário bolsa família outubro"]}, "CadÚnico": {"volume": 1.4, "indice": 1.05, "top_uf": ["AP", "BA", "PA"], "em_alta": [], "em_alta_uf": []}, "BPC": {"volume": 6.5, "indice": 1.06, "top_uf": ["CE", "PB", "MA"], "em_alta": [], "em_alta_uf": ["o que é bpc"]}, "gás": {"volume": 20.7, "indice": 1.02, "top_uf": ["MA", "BA", "CE"], "em_alta": [], "em_alta_uf": ["consultar o vale gás"]}, "cesta básica": {"volume": 1.1, "indice": 0.98, "top_uf": ["AM", "RJ", "PI"], "em_alta": [], "em_alta_uf": []}}, "hashtags": ["#ReajusteBolsaFamília"]}, "media": {"volume": {"dívida": 12.6, "juros": 22.6, "assalto": 3.4, "ônibus": 71.5, "carteira assinada": 7.3}, "uf": {"RJ": {"peso": 1.06, "interesse": 80.0, "prioridade": true}, "ES": {"peso": 1.06, "interesse": 77.4, "prioridade": true}, "TO": {"peso": 1.01, "interesse": 79.4, "prioridade": true}, "GO": {"peso": 1.16, "interesse": 73.0, "prioridade": true}, "MT": {"peso": 1.0, "interesse": 77.2, "prioridade": false}, "BA": {"peso": 0.93, "interesse": 79.2, "prioridade": false}, "AP": {"peso": 1.25, "interesse": 60.6, "prioridade": false}, "PA": {"peso": 0.86, "interesse": 79.4, "prioridade": false}, "AM": {"peso": 1.06, "interesse": 68.4, "prioridade": false}, "SP": {"peso": 1.16, "interesse": 64.4, "prioridade": false}, "RO": {"peso": 0.97, "interesse": 71.6, "prioridade": false}, "RN": {"peso": 0.99, "interesse": 70.8, "prioridade": false}, "MG": {"peso": 0.95, "interesse": 72.8, "prioridade": false}, "RR": {"peso": 1.22, "interesse": 50.6, "prioridade": false}, "SC": {"peso": 1.07, "interesse": 58.8, "prioridade": false}, "CE": {"peso": 0.8, "interesse": 76.0, "prioridade": false}, "PR": {"peso": 1.06, "interesse": 60.2, "prioridade": false}, "MA": {"peso": 0.77, "interesse": 75.0, "prioridade": false}, "RS": {"peso": 0.97, "interesse": 67.4, "prioridade": false}, "PB": {"peso": 0.74, "interesse": 73.6, "prioridade": false}, "PI": {"peso": 0.76, "interesse": 72.8, "prioridade": false}, "SE": {"peso": 0.9, "interesse": 65.8, "prioridade": false}, "PE": {"peso": 0.81, "interesse": 68.0, "prioridade": false}, "MS": {"peso": 0.92, "interesse": 59.0, "prioridade": false}, "AC": {"peso": 0.81, "interesse": 59.4, "prioridade": false}, "AL": {"peso": 0.7, "interesse": 52.4, "prioridade": false}}, "uf_grupo": "GO", "peso_uf_grupo": 1.16, "termos": {"dívida": {"volume": 12.6, "indice": 0.99, "top_uf": ["TO", "AP", "PA"], "em_alta": [], "em_alta_uf": []}, "juros": {"volume": 22.6, "indice": 1.01, "top_uf": ["DF", "RS", "SE"], "em_alta": ["fed juros", "juros futuros di", "taxa de juros americana", "curva de juros"], "em_alta_uf": ["fórmula juros compostos", "juros baixos empréstimo", "bacen taxa de juros", "formula de juros compostos"]}, "assalto": {"volume": 3.4, "indice": 1.0, "top_uf": ["PA", "RJ", "PI"], "em_alta": ["assalto em imperatriz"], "em_alta_uf": []}, "ônibus": {"volume": 71.5, "indice": 1.01, "top_uf": ["ES", "MG", "DF"], "em_alta": ["greve de ônibus df", "greve dos ônibus df", "ônibus de graça hoje", "greve de ônibus"], "em_alta_uf": ["greve ônibus", "greve de ônibus", "greve ônibus df", "greve de ônibus df"]}, "carteira assinada": {"volume": 7.3, "indice": 0.95, "top_uf": ["TO", "BA", "CE"], "em_alta": [], "em_alta_uf": []}}, "hashtags": ["#AssaltoEmImperatriz", "#CurvaDeJuros", "#FedJuros", "#FórmulaJurosCompostos", "#GreveDeÔnibus", "#GreveÔnibus", "#GreveÔnibusDf", "#JurosBaixosEmpréstimo", "#JurosEua", "#JurosFuturosDi"]}, "superior": {"volume": {"imposto de renda": 8.2, "dólar": 8.1, "corrupção": 3.0, "concurso": 74.9, "passaporte": 9.0}, "uf": {"RR": {"peso": 1.43, "interesse": 70.0, "prioridade": true}, "SC": {"peso": 1.42, "interesse": 62.2, "prioridade": true}, "AP": {"peso": 1.16, "interesse": 71.4, "prioridade": true}, "MT": {"peso": 1.2, "interesse": 66.2, "prioridade": true}, "MS": {"peso": 1.17, "interesse": 61.8, "prioridade": true}, "TO": {"peso": 1.18, "interesse": 60.6, "prioridade": true}, "GO": {"peso": 1.24, "interesse": 60.0, "prioridade": true}, "PR": {"peso": 1.44, "interesse": 57.2, "prioridade": false}, "RO": {"peso": 0.98, "interesse": 67.2, "prioridade": false}, "SP": {"peso": 1.28, "interesse": 58.4, "prioridade": true}, "ES": {"peso": 1.02, "interesse": 60.2, "prioridade": true}, "RJ": {"peso": 0.82, "interesse": 65.8, "prioridade": false}, "AM": {"peso": 1.04, "interesse": 57.2, "prioridade": false}, "MG": {"peso": 0.84, "interesse": 58.0, "prioridade": false}, "AC": {"peso": 0.99, "interesse": 56.8, "prioridade": false}, "RN": {"peso": 1.1, "interesse": 55.8, "prioridade": false}, "RS": {"peso": 0.91, "interesse": 57.0, "prioridade": false}, "AL": {"peso": 0.49, "interesse": 60.2, "prioridade": false}, "SE": {"peso": 0.69, "interesse": 59.4, "prioridade": false}, "PB": {"peso": 0.82, "interesse": 54.2, "prioridade": false}, "PE": {"peso": 0.76, "interesse": 56.0, "prioridade": false}, "PA": {"peso": 0.72, "interesse": 56.2, "prioridade": false}, "BA": {"peso": 0.78, "interesse": 52.2, "prioridade": false}, "CE": {"peso": 0.74, "interesse": 52.2, "prioridade": false}, "PI": {"peso": 0.74, "interesse": 49.6, "prioridade": false}, "MA": {"peso": 0.49, "interesse": 51.0, "prioridade": false}}, "uf_grupo": "PR", "peso_uf_grupo": 1.44, "termos": {"imposto de renda": {"volume": 8.2, "indice": 1.01, "top_uf": ["DF", "MT", "RS"], "em_alta": ["isenção imposto de renda"], "em_alta_uf": []}, "dólar": {"volume": 8.1, "indice": 1.02, "top_uf": ["RR", "AC", "MS"], "em_alta": ["dólar caiu", "conta em dólar", "valor do dolar hoje", "ibovespa hoje"], "em_alta_uf": ["dólar caiu", "valor do dolar hoje", "dólar hoje compra", "valor do dólar hj"]}, "corrupção": {"volume": 3.0, "indice": 0.96, "top_uf": ["AP", "DF", "AM"], "em_alta": [], "em_alta_uf": []}, "concurso": {"volume": 74.9, "indice": 0.95, "top_uf": ["AP", "TO", "DF"], "em_alta": [], "em_alta_uf": []}, "passaporte": {"volume": 9.0, "indice": 1.04, "top_uf": ["DF", "RR", "SP"], "em_alta": ["posso votar com passaporte", "pode votar com passaporte", "renovacao passaporte brasil", "agendamento passaporte pf"], "em_alta_uf": ["remarcar passaporte", "renovação de passaporte curitiba", "valor do passaporte 2026", "consulta passaporte pf"]}}, "hashtags": ["#AgendamentoPassaportePf", "#ConsultaPassaportePf", "#ContaEmDólar", "#DólarCaiu", "#DólarHojeCompra", "#IbovespaHoje", "#RemarcarPassaporte", "#RenovacaoPassaporteBrasil"]}}};
+// Theme pictograms (24×24, stroke = currentColor), drawn inline so the page needs no image files
+const ICON = {
+  saude: '<path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/><path d="M12 9v5M9.5 11.5h5"/>',
+  moeda: '<circle cx="12" cy="12" r="8"/><path d="M14.5 9.5c-.5-1-1.5-1.5-2.5-1.5-1.5 0-2.5.8-2.5 2s1 1.6 2.5 2 2.5.8 2.5 2-1 2-2.5 2c-1 0-2-.5-2.5-1.5M12 6.5V8M12 16v1.5"/>',
+  documento: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 15.5h5M10 9h2"/>',
+  pilula: '<rect x="3.5" y="9" width="17" height="6" rx="3" transform="rotate(-35 12 12)"/><path d="M10.2 9.4l3.6 5.2"/>',
+  digital: '<path d="M8 20c-1-2-1.5-4-1.5-7a5.5 5.5 0 0 1 11 0c0 2-.3 4-1 6"/><path d="M12 13c0 3 .3 5 1 7M9.5 13a2.5 2.5 0 0 1 5 0c0 1.5-.1 3-.5 4.5"/>',
+  escudo: '<path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/>',
+  maleta: '<rect x="3.5" y="7.5" width="17" height="12" rx="2"/><path d="M9 7.5V5.5h6v2M3.5 12.5h17"/>',
+  capelo: '<path d="M2.5 9.5L12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4c1.5 1.5 3.5 2 5.5 2s4-.5 5.5-2v-4M21.5 9.5v5"/>',
+  casa: '<path d="M4 11l8-6.5 8 6.5"/><path d="M6 9.5V20h12V9.5M10 20v-5h4v5"/>',
+  livro: '<path d="M4 5.5c2.5-1 5.5-1 8 .5v13c-2.5-1.5-5.5-1.5-8-.5zM20 5.5c-2.5-1-5.5-1-8 .5v13c2.5-1.5 5.5-1.5 8-.5z"/>',
+  mente: '<path d="M9 20v-3H7a2 2 0 0 1-2-2v-2l-1.5-1L5 9a7 7 0 0 1 14 1c0 2.5-1 4-2 5v5"/><path d="M10 9.5c.5-1 1.5-1.5 2.5-1 1 .4 1.2 1.6.5 2.4"/>',
+  familia: '<circle cx="8" cy="7" r="2.3"/><circle cx="16" cy="7" r="2.3"/><circle cx="12" cy="12.5" r="1.8"/><path d="M4 20v-5a4 4 0 0 1 4-4M20 20v-5a4 4 0 0 0-4-4M9.5 20v-2.5a2.5 2.5 0 0 1 5 0V20"/>',
+  chama: '<path d="M12 21c-3.5 0-6-2.3-6-5.5 0-3 2-4.5 3-7 .5 1.5 1.5 2.5 2.5 3 0-3 1-5.5 3-7.5.5 3 3.5 5.5 3.5 10 0 4-2.5 7-6 7z"/>',
+  cesta: '<path d="M3.5 10h17l-2 9.5h-13z"/><path d="M7.5 10l4-6M16.5 10l-4-6M9 13.5v3M12 13.5v3M15 13.5v3"/>',
+  porcento: '<circle cx="7.5" cy="7.5" r="2.3"/><circle cx="16.5" cy="16.5" r="2.3"/><path d="M18 6L6 18"/>',
+  grafico: '<path d="M4 20h16M4 20V4"/><path d="M7 15l4-4 3 3 5-6"/><path d="M15.5 8H19v3.5"/>',
+  onibus: '<rect x="5" y="3.5" width="14" height="14" rx="2.5"/><path d="M5 11h14M8 17.5V20M16 17.5V20"/><circle cx="8.5" cy="14.2" r=".9"/><circle cx="15.5" cy="14.2" r=".9"/>',
+  balanca: '<path d="M12 4v16M8 20h8M5 7h14"/><path d="M5 7l-2.5 6a2.5 2.5 0 0 0 5 0zM19 7l-2.5 6a2.5 2.5 0 0 0 5 0z"/>',
+  recibo: '<path d="M6 3h12v18l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5L6 21z"/><path d="M9 8h6M9 11.5h6M9 15h4"/>',
+  aviao: '<path d="M3 13.5l7-1.5 4.5-7.5c.8-1.3 2.8-.9 2.6.7L16 12l4.5 1.5-.5 2-5-.5-3 4.5H10l1-4.5-7-.5z"/>',
+};
+const icon = (k, size = 40) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k] || ICON.documento}</svg>`;
+const hashtag = t => "#" + t.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join("");
 
 const nf = new Intl.NumberFormat("pt-BR");
 const pf = (v, d = 1) => v.toLocaleString("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -1146,6 +1361,59 @@ $("t-rank").addEventListener("click", ev => {
 });
 $("rank-more").onclick = () => { rankLimit += 50; renderRanking(); };
 
+// ---------- kit: themes carousel + group × searches cross ----------
+function temasCarousel(g) {
+  const tg = TG && TG.grupos[g.id];
+  const vols = tg ? Object.values(tg.termos).map(t => t.volume) : [];
+  const vmax = Math.max(1, ...vols);
+  const cards = g.temas.map((t, i) => {
+    const d = tg && t.termo ? tg.termos[t.termo] : null;
+    const tag = hashtag(t.termo || t.tema);
+    const trendsUrl = `https://trends.google.com/trends/explore?geo=${S.uf ? "BR-" + S.uf : "BR"}&date=today%201-m&q=${encodeURIComponent(t.termo || t.tema)}`;
+    return `<article class="tcard" aria-roledescription="slide" aria-label="${i + 1} de ${g.temas.length}: ${esc(t.tema)}">
+      <span class="ic">${icon(t.icone)}</span>
+      <h4>${esc(t.tema)}</h4>
+      ${d ? `<span class="k">Busca no Google · “${esc(t.termo)}”</span>
+        <div class="vol" title="Volume relativo entre os temas do grupo"><i style="width:${100 * d.volume / vmax}%"></i></div>
+        <span class="k">Onde vivem os ausentes do grupo: <b style="color:var(--ink)">${pf(d.indice, 2)}×</b> ${d.indice >= 1.03 ? '<span class="badge up">▲ mais buscado</span>' : d.indice <= 0.97 ? '<span class="badge dn">▼ menos buscado</span>' : '<span class="badge eq">● na média</span>'}</span>
+        ${d.em_alta_uf.length ? `<span class="k">Em alta em ${tg.uf_grupo}, onde o grupo mais pesa</span><ul>${d.em_alta_uf.slice(0, 3).map(q => `<li>${esc(q)}</li>`).join("")}</ul>`
+          : d.em_alta.length ? `<span class="k">Em alta no Brasil</span><ul>${d.em_alta.slice(0, 3).map(q => `<li>${esc(q)}</li>`).join("")}</ul>` : `<span class="none">Nenhuma busca relacionada em alta no período.</span>`}`
+      : `<span class="none">Tema das pesquisas de opinião, sem termo medido no Google Trends.</span>`}
+      <div class="acts"><button type="button" class="btn sm" data-copy="${esc(tag)}">Copiar ${esc(tag)}</button><a href="${trendsUrl}" target="_blank" rel="noopener">Trends ↗</a></div>
+    </article>`;
+  }).join("");
+  return `<div class="blk carousel" data-car>
+    <div class="car-head"><h3>Temas que pesam ${TG ? `<span class="tag inf">Google Trends · ${esc(TG.periodo)}</span>` : ""}</h3>
+      <div class="car-nav"><button type="button" class="btn" data-car-step="-1" aria-label="Tema anterior">‹</button><span data-car-pos>1 de ${g.temas.length}</span><button type="button" class="btn" data-car-step="1" aria-label="Próximo tema">›</button></div></div>
+    <div class="car-track" tabindex="0" role="region" aria-label="Temas que pesam, use as setas para navegar">${cards}</div>
+    ${tg ? `<p class="note">O Google Trends não separa buscas por idade, escolaridade ou classe. Para ler as buscas <b>deste grupo</b>, usamos onde os ausentes dele vivem: o índice pondera o interesse de cada estado pelo número de ausentes do grupo ali e compara com todos os ausentes. As buscas em alta vêm de ${tg.uf_grupo}, o estado em que o grupo pesa mais (${pf(tg.peso_uf_grupo, 2)}× a média). Os índices ficam perto de 1× porque os ausentes de cada grupo estão espalhados pelo país: o que separa os grupos é idade e escolaridade, não o lugar. A barra compara o volume dos temas do grupo entre si.</p>` : ""}
+  </div>`;
+}
+function cruzamento(g) {
+  const tg = TG && TG.grupos[g.id]; if (!tg) return "";
+  const ufs = Object.entries(tg.uf).slice(0, 6);
+  return `<div class="blk"><h3>Onde o grupo e os temas se cruzam <span class="tag inf">estimativa</span></h3>
+    <p class="note">Estados em que este grupo pesa mais entre os ausentes do que no Brasil e em que os temas dele são mais buscados no Google.</p>
+    <div class="dtable"><table style="min-width:0"><thead><tr><th>UF</th><th class="n">Peso do grupo</th><th class="n">Interesse de busca (0–100)</th><th></th></tr></thead><tbody>
+    ${ufs.map(([u, x]) => `<tr><td>${u}</td><td class="n">${pf(x.peso, 2)}×</td><td class="n">${pf(x.interesse, 0)}</td><td>${x.prioridade ? '<span class="badge up">▲ cruzamento forte</span>' : ""}</td></tr>`).join("")}
+    </tbody></table></div>
+    ${tg.hashtags.length ? `<div class="chips" style="margin-top:6px">${tg.hashtags.map(h => `<span class="chip">${esc(h)}</span>`).join("")}<button type="button" class="btn sm" data-copy="${esc(tg.hashtags.join(" "))}">Copiar hashtags</button></div>
+    <p class="note">Hashtags montadas a partir de buscas em alta perto dos temas do grupo. Buscas que citam candidatos ou políticos foram retiradas para manter o kit apartidário. Confira o uso real na rede antes de publicar.</p>` : ""}
+  </div>`;
+}
+function wireCarousel(root) {
+  root.querySelectorAll("[data-car]").forEach(car => {
+    const track = car.querySelector(".car-track"), pos = car.querySelector("[data-car-pos]");
+    const cards = [...track.children];
+    const current = () => Math.round(track.scrollLeft / (cards[0].offsetWidth + 14));
+    const update = () => { pos.textContent = `${Math.min(cards.length, current() + 1)} de ${cards.length}`; };
+    const step = d => track.scrollBy({ left: d * (cards[0].offsetWidth + 14), behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    car.querySelectorAll("[data-car-step]").forEach(b => b.onclick = () => step(+b.dataset.carStep));
+    track.addEventListener("keydown", ev => { if (ev.key === "ArrowRight") { step(1); ev.preventDefault(); } if (ev.key === "ArrowLeft") { step(-1); ev.preventDefault(); } });
+    track.addEventListener("scroll", update, { passive: true });
+  });
+}
+
 // ---------- kit ----------
 function renderKit() {
   $("gchoose").innerHTML = G.grupos.map(g => `<button type="button" aria-pressed="${S.g === g.id}" data-g="${g.id}"><i class="sw" style="background:${gcolor(g.id)}"></i>${esc(g.nome)}</button>`).join("");
@@ -1185,7 +1453,8 @@ function renderKit() {
       <div class="blk"><h3>Mensagens cívicas prontas</h3>
         ${g.mensagens.map(m => `<div class="msg"><span>${esc(m)}</span><span><button type="button" class="btn sm" data-copy="${esc(m)}">Copiar</button></span></div>`).join("")}</div>
       <div class="dores"><h3>Dores deste grupo</h3><ul>${g.dores.map(d => `<li>${esc(d)}</li>`).join("")}</ul></div>
-      <div class="blk"><h3>Temas que pesam</h3><div class="chips">${g.temas.map(t => `<span class="chip">${esc(t)}</span>`).join("")}</div></div>
+      ${temasCarousel(g)}
+      ${cruzamento(g)}
       <details class="vies"><summary>Inclinação política estimada</summary>
         <p class="note">No Brasil, resultado do 1º turno nos municípios onde vivem os ausentes deste grupo (média ponderada): ${CAND.map((c, j) => `${NOMES[c]} <b class="num">${pf(pcts[j])}%</b>`).join(" · ")}</p>
         <div class="leanbar" aria-hidden="true">${pcts.map((p, j) => `<div style="flex:${p} 1 0;background:${css(j ? "--ink-3" : "--ink-2")}"></div>`).join("")}<div style="flex:${Math.max(0, 100 - pcts[0] - pcts[1])} 1 0;background:var(--rule)"></div></div>
@@ -1194,6 +1463,7 @@ function renderKit() {
       <p class="fontes-g">Fontes: ${[...new Set([...g.vies_fontes, ...g.fontes])].map(link).join("; ")}.</p>
     </section>`;
   }
+  wireCarousel($("kit-body"));
   // trends snapshot
   $("trends").innerHTML = TR && TR.itens.length ? `
     <div class="src"><b>Google Trends</b> · buscas do dia no Brasil · coletado em ${esc(TR.coletado_em)}</div>

@@ -23,6 +23,7 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python pipeline/02_build.py      # -> data/municipios.csv, data/perfil.csv
 .venv/bin/python pipeline/03_analyze.py    # -> site/data.json
 .venv/bin/python pipeline/05_trends.py     # optional: Google daily trending snapshot -> site/trends.json
+.venv/bin/python pipeline/06_group_trends.py # optional: Google Trends per group (slow, rate-limited, cached) -> site/trends_grupos.json
 .venv/bin/python pipeline/04_export.py     # -> site/index.html
 ```
 
