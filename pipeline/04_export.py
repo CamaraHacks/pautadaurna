@@ -11,10 +11,6 @@ html = (SITE / "template.html").read_text()
 html = html.replace("/*__DATA__*/null", (SITE / "data.json").read_text())
 html = html.replace("/*__TOPO__*/null", (ROOT / "data" / "raw" / "malha_municipios.topojson").read_text())
 html = html.replace("/*__GRUPOS__*/null", (SITE / "grupos.json").read_text())
-trends = SITE / "trends.json"  # optional snapshot from 05_trends.py
-tg = SITE / "trends_grupos.json"  # optional, from 06_group_trends.py
-html = html.replace("/*__TRENDS_GRUPOS__*/null", tg.read_text() if tg.exists() else "null")
-html = html.replace("/*__TRENDS__*/null", trends.read_text() if trends.exists() else "null")
 assert "/*__" not in html, "unfilled placeholder"
 (SITE / "index.html").write_text(html)
 print(f"site/index.html: {len(html) / 1e6:.2f} MB")

@@ -38,7 +38,8 @@ Type: **Archivo** (condensed, display), **Source Serif 4** (reading), **IBM Plex
 | **Badge** | State in shape and word, not color alone: ▲ acima da média, ▼ abaixo, ● na média. |
 | **DataTable** | Sortable headers (`aria-sort`), city names are buttons that open the city, "Mostrar mais". |
 | **Group chooser / group cards** | Pressed state uses an underline, not only color. |
-| **Chip** | Topic (plain) or keyword (`#`, with "Trends ↗" link). |
+| **Chip** | Topic (plain) or keyword (`#`). |
+| **Theme carousel** | One card per theme with an inline SVG pictogram, ‹ › buttons, position counter, arrow keys, scroll-snap on touch. |
 | **Copy button + Toast** | Every message and keyword set is one click to copy; a toast confirms "Copiado". |
 | **Tag** | `estimativa`, `hipótese`, `inferência`: marks anything that is our reading, not measured data. |
 | **Details** | Sensitive or secondary content (political lean) stays collapsed by default. |

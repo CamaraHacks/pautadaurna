@@ -246,8 +246,6 @@ details.vies[open] summary { margin-bottom: 10px; }
 .leanbar { display: flex; height: 8px; gap: 2px; border-radius: 2px; overflow: hidden; max-width: 360px; margin-block: 6px; }
 .fontes-g { font-size: 0.8rem; color: var(--ink-3); }
 .fontes-g a { color: var(--ink-2); }
-.trends ol { margin: 0; padding-left: 22px; display: grid; gap: 6px; font-size: 0.92rem; }
-.trends .q { font-family: var(--mono); font-size: 0.8rem; color: var(--ink-3); }
 
 /* Notice + empty state */
 .notice { border-left: 3px solid var(--accent); padding: 10px 14px; background: var(--panel); font-size: 0.92rem; color: var(--ink-2); border-radius: 0 6px 6px 0; }
@@ -406,7 +404,6 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
       <div class="gchoose" id="gchoose" role="group" aria-label="Grupo"></div>
     </section>
     <div id="kit-body"></div>
-    <section class="trends" id="trends"></section>
   </div>
 
   <!-- ================= MÉTODO ================= -->
@@ -447,7 +444,6 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
         <li><a href="https://reutersinstitute.politics.ox.ac.uk/es/digital-news-report/2025/brasil">Reuters Institute, Digital News Report 2025, Brasil</a></li>
         <li><a href="https://jaironicolau.substack.com/p/quatro-topicos-sobre-a-abstencao">Jairo Nicolau, “Quatro tópicos sobre a abstenção eleitoral de 2026”</a></li>
         <li><a href="https://gife.org.br/abstencao-eleitoral-solidao-exaustao-vinculos-comunitarios/">Avaaz e Datafolha, Termômetro do Bem Viver</a></li>
-        <li><a href="https://trends.google.com/trending?geo=BR">Google Trends</a>: buscas do dia no Brasil e, por grupo, volume, estados e buscas em alta dos termos de cada tema (últimos 30 dias)</li>
         <li><a href="https://github.com/betafcc/Municipios-Brasileiros-TSE">Tabela de correspondência TSE ↔ IBGE</a></li>
       </ul>
     </footer>
@@ -461,8 +457,6 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
 const D = /*__DATA__*/null;
 const TOPO = /*__TOPO__*/null;
 const G = /*__GRUPOS__*/null;
-const TR = /*__TRENDS__*/null;
-const TG = /*__TRENDS_GRUPOS__*/null;
 // Theme pictograms (24×24, stroke = currentColor), drawn inline so the page needs no image files
 const ICON = {
   saude: '<path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/><path d="M12 9v5M9.5 11.5h5"/>',
@@ -834,42 +828,19 @@ $("rank-more").onclick = () => { rankLimit += 50; renderRanking(); };
 
 // ---------- kit: themes carousel + group × searches cross ----------
 function temasCarousel(g) {
-  const tg = TG && TG.grupos[g.id];
-  const vols = tg ? Object.values(tg.termos).map(t => t.volume) : [];
-  const vmax = Math.max(1, ...vols);
   const cards = g.temas.map((t, i) => {
-    const d = tg && t.termo ? tg.termos[t.termo] : null;
     const tag = hashtag(t.termo || t.tema);
-    const trendsUrl = `https://trends.google.com/trends/explore?geo=${S.uf ? "BR-" + S.uf : "BR"}&date=today%201-m&q=${encodeURIComponent(t.termo || t.tema)}`;
     return `<article class="tcard" aria-roledescription="slide" aria-label="${i + 1} de ${g.temas.length}: ${esc(t.tema)}">
       <span class="ic">${icon(t.icone)}</span>
       <h4>${esc(t.tema)}</h4>
-      ${d ? `<span class="k">Busca no Google · “${esc(t.termo)}”</span>
-        <div class="vol" title="Volume relativo entre os temas do grupo"><i style="width:${100 * d.volume / vmax}%"></i></div>
-        <span class="k">Onde vivem os ausentes do grupo: <b style="color:var(--ink)">${pf(d.indice, 2)}×</b> ${d.indice >= 1.03 ? '<span class="badge up">▲ mais buscado</span>' : d.indice <= 0.97 ? '<span class="badge dn">▼ menos buscado</span>' : '<span class="badge eq">● na média</span>'}</span>
-        ${d.em_alta_uf.length ? `<span class="k">Em alta em ${tg.uf_grupo}, onde o grupo mais pesa</span><ul>${d.em_alta_uf.slice(0, 3).map(q => `<li>${esc(q)}</li>`).join("")}</ul>`
-          : d.em_alta.length ? `<span class="k">Em alta no Brasil</span><ul>${d.em_alta.slice(0, 3).map(q => `<li>${esc(q)}</li>`).join("")}</ul>` : `<span class="none">Nenhuma busca relacionada em alta no período.</span>`}`
-      : `<span class="none">Tema das pesquisas de opinião, sem termo medido no Google Trends.</span>`}
-      <div class="acts"><button type="button" class="btn sm" data-copy="${esc(tag)}">Copiar ${esc(tag)}</button><a href="${trendsUrl}" target="_blank" rel="noopener">Trends ↗</a></div>
+      <div class="acts"><button type="button" class="btn sm" data-copy="${esc(tag)}">Copiar ${esc(tag)}</button></div>
     </article>`;
   }).join("");
   return `<div class="blk carousel" data-car>
-    <div class="car-head"><h3>Temas que pesam ${TG ? `<span class="tag inf">Google Trends · ${esc(TG.periodo)}</span>` : ""}</h3>
+    <div class="car-head"><h3>Temas que pesam</h3>
       <div class="car-nav"><button type="button" class="btn" data-car-step="-1" aria-label="Tema anterior">‹</button><span data-car-pos>1 de ${g.temas.length}</span><button type="button" class="btn" data-car-step="1" aria-label="Próximo tema">›</button></div></div>
     <div class="car-track" tabindex="0" role="region" aria-label="Temas que pesam, use as setas para navegar">${cards}</div>
-    ${tg ? `<p class="note">O Google Trends não separa buscas por idade, escolaridade ou classe. Para ler as buscas <b>deste grupo</b>, usamos onde os ausentes dele vivem: o índice pondera o interesse de cada estado pelo número de ausentes do grupo ali e compara com todos os ausentes. As buscas em alta vêm de ${tg.uf_grupo}, o estado em que o grupo pesa mais (${pf(tg.peso_uf_grupo, 2)}× a média). Os índices ficam perto de 1× porque os ausentes de cada grupo estão espalhados pelo país: o que separa os grupos é idade e escolaridade, não o lugar. A barra compara o volume dos temas do grupo entre si.</p>` : ""}
-  </div>`;
-}
-function cruzamento(g) {
-  const tg = TG && TG.grupos[g.id]; if (!tg) return "";
-  const ufs = Object.entries(tg.uf).slice(0, 6);
-  return `<div class="blk"><h3>Onde o grupo e os temas se cruzam <span class="tag inf">estimativa</span></h3>
-    <p class="note">Estados em que este grupo pesa mais entre os ausentes do que no Brasil e em que os temas dele são mais buscados no Google.</p>
-    <div class="dtable"><table style="min-width:0"><thead><tr><th>UF</th><th class="n">Peso do grupo</th><th class="n">Interesse de busca (0–100)</th><th></th></tr></thead><tbody>
-    ${ufs.map(([u, x]) => `<tr><td>${u}</td><td class="n">${pf(x.peso, 2)}×</td><td class="n">${pf(x.interesse, 0)}</td><td>${x.prioridade ? '<span class="badge up">▲ cruzamento forte</span>' : ""}</td></tr>`).join("")}
-    </tbody></table></div>
-    ${tg.hashtags.length ? `<div class="chips" style="margin-top:6px">${tg.hashtags.map(h => `<span class="chip">${esc(h)}</span>`).join("")}<button type="button" class="btn sm" data-copy="${esc(tg.hashtags.join(" "))}">Copiar hashtags</button></div>
-    <p class="note">Hashtags montadas a partir de buscas em alta perto dos temas do grupo. Buscas que citam candidatos ou políticos foram retiradas para manter o kit apartidário. Confira o uso real na rede antes de publicar.</p>` : ""}
+    <p class="note">Temas das pesquisas de opinião (Datafolha e Quaest) e das dores do grupo.</p>
   </div>`;
 }
 function wireCarousel(root) {
@@ -903,7 +874,6 @@ function renderKit() {
     const F = G.fontes, link = k => `<a href="${F[k].url}" target="_blank" rel="noopener">${esc(F[k].nome)}</a>`;
     const kRatio = S.c ? (100 * x.ab / tot) / (100 * BR_SIZES[g.i].ab / BR_TOT) : null;
     const top = !S.c ? D.municipios.filter(r => r[11] && (!S.uf || r[2] === S.uf)).sort((a, b) => b[11][2 * g.i + 1] - a[11][2 * g.i + 1]).slice(0, 8) : [];
-    const trendsUrl = k => `https://trends.google.com/trends/explore?geo=${S.uf ? "BR-" + S.uf : "BR"}&date=today%201-m&q=${encodeURIComponent(k)}`;
     const pcts = CAND.map(c => D.lean[g.id][c]);
     $("kit-body").innerHTML = `<section class="kit">
       <div class="kit-head">
@@ -919,13 +889,11 @@ function renderKit() {
       <div class="blk"><h3>Redes e formatos</h3><div class="fmt">${g.formatos.map(f => `
         <div><span class="rede">${esc(f.rede)}</span><span>${esc(f.formato)}<span class="ex">${esc(f.exemplo)}</span></span><span><button type="button" class="btn sm" data-copy="${esc(f.exemplo.replace(/^“|”$/g, ""))}">Copiar</button></span></div>`).join("")}</div></div>
       <div class="blk"><h3>Palavras-chave <span class="tag inf">hipótese</span> <button type="button" class="btn sm" data-copy="${esc(g.palavras_chave.join(", "))}">Copiar todas</button></h3>
-        <div class="chips">${g.palavras_chave.map(k => `<span class="chip kw"><span>${esc(k)}</span><a href="${trendsUrl(k)}" target="_blank" rel="noopener" title="Ver buscas no Google Trends${S.uf ? " em " + S.uf : ""}">Trends ↗</a></span>`).join("")}</div>
-        <p class="note">“Trends ↗” abre o Google Trends dos últimos 30 dias${S.uf ? " em " + S.uf : " no Brasil"} para conferir se o termo é buscado.</p></div>
+        <div class="chips">${g.palavras_chave.map(k => `<span class="chip kw"><span>${esc(k)}</span></span>`).join("")}</div></div>
       <div class="blk"><h3>Mensagens cívicas prontas</h3>
         ${g.mensagens.map(m => `<div class="msg"><span>${esc(m)}</span><span><button type="button" class="btn sm" data-copy="${esc(m)}">Copiar</button></span></div>`).join("")}</div>
       <div class="dores"><h3>Dores deste grupo</h3><ul>${g.dores.map(d => `<li>${esc(d)}</li>`).join("")}</ul></div>
       ${temasCarousel(g)}
-      ${cruzamento(g)}
       <details class="vies"><summary>Inclinação política estimada</summary>
         <p class="note">No Brasil, resultado do 1º turno nos municípios onde vivem os ausentes deste grupo (média ponderada): ${CAND.map((c, j) => `${NOMES[c]} <b class="num">${pf(pcts[j])}%</b>`).join(" · ")}</p>
         <div class="leanbar" aria-hidden="true">${pcts.map((p, j) => `<div style="flex:${p} 1 0;background:${css(j ? "--ink-3" : "--ink-2")}"></div>`).join("")}<div style="flex:${Math.max(0, 100 - pcts[0] - pcts[1])} 1 0;background:var(--rule)"></div></div>
@@ -935,12 +903,6 @@ function renderKit() {
     </section>`;
   }
   wireCarousel($("kit-body"));
-  // trends snapshot
-  $("trends").innerHTML = TR && TR.itens.length ? `
-    <div class="src"><b>Google Trends</b> · buscas do dia no Brasil · coletado em ${esc(TR.coletado_em)}</div>
-    <h3>Assuntos brasileiros em alta</h3>
-    <p class="note">Só entram assuntos cujas notícias vêm de veículos brasileiros; jogos e notícias do exterior ficam de fora. Conteúdo que conversa com o assunto do dia circula mais. É uma foto do momento da coleta; para ver o atual, abra o <a href="https://trends.google.com/trending?geo=BR" target="_blank" rel="noopener">Google Trends</a>.</p>
-    <ol>${TR.itens.map(i => `<li><strong>${esc(i.termo)}</strong> <span class="q">${esc(i.buscas || "")} buscas</span>${i.noticia ? `<br><span class="note">${i.url ? `<a href="${esc(i.url)}" target="_blank" rel="noopener">${esc(i.noticia)}</a>` : esc(i.noticia)}${i.fonte ? " · " + esc(i.fonte) : ""}</span>` : ""}</li>`).join("")}</ol>` : "";
 }
 $("gchoose").addEventListener("click", ev => { const b = ev.target.closest("[data-g]"); if (b) go({ g: S.g === b.dataset.g ? "" : b.dataset.g }); });
 $("kit-body").addEventListener("click", ev => {
