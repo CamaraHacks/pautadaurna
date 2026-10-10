@@ -4,7 +4,7 @@ Quem deixou de votar no 1º turno da eleição presidencial de 2026 (4 de outubr
 
 O site é para **criadores de conteúdo** que querem trazer eleitores ausentes de volta à urna. Ele cruza dados do TSE com o Censo 2022 do IBGE para os 5.571 municípios, desce até a zona eleitoral nas cidades grandes e divide os ausentes em cinco grupos. Cada grupo tem um kit com redes, formatos, palavras-chave, temas e mensagens prontas para copiar.
 
-**É apartidário.** As mensagens explicam como e onde votar e não pedem voto em ninguém. Os candidatos aparecem em cores neutras, sem relação com partidos.
+**Tem lado: defendemos a democracia e, por isso, apoiamos Lula no 2º turno.** Isso não muda os números: cada dado vem de fonte oficial, com link, e as propostas dos dois candidatos são citadas dos planos de governo registrados no TSE, com a página. Quando um plano não trata de um tema, o site diz isso, sem atribuir intenção.
 
 A página (`site/index.html`) é um único arquivo com dados e mapa embutidos: funciona offline, em qualquer servidor estático e no GitHub Pages.
 
@@ -33,10 +33,10 @@ Uma página com quatro abas e um filtro global (cidade, estado e grupo) que fica
 
 - **Panorama:** a história nacional, com mapa por município, perfil por idade e escolaridade e os motivos declarados para não votar.
 - **Onde agir:**
-  - ranking de cidades por número de ausentes, com a comparação entre ausentes e a diferença de votos;
-  - visão da cidade, com o peso de cada grupo e as zonas eleitorais.
-- **Kit de redes:** por grupo, redes e formatos, palavras-chave, mensagens cívicas, dores em destaque e um carrossel de temas com buscas do Google Trends.
-- **Método:** limites e guia de uso.
+  - ranking de cidades ou de regiões (Regiões Imediatas do IBGE, como a Baixada Santista), com ausentes, mobilizáveis e saldo pró-Lula;
+  - visão da cidade, com o peso de cada grupo, os setores (Centro, Norte, Sul, Leste, Oeste) nas cidades com mais de 500 mil eleitores, os locais de votação ordenados por saldo e as zonas eleitorais.
+- **Kit de redes:** por grupo, dores em destaque, pautas que comparam os planos de Lula e Flávio (com fato oficial, página do plano e link para o [Mapa do Segundo Turno](https://mapasegundoturno.com.br)), imagem pronta para post, redes e formatos, mensagens cívicas e um carrossel de temas com buscas do Google Trends.
+- **Método** e **Sobre:** limites, posição editorial, regras e autoria.
 
 O sistema visual está documentado em `DESIGN.md`.
 
@@ -48,6 +48,8 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python pipeline/02_build.py         # -> data/municipios.csv, perfil.csv, segmentos.csv, zonas.csv, votos.csv
 .venv/bin/python pipeline/03_analyze.py       # -> site/data.json
 .venv/bin/python pipeline/06_group_trends.py  # Google Trends por grupo via SerpApi (SERPAPI_KEY; rodízio diário, até 95/mês)
+.venv/bin/python pipeline/07_secoes.py        # seções 2026 (comparecimento + votos + locais) -> data/locais.csv (~350 MB de download)
+.venv/bin/python pipeline/08_regioes.py       # regiões imediatas, setores das cidades grandes, saldo -> site/regioes.json, site/locais/<UF>.json
 .venv/bin/python pipeline/04_export.py        # -> site/index.html
 ```
 
@@ -69,6 +71,10 @@ GitHub Pages com domínio próprio, atualizado todo dia por GitHub Actions: veja
   - `perfil_comparecimento_abstencao` 2022.
 - **IBGE, SIDRA:** tabelas do Censo 2022 10295 (renda), 10211 (situação do domicílio), 9543 (alfabetização) e 10253 (ocupação), e a malha municipal.
 - **Tabela TSE ↔ IBGE:** [betafcc/Municipios-Brasileiros-TSE](https://github.com/betafcc/Municipios-Brasileiros-TSE), mais Boa Esperança do Norte (MT), instalado em 2025 e incluído à mão.
+- **TSE, por seção (2026):** `detalhe_votacao_secao`, `votacao_secao_2026_BR` e `eleitorado_local_votacao`.
+- **IBGE:** Regiões Geográficas Imediatas (API de localidades). Coordenadas das sedes municipais: [kelvins/municipios-brasileiros](https://github.com/kelvins/municipios-brasileiros).
+- **Planos de governo registrados no TSE:** cópias integrais publicadas pelo Poder360.
+- **Fatos oficiais das pautas:** IBGE (PNAD Contínua), Planalto (Decreto 12.797/2025 e Lei 15.270/2025), Secom e Ministério da Saúde (Farmácia Popular), MDS (FAO/SOFI 2025) e Agência Brasil (PEC da escala 6x1).
 - **Pesquisas:**
   - Datafolha 2–3/out/2026 (BR-01708/2026), por idade e renda;
   - Datafolha 6–7/out/2026 (BR-02949/2026), motivos da abstenção;
@@ -77,6 +83,14 @@ GitHub Pages com domínio próprio, atualizado todo dia por GitHub Actions: veja
 - **Uso de redes:** Reuters Institute, Digital News Report 2025, Brasil.
 - **Análise de contexto:** Jairo Nicolau.
 - **Buscas:** Google Trends, via SerpApi.
+
+### Saldo pró-Lula
+
+Para cada local de votação, calcula-se: ausentes mobilizáveis × (Lula% − Flávio%) dos votos válidos daquele local no 1º turno. Os mobilizáveis são os ausentes sem a fatia de 70+ do município. A conta supõe que quem faltou votaria como os vizinhos de seção, então serve para priorizar onde agir, não como previsão. Os totais por seção batem com os do município (157.828.968 aptos e 32.894.899 ausentes).
+
+### Medição de uso
+
+O site conta visitas e ações (copiar, baixar imagem, compartilhar) com o [GoatCounter](https://www.goatcounter.com): sem cookies e sem dado pessoal. Para ativar, defina a variável `GOATCOUNTER` do repositório com o código do site (Settings → Secrets and variables → Actions → Variables). Sem ela, nada é medido.
 
 ## Limites
 

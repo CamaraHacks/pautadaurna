@@ -3,3 +3,4 @@ data/raw/
 __pycache__/
 .env
 logs/
+data/locais.csv

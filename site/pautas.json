@@ -1,0 +1,207 @@
+{
+ "planos": {
+  "lula": {
+   "nome": "Lula (PT)",
+   "doc": "Diretrizes para o Programa de Transformação do Brasil, plano registrado no TSE (84 p.)",
+   "url": "https://static.poder360.com.br/uploads/2026/08/Programa-Governo-LULA-2026.pdf"
+  },
+  "flavio": {
+   "nome": "Flávio Bolsonaro (PL)",
+   "doc": "Para o Brasil Vencer o Atraso, plano registrado no TSE (76 p.)",
+   "url": "https://static.poder360.com.br/uploads/2026/08/plano-flavio.pdf"
+  },
+  "tse": "https://www.tse.jus.br/eleicoes/eleicoes-2026-content/propostas-de-governo-dos-candidatos-ao-cargo-de-presidente-da-republica-eleicoes-2026"
+ },
+ "fontes": {
+  "farmacia": {
+   "nome": "Secom/Presidência, 14/02/2025: todos os medicamentos do Farmácia Popular gratuitos",
+   "url": "https://www.gov.br/secom/pt-br/acompanhe-a-secom/noticias/2025/02/todos-os-medicamentos-do-farmacia-popular-serao-gratuitos-a-toda-a-populacao"
+  },
+  "salario": {
+   "nome": "Decreto nº 12.797/2025: salário mínimo de R$ 1.621 em 2026",
+   "url": "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/decreto/D12797.htm"
+  },
+  "pnad": {
+   "nome": "IBGE, PNAD Contínua: desocupação de 5,4% no 2º trimestre de 2026",
+   "url": "https://agenciadenoticias.ibge.gov.br/agencia-sala-de-imprensa/2013-agencia-de-noticias/releases/47774-pnad-continua-trimestral-desocupacao-cai-em-13-das-27-ufs-no-2-trimestre-de-2026"
+  },
+  "pec6x1": {
+   "nome": "Agência Brasil, 27/05/2026: Câmara aprova em dois turnos a PEC pelo fim da escala 6x1",
+   "url": "https://agenciabrasil.ebc.com.br/politica/noticia/2026-05/camara-aprova-em-dois-turnos-pec-pelo-fim-da-escala-6x1"
+  },
+  "fome": {
+   "nome": "MDS: relatório da ONU (FAO, SOFI 2025) confirma o Brasil fora do Mapa da Fome",
+   "url": "https://www.gov.br/mds/pt-br/noticias/relatorio-da-onu-confirma-que-brasil-permanece-fora-do-mapa-da-fome-e-aponta-melhora-em-indicadores"
+  },
+  "ir": {
+   "nome": "Lei nº 15.270/2025: isenção do IR para quem ganha até R$ 5 mil",
+   "url": "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/L15270.htm"
+  }
+ },
+ "mapa": "https://mapasegundoturno.com.br",
+ "grupos": {
+  "idosos": [
+   {
+    "dor": "Preço dos remédios",
+    "fato": "Desde 14 de fevereiro de 2025, os 41 medicamentos e itens do Farmácia Popular, inclusive fraldas geriátricas, são de graça.",
+    "fonte": "farmacia",
+    "lula": "Manter o Farmácia Popular 100% gratuito, com revisão dos medicamentos e fraldas geriátricas, e ampliar os locais de retirada nas periferias.",
+    "lula_p": 36,
+    "flavio": "Criar entrega de remédio em domicílio para idosos, pessoas com deficiência e doentes crônicos. O plano não cita o Farmácia Popular.",
+    "flavio_p": 38,
+    "mapa_url": "/programas-sociais",
+    "mapa_titulo": "Programas sociais"
+   },
+   {
+    "dor": "Aposentadoria que não acompanha os preços",
+    "fato": "O salário mínimo de 2026 é R$ 1.621, com 2,5% de ganho acima da inflação. É o piso das aposentadorias do INSS.",
+    "fonte": "salario",
+    "lula": "Manter a política de valorização do salário mínimo, que elevou o poder de compra de aposentados e pensionistas.",
+    "lula_p": 77,
+    "flavio": "Reeditar um pacote antifraude na Previdência e mudar a governança do consignado do INSS. O plano não menciona política de valorização do salário mínimo.",
+    "flavio_p": 72,
+    "mapa_url": "/programas-sociais",
+    "mapa_titulo": "Programas sociais"
+   },
+   {
+    "dor": "Fila do INSS",
+    "lula": "Seguir enfrentando as filas do INSS e reduzir o tempo de espera, voltando à situação em que o trabalhador recebia uma carta ao cumprir os requisitos.",
+    "lula_p": 77,
+    "flavio": "Digitalizar os processos do INSS, dando continuidade ao Meu INSS, e profissionalizar a gestão do órgão.",
+    "flavio_p": 26,
+    "mapa_url": "/promessa-e-historico",
+    "mapa_titulo": "Promessa e histórico"
+   }
+  ],
+  "jovens": [
+   {
+    "dor": "Jornada 6x1 e falta de tempo",
+    "fato": "A Câmara aprovou em maio de 2026, por 461 a 19, a PEC que acaba com a escala 6x1 e reduz a jornada para 40 horas. Falta o plenário do Senado.",
+    "fonte": "pec6x1",
+    "lula": "Atuar no Senado para garantir o fim da escala 6x1 e a jornada de 40 horas sem redução salarial, nos termos aprovados na Câmara.",
+    "lula_p": 75,
+    "flavio": "O plano de governo não menciona a escala 6x1 nem a redução da jornada.",
+    "flavio_p": null,
+    "mapa_url": "/escala-6x1",
+    "mapa_titulo": "Escala 6x1"
+   },
+   {
+    "dor": "Primeiro emprego",
+    "fato": "A desocupação ficou em 5,4% no 2º trimestre de 2026.",
+    "fonte": "pnad",
+    "lula": "Dar atenção adicional à política de aprendizagem (jovem aprendiz) e gerar emprego decente em tecnologia, indústria verde e economia criativa.",
+    "lula_p": 24,
+    "flavio": "Dar a beneficiários de programas sociais prioridade em primeiro emprego e qualificação, com uma trilha própria de intermediação.",
+    "flavio_p": 43,
+    "mapa_url": "/projetos",
+    "mapa_titulo": "Projetos e entregas"
+   },
+   {
+    "dor": "Estudo e ENEM",
+    "lula": "Aprimorar o Pé-de-Meia, manter a rede de cursinhos populares para o ensino superior e ampliar alimentação e moradia estudantil.",
+    "lula_p": 24,
+    "flavio": "Aproximar universidade e empresa: pesquisa voltada à indústria e pós-graduação financiada pelas empresas que precisam dos profissionais.",
+    "flavio_p": 36,
+    "mapa_url": "/educacao",
+    "mapa_titulo": "Educação"
+   }
+  ],
+  "base": [
+   {
+    "dor": "Comida na mesa",
+    "fato": "O relatório da ONU (FAO, SOFI 2025) confirma o Brasil fora do Mapa da Fome.",
+    "fonte": "fome",
+    "lula": "Manter, aperfeiçoar e ampliar a proteção social, com o Bolsa Família recriado e benefícios para crianças e adolescentes.",
+    "lula_p": 18,
+    "flavio": "Manter os programas sociais existentes: “quem depende hoje da ajuda do Estado para pôr comida na mesa não vai ter essa ajuda tirada”. Programa social como “ponto de partida”.",
+    "flavio_p": 42,
+    "mapa_url": "/fome",
+    "mapa_titulo": "Fome e alimentação"
+   },
+   {
+    "dor": "Preço do gás de cozinha",
+    "lula": "Gás do Povo: recarga gratuita do botijão de 13 kg para famílias de baixa renda, no lugar do antigo Auxílio Gás.",
+    "lula_p": 66,
+    "flavio": "Mais concorrência e mais gás natural do pré-sal para baixar o preço (Nova Lei do Gás). O plano não prevê auxílio para o botijão.",
+    "flavio_p": 52,
+    "mapa_url": "/gasolina",
+    "mapa_titulo": "Gasolina"
+   },
+   {
+    "dor": "Salário que não chega ao fim do mês",
+    "fato": "O salário mínimo de 2026 é R$ 1.621, com 2,5% de ganho acima da inflação.",
+    "fonte": "salario",
+    "lula": "Manter a política de valorização do salário mínimo, que deu ganho real a trabalhadores, aposentados e beneficiários do BPC.",
+    "lula_p": 19,
+    "flavio": "Redução de tributos para “sobrar dinheiro no fim do mês”. O plano não menciona política de valorização do salário mínimo.",
+    "flavio_p": 29,
+    "mapa_url": "/programas-sociais",
+    "mapa_titulo": "Programas sociais"
+   }
+  ],
+  "media": [
+   {
+    "dor": "Escala 6x1",
+    "fato": "A Câmara aprovou em maio de 2026, por 461 a 19, a PEC que acaba com a escala 6x1 e reduz a jornada para 40 horas. Falta o plenário do Senado.",
+    "fonte": "pec6x1",
+    "lula": "Atuar no Senado para garantir o fim da escala 6x1 e a jornada de 40 horas sem redução salarial.",
+    "lula_p": 75,
+    "flavio": "O plano de governo não menciona a escala 6x1 nem a redução da jornada.",
+    "flavio_p": null,
+    "mapa_url": "/escala-6x1",
+    "mapa_titulo": "Escala 6x1"
+   },
+   {
+    "dor": "Dívidas",
+    "lula": "Desenrola Brasil e Novo Desenrola (2026), com descontos, juros menores e prazos maiores para famílias de menor renda e pequenos negócios.",
+    "lula_p": 12,
+    "flavio": "Reduzir tributos para aliviar o orçamento das famílias; o plano cita que 85% das famílias com até 3 salários mínimos estão endividadas.",
+    "flavio_p": 29,
+    "mapa_url": "/juros",
+    "mapa_titulo": "Juros e Banco Central"
+   },
+   {
+    "dor": "Segurança no bairro",
+    "lula": "Criar o Ministério da Segurança Pública, após a PEC da Segurança, para coordenar estados e municípios contra o crime organizado.",
+    "lula_p": 30,
+    "flavio": "Declarar facções como organizações narcoterroristas e reduzir a maioridade penal de 18 para 16 anos.",
+    "flavio_p": 13,
+    "mapa_url": "/seguranca",
+    "mapa_titulo": "Segurança pública"
+   }
+  ],
+  "superior": [
+   {
+    "dor": "Imposto de renda",
+    "fato": "Desde janeiro de 2026, quem ganha até R$ 5 mil por mês está isento do IR, com desconto até R$ 7.350, compensado por imposto mínimo sobre rendas acima de R$ 600 mil por ano.",
+    "fonte": "ir",
+    "lula": "“Colocar o pobre no orçamento e o rico no Imposto de Renda”: isenção total ou parcial para a base, com contribuição maior do topo.",
+    "lula_p": 10,
+    "flavio": "Reduzir o IVA da reforma tributária e “menos impostos”. O plano não trata do Imposto de Renda da pessoa física.",
+    "flavio_p": 72,
+    "mapa_url": "/divida-publica",
+    "mapa_titulo": "Dívida pública"
+   },
+   {
+    "dor": "Instituições e democracia",
+    "lula": "Diretriz nº 1: fortalecer a democracia, a participação social e modernizar o Estado.",
+    "lula_p": 15,
+    "flavio": "Fim da reeleição para presidente, fim das decisões monocráticas do STF e fim das competências criminais originárias do Supremo.",
+    "flavio_p": 65,
+    "mapa_url": "/constituicao",
+    "mapa_titulo": "Constituição"
+   },
+   {
+    "dor": "Emprego e renda",
+    "fato": "A desocupação ficou em 5,4% no 2º trimestre de 2026.",
+    "fonte": "pnad",
+    "lula": "Desenvolvimento com geração de emprego decente, ancorado em novas tecnologias e na indústria verde e criativa.",
+    "lula_p": 24,
+    "flavio": "“Menos impostos, mais formalidade, mais crescimento”, com corte de ministérios e simplificação tributária.",
+    "flavio_p": 72,
+    "mapa_url": "/projetos",
+    "mapa_titulo": "Projetos e entregas"
+   }
+  ]
+ }
+}

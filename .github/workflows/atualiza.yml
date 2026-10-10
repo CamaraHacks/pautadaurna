@@ -60,7 +60,11 @@ jobs:
           git push
 
       - name: Monta o site
-        run: mkdir _site && cp site/index.html _site/index.html
+        env:
+          GOATCOUNTER: ${{ vars.GOATCOUNTER }}
+        run: |
+          python3 pipeline/04_export.py   # stdlib only; bakes the GoatCounter code into the page
+          mkdir _site && cp site/index.html _site/index.html && cp -r site/locais _site/locais
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

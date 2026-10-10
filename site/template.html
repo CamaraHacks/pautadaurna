@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Pauta da Urna</title>
 <meta name="description" content="Quem não votou no 1º turno de 2026, onde vivem e como alcançá-los: TSE × IBGE, por cidade, zona eleitoral e grupo.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -206,6 +207,21 @@ main { padding-inline: 20px; padding-block: 36px 96px; gap: 0; }
 .blk { display: grid; gap: 8px; align-content: start; }
 .blk h3 { font-size: 0.72rem; font-family: var(--mono); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .blk ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; font-size: 0.94rem; }
+.posicao { max-width: 66ch; font-size: 0.98rem; padding: 10px 14px; border-left: 4px solid var(--accent); background: var(--yellow-soft); }
+/* Pautas (comparação de planos) */
+.pautas { display: grid; gap: 14px; }
+.pauta { border: 1px solid var(--rule); border-radius: 8px; background: var(--panel); padding: 16px; display: grid; gap: 12px; }
+.pauta h4 { margin: 0; font: 800 1.15rem/1.15 var(--display); font-stretch: 85%; }
+.pauta .fato { font-size: 0.95rem; padding: 8px 12px; background: var(--yellow-soft); border-radius: 4px; }
+.pauta .fato a { font-size: 0.8rem; color: var(--ink-2); }
+.pauta .vs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 640px) { .pauta .vs { grid-template-columns: 1fr; } }
+.pauta .cand-box { border-top: 4px solid var(--rule); padding-top: 8px; font-size: 0.93rem; display: grid; gap: 4px; align-content: start; }
+.pauta .cand-box b { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.pauta .cand-box a { font-size: 0.78rem; color: var(--ink-3); }
+.pauta .acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.pauta .acts a { font: 600 0.72rem var(--mono); color: var(--ink-2); }
+
 /* Votos por candidato (cores neutras) */
 .cand { display: inline-flex; align-items: center; gap: 6px; }
 .cand i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
@@ -285,6 +301,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
         <a href="#/explorar" data-tab="explorar">Onde agir</a>
         <a href="#/kit" data-tab="kit">Kit de redes</a>
         <a href="#/metodo" data-tab="metodo">Método</a>
+        <a href="#/sobre" data-tab="sobre">Sobre</a>
       </nav>
     </div>
     <form class="filterbar" id="filtro" autocomplete="off">
@@ -306,6 +323,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
         <div style="display:grid;gap:20px">
           <h1>Quem não foi votar</h1>
           <p class="lede prose"><span class="mark">Um em cada cinco eleitores</span> aptos não apareceu na seção. Este site mostra quem são, onde vivem e como alcançá-los nas redes antes do 2º turno, em 25 de outubro.</p>
+          <p class="posicao"><b>Este site tem lado.</b> Defendemos a democracia e, por isso, apoiamos Lula no 2º turno. Os números não mudam por isso: cada dado tem fonte oficial com link, e as propostas dos dois candidatos são citadas dos planos registrados no TSE, com página.</p>
         </div>
         <svg class="urna" viewBox="0 0 320 250" role="img" aria-label="Ilustração de uma urna eletrônica mostrando o número de ausentes">
           <rect x="4" y="18" width="312" height="226" rx="16" fill="#e9e6dd" stroke="#1d1c1a" stroke-width="2"/>
@@ -390,6 +408,16 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
         <div id="c-pesos"></div>
         <p class="note">“Acima da média” quando o grupo pesa pelo menos 15% mais entre os ausentes da cidade do que no Brasil. Perfil <span class="perfil-ano2"></span>. Clique num grupo para abrir o kit.</p>
       </div>
+      <div id="setores-wrap" hidden>
+        <h3 style="margin-bottom:10px">Setores da cidade</h3>
+        <div class="dtable"><table id="t-setores"></table></div>
+        <p class="note" style="margin-top:8px">Setores aproximados pela posição de cada local de votação em relação ao centro da cidade (sede municipal). Não são as divisões oficiais da prefeitura. Clique num setor para filtrar os locais.</p>
+      </div>
+      <div id="locais-wrap">
+        <h3 style="margin-bottom:10px" id="locais-h">Locais de votação com maior saldo</h3>
+        <div class="dtable"><table id="t-locais"></table></div>
+        <div class="table-foot" style="margin-top:8px"><span id="locais-count"></span><button type="button" class="btn sm" id="locais-more">Mostrar mais 20</button></div>
+      </div>
       <div id="zonas-wrap" hidden>
         <h3 style="margin-bottom:10px">Zonas eleitorais da cidade</h3>
         <div class="dtable"><table id="t-zonas"></table></div>
@@ -402,8 +430,10 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
       <div class="src"><b>TSE</b> · 1º turno 2026 · ranking</div>
       <h2 id="rank-h">Onde agir</h2>
       <p class="prose" id="rank-txt"></p>
+      <div class="seg" role="group" aria-label="Agrupar por"><button type="button" id="rk-cid" aria-pressed="true">Cidades</button><button type="button" id="rk-reg" aria-pressed="false">Regiões</button></div>
       <div class="dtable"><table id="t-rank"></table></div>
       <div class="table-foot"><span id="rank-count"></span><button type="button" class="btn sm" id="rank-more">Mostrar mais 50</button></div>
+      <p class="note"><b>Mobilizáveis</b>: ausentes sem os eleitores de 70 anos ou mais, que têm voto facultativo e faltam muito por saúde. <b>Saldo pró-Lula</b>: mobilizáveis × (Lula% − Flávio%) nos locais onde votam, ou seja, quantos votos de diferença Lula ganharia se eles fossem votar como seus vizinhos de seção. É uma estimativa <span class="tag inf">estimativa</span>. <b>Regiões</b> são as Regiões Geográficas Imediatas do IBGE; a de Santos aparece como Baixada Santista.</p>
     </section>
   </div>
 
@@ -412,7 +442,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
     <section>
       <div class="src"><b>Kit de redes</b> · <span class="tag inf">hipóteses para testar</span></div>
       <h2>Como chegar em cada grupo nas redes</h2>
-      <p class="prose">Escolha um grupo para ver redes, formatos, palavras-chave e mensagens. As mensagens são cívicas: explicam como e onde votar e não pedem voto em ninguém. Com uma cidade no filtro, os números são da cidade.</p>
+      <p class="prose">Escolha um grupo para ver as dores dele, as pautas que comparam os planos de governo de Lula e Flávio, redes, formatos e mensagens prontas. As mensagens cívicas explicam como e onde votar; as pautas são o nosso lado, sempre com fonte oficial. Com uma cidade no filtro, os números são da cidade.</p>
       <div class="gchoose" id="gchoose" role="group" aria-label="Grupo"></div>
     </section>
     <div id="kit-body"></div>
@@ -431,7 +461,9 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
         <p><strong>Zonas.</strong> A tabela de zonas aparece em <span class="num" id="n-zonas"></span> municípios com mais de uma zona. Como o TSE redesenhou zonas entre 2022 e 2026, não comparamos zonas entre eleições.</p>
         <p><strong>Exterior.</strong> As taxas consideram só eleitores no Brasil (<span class="num" id="tx-br"></span>). O número oficial do TSE, com o exterior, é 21,08%.</p>
         <p><strong>Cadastro desatualizado.</strong> Em <span class="num" id="n-inflado"></span> municípios há mais eleitores aptos em 2026 do que moradores no Censo 2022, contando inclusive crianças.</p>
-        <p><strong>Uso responsável.</strong> Tudo aqui é agregado; não há dado de nenhum eleitor individual. Opinião política é dado sensível pela LGPD. Impulsionamento pago de conteúdo eleitoral é exclusivo de candidatos, partidos e coligações (Res. TSE 23.610/2019). As mensagens sugeridas são de serviço cívico.</p>
+        <p><strong>Posição editorial.</strong> O Pauta da Urna apoia Lula no 2º turno, em defesa da democracia. Os fatos vêm de fontes oficiais (IBGE, TSE, Planalto, ministérios, Agência Brasil, ONU/FAO), e as propostas de Lula e Flávio são citadas dos planos de governo registrados no TSE, com o número da página. Quando um plano não trata de um tema, dizemos isso, em vez de atribuir intenção.</p>
+        <p><strong>Saldo pró-Lula.</strong> Para cada local de votação: ausentes mobilizáveis (sem os 70+ do perfil do município) × (Lula% − Flávio%) dos votos válidos daquele local no 1º turno. Supõe que quem faltou votaria como os vizinhos de seção. É uma estimativa para priorizar onde agir, não uma previsão.</p>
+        <p><strong>Regras.</strong> Tudo é agregado; não há dado de nenhum eleitor individual (LGPD). Impulsionamento pago de conteúdo eleitoral é exclusivo de candidatos, partidos e coligações (Res. TSE 23.610/2019); compartilhar e publicar como cidadão é livre, com autoria identificada e sem desinformação. Oferecer transporte ou qualquer vantagem em troca de voto é crime: ajude a pessoa a planejar como chegar, sem condicionar nada.</p>
         <p><strong>Boa Esperança do Norte (MT)</strong>, instalado em 2025, entra nos totais, mas não tem dados do Censo nem polígono no mapa.</p>
       </div>
     </section>
@@ -460,6 +492,17 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
       </ul>
     </footer>
   </div>
+  <!-- ================= SOBRE ================= -->
+  <div class="view" data-view="sobre" hidden>
+    <section class="prose" style="display:grid;gap:16px">
+      <div class="src"><b>Sobre</b> · quem fez</div>
+      <h2>Quem fez o Pauta da Urna</h2>
+      <p><strong>Gustavo Câmara</strong> é analista de sistemas e trabalha com infraestrutura, em transição para engenharia de confiabilidade (SRE). Criou o Pauta da Urna em outubro de 2026, entre o 1º e o 2º turno, para transformar os dados abertos do TSE e do IBGE em pauta para quem produz conteúdo.</p>
+      <p><strong>Por que este site tem lado.</strong> 33 milhões de pessoas não votaram no 1º turno, e a diferença entre os dois primeiros foi de 2,2 milhões de votos. Defendemos a democracia e apoiamos Lula. Isso não muda os números: cada dado tem fonte oficial com link, e as propostas dos dois candidatos são citadas dos planos registrados no TSE, com página, para você conferir.</p>
+      <p><strong>Código aberto.</strong> Todo o código e os dados tratados estão em <a href="https://github.com/CamaraHacks/pautadaurna" target="_blank" rel="noopener">github.com/CamaraHacks/pautadaurna</a>. Achou um erro? Abra uma issue lá ou fale comigo pelo <a href="https://www.linkedin.com/in/camarahacks/" target="_blank" rel="noopener">LinkedIn</a>.</p>
+      <p><strong>Referências.</strong> As pautas conversam com os estudos do <a href="https://mapasegundoturno.com.br" target="_blank" rel="noopener">Mapa do Segundo Turno</a>, de Miro Medeiros, que linkamos em cada tema.</p>
+    </section>
+  </div>
 </main>
 <footer class="site-foot">
   <span>Criado por <strong>Gustavo Câmara</strong> · <a href="https://www.linkedin.com/in/camarahacks/" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://github.com/CamaraHacks" target="_blank" rel="noopener">GitHub</a></span>
@@ -474,6 +517,9 @@ const D = /*__DATA__*/null;
 const TOPO = /*__TOPO__*/null;
 const G = /*__GRUPOS__*/null;
 const TG = /*__TRENDS_GRUPOS__*/null;
+const R = /*__REGIOES__*/null;   // regions, city sectors, per-municipality saldo (08_regioes.py)
+const P = /*__PAUTAS__*/null;    // dores -> fatos oficiais + propostas dos planos (site/pautas.json)
+const GC = /*__GC__*/"";          // GoatCounter site code (no cookies); empty = no tracking
 // Theme pictograms (24×24, stroke = currentColor), drawn inline so the page needs no image files
 const ICON = {
   saude: '<path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/><path d="M12 9v5M9.5 11.5h5"/>',
@@ -551,12 +597,22 @@ function tipFor(container) {
   $("urna-n").textContent = nf.format(D.total.abst);
 })();
 
+// ---------- usage measurement (GoatCounter: no cookies, no personal data) ----------
+if (GC) {
+  window.goatcounter = { no_onload: true };
+  const sc = document.createElement("script");
+  sc.async = true; sc.src = "https://gc.zgo.at/count.js"; sc.dataset.goatcounter = `https://${GC}.goatcounter.com/count`;
+  document.head.appendChild(sc);
+}
+const track = (path, title) => { try { window.goatcounter && window.goatcounter.count && window.goatcounter.count({ path, title: title || path, event: !path.startsWith("/") }); } catch { } };
+const viewPath = () => `/${S.view}${S.g ? "/" + S.g : ""}${S.c ? "/" + S.c[0] : S.uf ? "/" + S.uf : ""}`;
+
 // ---------- state + router ----------
 const S = { view: "panorama", c: null, uf: "", g: "" };
 function readHash() {
   const [path, qs] = location.hash.replace(/^#\/?/, "").split("?");
   const p = new URLSearchParams(qs || "");
-  S.view = ["panorama", "explorar", "kit", "metodo"].includes(path) ? path : (/^\d{7}$/.test(path) ? "explorar" : "panorama");
+  S.view = ["panorama", "explorar", "kit", "metodo", "sobre"].includes(path) ? path : (/^\d{7}$/.test(path) ? "explorar" : "panorama");
   S.c = ROWS.get(p.get("c") || (/^\d{7}$/.test(path) ? path : "")) || null;
   S.uf = S.c ? S.c[2] : (UFS.includes(p.get("uf")) ? p.get("uf") : "");
   S.g = GIDS.includes(p.get("g")) ? p.get("g") : "";
@@ -618,7 +674,7 @@ function copyText(text) {
   };
   try { navigator.clipboard.writeText(text).then(ok, fallback); } catch { fallback(); }
 }
-document.addEventListener("click", ev => { const b = ev.target.closest("[data-copy]"); if (b) copyText(b.dataset.copy); });
+document.addEventListener("click", ev => { const b = ev.target.closest("[data-copy]"); if (b) { copyText(b.dataset.copy); track(`copiar/${S.g || "geral"}`, b.dataset.copy.slice(0, 60)); } });
 
 // ---------- shared pieces ----------
 const sign = (v, d = 1) => (v >= 0 ? "+" : "−") + pf(Math.abs(v), d);
@@ -769,14 +825,17 @@ $("m-delta").onclick = () => setMode("delta");
 
 // ---------- onde agir ----------
 let zonasAll = false;
-let rankLimit = 50, rankSort = { key: "abst", dir: -1 };
+let rankLimit = 50, rankSort = { key: "saldo", dir: -1 };
 function renderExplorar() {
   const c = S.c;
   $("exp-cidade").hidden = !c;
   if (c) renderCidade(c);
   renderRanking();
 }
+let lastCity = null;
 function renderCidade(r) {
+  if (lastCity !== r) { locSetor = null; locLimit = 20; lastCity = r; }
+  renderSetores(r); renderLocais(r);
   $("exp-h").textContent = `${r[1]} · ${r[2]}`;
   $("exp-src").textContent = "1º turno 2026";
   const d22 = r[5] == null ? "sem dado de 2022" : `${pf(r[5])}% em 2022 (${sign(r[4] - r[5])} p.p.)`;
@@ -821,7 +880,21 @@ const RANK_COLS = [
   { key: "tx", label: "Taxa", get: r => S.g ? (r[11] && r[11][2 * GBY[S.g].i] ? 100 * r[11][2 * GBY[S.g].i + 1] / r[11][2 * GBY[S.g].i] : 0) : r[4], fmt: v => pf(v) + "%", n: true },
   { key: "margem", label: "Diferença 1º×2º", get: r => r[13], fmt: v => nf.format(v), n: true },
   { key: "ratio", label: "Ausentes ÷ diferença", get: r => r[13] > 0 ? r[9] / r[13] : Infinity, fmt: v => v === Infinity ? "empate" : pf(v, 1) + "×", n: true },
+  { key: "mob", label: "Mobilizáveis", get: r => (R && R.mun[r[0]] ? R.mun[r[0]][0] : 0), fmt: v => nf.format(v), n: true },
+  { key: "saldo", label: "Saldo pró-Lula", get: r => (R && R.mun[r[0]] ? R.mun[r[0]][1] : 0), fmt: v => saldoFmt(v), n: true },
 ];
+const saldoFmt = v => `<span style="color:${v > 0 ? "var(--cand-2)" : v < 0 ? "var(--cand-1)" : "inherit"};font-weight:600">${v > 0 ? "+" : ""}${nf.format(v)}</span>`;
+const REG_COLS = [
+  { key: "nome", label: "Região", get: x => x.nome, fmt: (v, x) => `${esc(v)}${x.nome !== x.nome_ibge ? ` <span class="note">(IBGE: ${esc(x.nome_ibge)})</span>` : ""}`, n: false },
+  { key: "uf", label: "UF", get: x => x.uf, fmt: v => v, n: false },
+  { key: "municipios", label: "Municípios", get: x => x.municipios, fmt: v => nf.format(v), n: true },
+  { key: "abst", label: "Ausentes", get: x => x.abst, fmt: v => nf.format(v), n: true },
+  { key: "mob", label: "Mobilizáveis", get: x => x.mob, fmt: v => nf.format(v), n: true },
+  { key: "pl", label: "Lula", get: x => x.pl, fmt: v => pf(v) + "%", n: true },
+  { key: "pf", label: "Flávio", get: x => x.pf, fmt: v => pf(v) + "%", n: true },
+  { key: "saldo", label: "Saldo pró-Lula", get: x => x.saldo, fmt: v => saldoFmt(v), n: true },
+];
+let rkMode = "cid";
 function renderRanking() {
   const scope = S.uf ? S.uf : "Brasil";
   const gname = S.g ? GBY[S.g].nome.toLowerCase() : "";
@@ -829,14 +902,17 @@ function renderRanking() {
   $("rank-txt").textContent = S.g
     ? `Cidades com mais ausentes do grupo “${gname}” (perfil ${D.perfil_ano}). Mais ausentes significa mais gente para alcançar com a mesma campanha.`
     : `Cidades ordenadas pelo número de eleitores que não votaram. A última coluna compara os ausentes com a diferença de votos entre os dois primeiros: quanto maior, mais a ausência pesa ali.`;
-  const col = RANK_COLS.find(c => c.key === rankSort.key);
-  const list = D.municipios.filter(r => !S.uf || r[2] === S.uf)
-    .map(r => ({ r, v: RANK_COLS.map(c => c.get(r)) }))
-    .sort((a, b) => { const i = RANK_COLS.indexOf(col); const x = a.v[i], y = b.v[i]; return (typeof x === "string" ? x.localeCompare(y, "pt-BR") : x - y) * rankSort.dir; });
+  const COLS = rkMode === "reg" && R ? REG_COLS : RANK_COLS;
+  if (!COLS.some(c => c.key === rankSort.key)) rankSort = { key: "saldo", dir: -1 };
+  const col = COLS.find(c => c.key === rankSort.key);
+  const base = rkMode === "reg" && R ? Object.values(R.regioes).filter(x => !S.uf || x.uf === S.uf) : D.municipios.filter(r => !S.uf || r[2] === S.uf);
+  const list = base.map(r => ({ r, v: COLS.map(c => c.get(r)) }))
+    .sort((a, b) => { const i = COLS.indexOf(col); const x = a.v[i], y = b.v[i]; return (typeof x === "string" ? x.localeCompare(y, "pt-BR") : x - y) * rankSort.dir; });
   const shown = list.slice(0, rankLimit);
-  $("t-rank").innerHTML = `<thead><tr><th>#</th>${RANK_COLS.map(c => `<th class="${c.n ? "n" : ""}" aria-sort="${c.key === rankSort.key ? (rankSort.dir < 0 ? "descending" : "ascending") : "none"}"><button type="button" data-sort="${c.key}">${c.label}${c.key === "abst" && S.g ? " do grupo" : ""}</button></th>`).join("")}</tr></thead><tbody>` +
-    shown.map((x, i) => `<tr><td class="rank">${i + 1}</td>${RANK_COLS.map((c, j) => `<td class="${c.n ? "n" : ""}">${c.fmt(x.v[j], x.r)}</td>`).join("")}</tr>`).join("") + "</tbody>";
-  $("rank-count").textContent = `Mostrando ${Math.min(rankLimit, list.length)} de ${nf.format(list.length)} municípios`;
+  $("t-rank").innerHTML = `<thead><tr><th>#</th>${COLS.map(c => `<th class="${c.n ? "n" : ""}" aria-sort="${c.key === rankSort.key ? (rankSort.dir < 0 ? "descending" : "ascending") : "none"}"><button type="button" data-sort="${c.key}">${c.label}${c.key === "abst" && S.g ? " do grupo" : ""}</button></th>`).join("")}</tr></thead><tbody>` +
+    shown.map((x, i) => `<tr><td class="rank">${i + 1}</td>${COLS.map((c, j) => `<td class="${c.n ? "n" : ""}">${c.fmt(x.v[j], x.r)}</td>`).join("")}</tr>`).join("") + "</tbody>";
+  $("rank-count").textContent = `Mostrando ${Math.min(rankLimit, list.length)} de ${nf.format(list.length)} ${rkMode === "reg" ? "regiões" : "municípios"}`;
+  $("rk-cid").setAttribute("aria-pressed", rkMode === "cid"); $("rk-reg").setAttribute("aria-pressed", rkMode === "reg");
   $("rank-more").hidden = rankLimit >= list.length;
 }
 $("t-rank").addEventListener("click", ev => {
@@ -845,6 +921,116 @@ $("t-rank").addEventListener("click", ev => {
   const c = ev.target.closest("[data-city]"); if (c) { go({ c: ROWS.get(c.dataset.city) }); window.scrollTo({ top: 0 }); }
 });
 $("rank-more").onclick = () => { rankLimit += 50; renderRanking(); };
+$("rk-cid").onclick = () => { rkMode = "cid"; rankLimit = 50; renderRanking(); };
+$("rk-reg").onclick = () => { rkMode = "reg"; rankLimit = 50; renderRanking(); track("ranking-regioes"); };
+
+// ---------- city: sectors + polling places (per-UF file loaded on demand) ----------
+const LOCAIS = {};
+let locSetor = null, locLimit = 20;
+async function locaisUF(uf) {
+  if (!LOCAIS[uf]) LOCAIS[uf] = fetch(`locais/${uf}.json`).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+  return LOCAIS[uf];
+}
+function renderSetores(r) {
+  const st = R && R.setores[String(r[0])];
+  $("setores-wrap").hidden = !st;
+  if (!st) return;
+  const ordem = ["Centro", "Norte", "Sul", "Leste", "Oeste"].filter(k => st[k]);
+  $("t-setores").innerHTML = `<thead><tr><th>Setor</th><th class="n">Ausentes</th><th class="n">Mobilizáveis</th><th class="n">Lula</th><th class="n">Flávio</th><th class="n">Saldo pró-Lula</th></tr></thead><tbody>` +
+    ordem.map(k => { const x = st[k]; return `<tr${locSetor === k ? ' style="background:var(--yellow-soft)"' : ""}><td><button type="button" class="linkbtn" data-setor="${k}">${k}</button></td><td class="n">${nf.format(x.abst)}</td><td class="n">${nf.format(x.mob)}</td><td class="n">${pf(x.pl)}%</td><td class="n">${pf(x.pf)}%</td><td class="n">${saldoFmt(x.saldo)}</td></tr>`; }).join("") + "</tbody>";
+}
+async function renderLocais(r) {
+  $("locais-h").textContent = `Locais de votação com maior saldo${locSetor ? " · " + locSetor : ""}`;
+  $("t-locais").innerHTML = `<tbody><tr><td class="note">Carregando os locais de ${esc(r[1])}…</td></tr></tbody>`;
+  let rows;
+  try { rows = (await locaisUF(r[2])).filter(x => x[0] === r[0] && (!locSetor || x[2] === locSetor)); }
+  catch {
+    $("t-locais").innerHTML = `<tbody><tr><td class="note">A lista de locais de votação carrega no site publicado (pautadaurna.com.br); nesta prévia ela não está disponível.</td></tr></tbody>`;
+    $("locais-count").textContent = ""; $("locais-more").hidden = true; return;
+  }
+  if (S.c !== r) return;  // user moved on while loading
+  const big = R && R.setores[String(r[0])];
+  const shown = rows.slice(0, locLimit);
+  $("t-locais").innerHTML = `<thead><tr><th>Local</th><th class="n">Zona</th>${big ? "<th>Setor</th>" : ""}<th class="n">Ausentes</th><th class="n">Lula</th><th class="n">Flávio</th><th class="n">Saldo pró-Lula</th></tr></thead><tbody>` +
+    shown.map(x => `<tr><td>${esc(x[3])}${x[4] ? `<br><span class="note">${esc(x[4])}</span>` : ""}</td><td class="n">${x[1]}ª</td>${big ? `<td>${x[2] || ""}</td>` : ""}<td class="n">${nf.format(x[6])}</td><td class="n">${pf(x[7])}%</td><td class="n">${pf(x[8])}%</td><td class="n">${saldoFmt(x[9])}</td></tr>`).join("") + "</tbody>";
+  $("locais-count").textContent = `Mostrando ${shown.length} de ${nf.format(rows.length)} locais, ordenados pelo saldo`;
+  $("locais-more").hidden = locLimit >= rows.length;
+}
+$("t-setores").addEventListener("click", ev => { const b = ev.target.closest("[data-setor]"); if (!b) return; locSetor = locSetor === b.dataset.setor ? null : b.dataset.setor; locLimit = 20; renderSetores(S.c); renderLocais(S.c); track("setor/" + b.dataset.setor); });
+$("locais-more").onclick = () => { locLimit += 20; renderLocais(S.c); };
+
+// ---------- kit: pautas (dor -> fato oficial -> o que dizem os planos) ----------
+const pagLink = (who, n) => n ? `<a href="${P.planos[who].url}#page=${n}" target="_blank" rel="noopener">plano registrado no TSE, p. ${n} ↗</a>` : `<a href="${P.planos[who].url}" target="_blank" rel="noopener">plano registrado no TSE (busca no documento) ↗</a>`;
+function pautasBlock(g) {
+  const lst = P && P.grupos[g.id]; if (!lst) return "";
+  return `<div class="blk"><h3>Pautas para este grupo <span class="tag inf">nosso lado · fontes oficiais</span></h3>
+    <p class="note">O que os planos de governo registrados no TSE dizem sobre cada dor. Copie o texto, baixe a imagem pronta para post ou compartilhe.</p>
+    <div class="pautas">${lst.map((pt, i) => `
+    <article class="pauta">
+      <h4>${esc(pt.dor)}</h4>
+      ${pt.fato ? `<div class="fato">${esc(pt.fato)} <a href="${P.fontes[pt.fonte].url}" target="_blank" rel="noopener">Fonte: ${esc(P.fontes[pt.fonte].nome)} ↗</a></div>` : ""}
+      <div class="vs">
+        <div class="cand-box" style="border-top-color:var(--cand-2)"><b><span class="cand"><i style="background:var(--cand-2)"></i>Lula</span></b><span>${esc(pt.lula)}</span>${pagLink("lula", pt.lula_p)}</div>
+        <div class="cand-box" style="border-top-color:var(--cand-1)"><b><span class="cand"><i style="background:var(--cand-1)"></i>Flávio</span></b><span>${esc(pt.flavio)}</span>${pagLink("flavio", pt.flavio_p)}</div>
+      </div>
+      <div class="acts">
+        <button type="button" class="btn sm" data-pauta="${g.id}:${i}:copiar">Copiar texto</button>
+        <button type="button" class="btn sm" data-pauta="${g.id}:${i}:imagem">Baixar imagem</button>
+        <button type="button" class="btn sm" data-pauta="${g.id}:${i}:compartilhar">Compartilhar</button>
+        <a href="${P.mapa}${pt.mapa_url}" target="_blank" rel="noopener">Aprofunde: ${esc(pt.mapa_titulo)} (Mapa do 2º Turno) ↗</a>
+      </div>
+    </article>`).join("")}</div></div>`;
+}
+function pautaTexto(pt) {
+  const fato = pt.fato ? `\n${pt.fato} (Fonte: ${P.fontes[pt.fonte].nome} – ${P.fontes[pt.fonte].url})` : "";
+  return `${pt.dor}${fato}\n\nLula (plano de governo, p. ${pt.lula_p}): ${pt.lula}\nFlávio (plano de governo${pt.flavio_p ? ", p. " + pt.flavio_p : ""}): ${pt.flavio}\n\nAprofunde: ${P.mapa}${pt.mapa_url}\nMais pautas: https://pautadaurna.com.br`;
+}
+function wrapLines(ctx, text, maxW) {
+  const out = []; let line = "";
+  for (const w of text.split(" ")) { const t = line ? line + " " + w : w; if (ctx.measureText(t).width > maxW && line) { out.push(line); line = w; } else line = t; }
+  if (line) out.push(line); return out;
+}
+async function pautaImagem(pt, nome) {
+  try { await document.fonts.ready; } catch { }
+  const W = 1080, H = 1350, M = 80, cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  const c = cv.getContext("2d"), col = n => css(n);
+  c.fillStyle = "#fdfcf9"; c.fillRect(0, 0, W, H);
+  c.fillStyle = col("--yellow"); c.fillRect(0, 0, W, 18);
+  c.fillStyle = "#191714"; c.font = '900 34px "Archivo", sans-serif'; c.fillText("PAUTA DA", M, 92);
+  c.fillStyle = col("--accent"); c.fillText("URNA", M + c.measureText("PAUTA DA ").width, 92);
+  let y = 190; c.fillStyle = "#191714"; c.font = '800 66px "Archivo", sans-serif';
+  for (const l of wrapLines(c, pt.dor, W - 2 * M)) { c.fillText(l, M, y); y += 74; }
+  if (pt.fato) {
+    c.font = '400 31px "Source Serif 4", Georgia, serif'; const ls = wrapLines(c, pt.fato, W - 2 * M - 48);
+    const h = ls.length * 42 + 40; c.fillStyle = col("--yellow-soft"); c.fillRect(M, y, W - 2 * M, h);
+    c.fillStyle = "#191714"; ls.forEach((l, k) => c.fillText(l, M + 24, y + 50 + k * 42)); y += h + 46;
+  }
+  for (const [who, txt, pg, cor] of [["Lula", pt.lula, pt.lula_p, "--cand-2"], ["Flávio", pt.flavio, pt.flavio_p, "--cand-1"]]) {
+    c.fillStyle = col(cor); c.fillRect(M, y, W - 2 * M, 8); y += 52;
+    c.beginPath(); c.arc(M + 12, y - 12, 12, 0, 7); c.fill();
+    c.fillStyle = "#191714"; c.font = '700 34px "IBM Plex Mono", monospace'; c.fillText(`Plano de ${who}${pg ? " · p. " + pg : ""}`, M + 36, y);
+    y += 50; c.font = '400 32px "Source Serif 4", Georgia, serif';
+    for (const l of wrapLines(c, txt, W - 2 * M)) { c.fillText(l, M, y); y += 44; }
+    y += 30;
+  }
+  c.fillStyle = "#4f4a42"; c.font = '500 22px "IBM Plex Mono", monospace';
+  const fonte = `Fontes: planos de governo registrados no TSE${pt.fato ? " · " + P.fontes[pt.fonte].nome.split(":")[0] : ""}`;
+  wrapLines(c, fonte, W - 2 * M).forEach((l, k) => c.fillText(l, M, H - 110 + k * 30));
+  c.fillStyle = col("--accent"); c.font = '800 34px "Archivo", sans-serif'; c.fillText("pautadaurna.com.br", M, H - 40);
+  cv.toBlob(b => { const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = nome; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); toast("Imagem gerada"); }, "image/png");
+}
+document.addEventListener("click", ev => {
+  const b = ev.target.closest("[data-pauta]"); if (!b) return;
+  const [gid, i, acao] = b.dataset.pauta.split(":"); const pt = P.grupos[gid][+i];
+  track(`pauta/${gid}/${i}/${acao}`, `${acao}: ${pt.dor}`);
+  if (acao === "copiar") copyText(pautaTexto(pt));
+  if (acao === "imagem") pautaImagem(pt, `pauta-${gid}-${+i + 1}.png`);
+  if (acao === "compartilhar") {
+    const url = location.href.split("#")[0] + `#/kit?g=${gid}${S.c ? "&c=" + S.c[0] : ""}`;
+    if (navigator.share) navigator.share({ title: pt.dor, text: pautaTexto(pt), url }).catch(() => { });
+    else copyText(url);
+  }
+});
 
 // ---------- kit: themes carousel + group × searches cross ----------
 function temasCarousel(g) {
@@ -924,6 +1110,7 @@ function renderKit() {
       <div class="blk"><h3>Mensagens cívicas prontas</h3>
         ${g.mensagens.map(m => `<div class="msg"><span>${esc(m)}</span><span><button type="button" class="btn sm" data-copy="${esc(m)}">Copiar</button></span></div>`).join("")}</div>
       <div class="dores"><h3>Dores deste grupo</h3><ul>${g.dores.map(d => `<li>${esc(d)}</li>`).join("")}</ul></div>
+      ${pautasBlock(g)}
       ${temasCarousel(g)}
       <details class="vies"><summary>Inclinação política estimada</summary>
         <p class="note">No Brasil, resultado do 1º turno nos municípios onde vivem os ausentes deste grupo (média ponderada): ${CAND.map((c, j) => candLbl(j, pcts[j])).join(" · ")}</p>
@@ -947,6 +1134,7 @@ function render() {
   document.querySelectorAll("[data-view]").forEach(v => v.hidden = v.dataset.view !== S.view);
   document.querySelectorAll(".tabs a").forEach(a => a.dataset.tab === S.view ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
   renderFilter();
+  const vp = viewPath(); if (vp !== render.last) { render.last = vp; track(vp); }
   if (S.view === "panorama" && !drawn) { drawPanorama(); drawn = true; }
   if (S.view === "explorar") renderExplorar();
   if (S.view === "kit") renderKit();
