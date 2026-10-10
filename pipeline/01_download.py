@@ -10,6 +10,7 @@ TSE = "https://cdn.tse.jus.br/estatistica/sead/odsele"
 FILES = {
     "detalhe_votacao_munzona_2026.zip": f"{TSE}/detalhe_votacao_munzona/detalhe_votacao_munzona_2026.zip",
     "detalhe_votacao_munzona_2022.zip": f"{TSE}/detalhe_votacao_munzona/detalhe_votacao_munzona_2022.zip",
+    "votacao_candidato_munzona_2026.zip": f"{TSE}/votacao_candidato_munzona/votacao_candidato_munzona_2026.zip",
     "perfil_comparecimento_abstencao_2026.zip": f"{TSE}/perfil_comparecimento_abstencao/perfil_comparecimento_abstencao_2026.zip",
     "perfil_comparecimento_abstencao_2022.zip": f"{TSE}/perfil_comparecimento_abstencao/perfil_comparecimento_abstencao_2022.zip",
     # TSE municipality code -> IBGE code (5570 rows)

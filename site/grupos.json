@@ -1,0 +1,267 @@
+{
+  "fontes": {
+    "df_vies": {
+      "nome": "Datafolha, 2–3/out/2026, 4.006 entrevistas, BR-01708/2026",
+      "url": "https://quenty.com.br/resumo/4-outubro-2026/datafolha-mostra-lula-a-frente-entre-jovens-e-idosos-e-flavio-bolsonaro-na-faixa-de-renda-mais-alta"
+    },
+    "df_motivos": {
+      "nome": "Datafolha, 6–7/out/2026, 2.520 entrevistas, BR-02949/2026",
+      "url": "https://jornaldebrasilia.com.br/noticias/politica-e-poder/datafolha-13-citam-desinteresse-como-motivo-para-abstencao-no-1o-turno"
+    },
+    "problemas": {
+      "nome": "Datafolha (jun/2026) e Quaest (ago/2026), principal problema do país",
+      "url": "https://correiodopovo-al.com.br/noticia/2026/08/18/prioridades-dos-eleitores-o-que-as-pesquisas-revelam"
+    },
+    "renda": {
+      "nome": "Quaest, set/2026, percepção de renda",
+      "url": "https://www.spacemoney.com.br/politica/pesquisa-quaest-percepcao-de-renda"
+    },
+    "nicolau": {
+      "nome": "Jairo Nicolau, 8/out/2026",
+      "url": "https://jaironicolau.substack.com/p/quatro-topicos-sobre-a-abstencao"
+    },
+    "avaaz": {
+      "nome": "Avaaz e Datafolha, Termômetro do Bem Viver, set/2026",
+      "url": "https://gife.org.br/abstencao-eleitoral-solidao-exaustao-vinculos-comunitarios/"
+    },
+    "tic": {
+      "nome": "Cetic.br, TIC Domicílios 2024",
+      "url": "https://www.cetic.br/media/docs/publicacoes/2/20250512115624/tic_domicilios_2024_resumo_executivo.pdf"
+    },
+    "idosos": {
+      "nome": "Movimento Econômico, abstenção de 60% entre idosos",
+      "url": "https://movimentoeconomico.com.br/politica/eleicoes-2026/2026/10/02/abstencao-de-60-entre-idosos-coloca-grupo-no-centro-do-debate-eleitoral/"
+    }
+  },
+  "grupos": [
+    {
+      "id": "idosos",
+      "nome": "Idosos com voto facultativo",
+      "regra": "70 anos ou mais",
+      "classe": "Todas as classes; a abstenção é maior entre idosas de baixa escolaridade",
+      "dores": [
+        "Saúde e mobilidade: “saúde, doença” (18%) e “idade” (4%) estão entre os motivos declarados para faltar",
+        "Isolamento: a pesquisa Avaaz/Datafolha liga a ausência à solidão e à perda de vínculos",
+        "Entre as idosas analfabetas ou só alfabetizadas, 76% não votaram (2,5 milhões de mulheres)"
+      ],
+      "temas": [
+        "Saúde pública e filas do SUS",
+        "Aposentadoria e INSS",
+        "Custo de remédios e de alimentos",
+        "Segurança no bairro"
+      ],
+      "vies": "Datafolha 2–3/out, 60 anos ou mais: Lula 47%, Flávio 38%.",
+      "vies_fontes": [
+        "df_vies"
+      ],
+      "canais": [
+        "TV aberta e rádio local",
+        "WhatsApp da família (cerca de metade dos 60+ usa internet)",
+        "Igrejas, UBS, centros de convivência"
+      ],
+      "palavras_chave": [
+        "idoso pode votar",
+        "voto facultativo 70 anos",
+        "prioridade na fila de votação",
+        "levar idoso para votar",
+        "seção acessível",
+        "INSS",
+        "remédio de graça",
+        "SUS"
+      ],
+      "mensagens": [
+        "Depois dos 70 o voto é opcional, mas continua valendo. Quem tem 60 anos ou mais tem prioridade na fila.",
+        "Precisa de ajuda para chegar à seção? Combine com a família ou vizinhos e confira no e-Título onde você vota.",
+        "Sua experiência conta: o 2º turno é no domingo, 25 de outubro, das 8h às 17h."
+      ],
+      "fontes": [
+        "df_motivos",
+        "avaaz",
+        "nicolau",
+        "idosos",
+        "tic"
+      ]
+    },
+    {
+      "id": "jovens",
+      "nome": "Jovens obrigados a votar",
+      "regra": "18 a 29 anos",
+      "classe": "Maioria nas classes C e D/E das periferias urbanas (inferência pela renda dos municípios e pela escolaridade)",
+      "dores": [
+        "Desinteresse: 13% dos ausentes citam falta de interesse pela eleição ou pelos candidatos",
+        "Trabalho em escala e viagem: trabalho (9%) e estar fora da cidade (19%)",
+        "Exaustão e desconexão: 44% dos “desvinculados” da pesquisa Avaaz têm de 18 a 34 anos"
+      ],
+      "temas": [
+        "Primeiro emprego e renda",
+        "Custo de vida e aluguel",
+        "Educação (mais citada entre os jovens)",
+        "Violência e abordagem policial",
+        "Saúde mental"
+      ],
+      "vies": "Datafolha 2–3/out: 16–24 anos, Lula 46% e Flávio 32%; 25–34 anos, Flávio 43% e Lula 38%. O grupo é dividido por idade.",
+      "vies_fontes": [
+        "df_vies"
+      ],
+      "canais": [
+        "TikTok, Instagram Reels, YouTube Shorts",
+        "Grupos de WhatsApp de trabalho e da faculdade",
+        "Criadores locais, futebol, música"
+      ],
+      "palavras_chave": [
+        "onde eu voto",
+        "e-Título",
+        "justificar voto",
+        "multa por não votar",
+        "título cancelado",
+        "2º turno 25 de outubro",
+        "primeiro emprego",
+        "aluguel caro"
+      ],
+      "mensagens": [
+        "Faltou no 1º turno? Você ainda pode votar no 2º, dia 25/10. Descubra sua seção no e-Título em 1 minuto.",
+        "Quem falta três eleições seguidas sem justificar tem o título cancelado. Sem título, não dá para tirar passaporte nem tomar posse em concurso.",
+        "Vai trabalhar ou viajar no dia 25? Dá para justificar pelo e-Título no próprio dia."
+      ],
+      "fontes": [
+        "df_motivos",
+        "avaaz",
+        "nicolau",
+        "problemas"
+      ]
+    },
+    {
+      "id": "base",
+      "nome": "Trabalhadores de baixa escolaridade",
+      "regra": "30 a 69 anos, até o fundamental completo",
+      "classe": "Classes D/E (proxy: escolaridade até o fundamental)",
+      "dores": [
+        "Abstenção de 52% entre analfabetos e de 31% entre quem só lê e escreve (perfil 2022)",
+        "Renda apertada: 33% dizem que a renda da família não aumentou no último ano e 21% que aumentou menos que os preços",
+        "Logística: trabalho (9%), falta de documentos (7%) e distância da seção (6%)"
+      ],
+      "temas": [
+        "Preço da comida e do gás",
+        "Bolsa Família e programas sociais",
+        "Emprego e bico",
+        "Saúde: posto e remédio",
+        "Segurança"
+      ],
+      "vies": "Datafolha 2–3/out, renda até 2 salários mínimos: Lula 50%, Flávio 32%. Usamos renda como aproximação, porque a pesquisa não divulgou o recorte por escolaridade.",
+      "vies_fontes": [
+        "df_vies"
+      ],
+      "canais": [
+        "Rádio e TV aberta",
+        "Áudios de WhatsApp (mais que texto)",
+        "Igrejas, associações de bairro, CRAS, feiras"
+      ],
+      "palavras_chave": [
+        "onde voto",
+        "votar sem título",
+        "documento com foto para votar",
+        "ônibus de graça eleição",
+        "Bolsa Família",
+        "preço do gás",
+        "cesta básica"
+      ],
+      "mensagens": [
+        "Para votar basta um documento com foto: RG, CNH ou o e-Título. Não precisa do título de papel.",
+        "Veja se a sua cidade tem ônibus de graça no dia da eleição, 25 de outubro.",
+        "Não sabe onde vota? Ligue 148 (Disque-Eleitor) ou pergunte no cartório eleitoral."
+      ],
+      "fontes": [
+        "df_motivos",
+        "renda",
+        "problemas"
+      ]
+    },
+    {
+      "id": "media",
+      "nome": "Escolaridade média",
+      "regra": "30 a 69 anos, do médio incompleto ao superior incompleto",
+      "classe": "Classe C (proxy: ensino médio)",
+      "dores": [
+        "Jornada longa e deslocamento: trabalho e viagem somam 28% dos motivos declarados",
+        "Renda corroída pela inflação de serviços e por dívidas",
+        "Violência, o problema número 1 na Quaest de agosto"
+      ],
+      "temas": [
+        "Segurança pública",
+        "Emprego com carteira",
+        "Endividamento e juros",
+        "Transporte e mobilidade",
+        "Corrupção"
+      ],
+      "vies": "Datafolha 2–3/out, renda de 2 a 5 salários mínimos: Flávio 47%, Lula 35%. É uma aproximação, porque renda e escolaridade não coincidem.",
+      "vies_fontes": [
+        "df_vies"
+      ],
+      "canais": [
+        "Instagram e Facebook",
+        "WhatsApp (grupos de condomínio, trabalho e igreja)",
+        "Rádio no trânsito, podcasts"
+      ],
+      "palavras_chave": [
+        "horário de votação",
+        "e-Título",
+        "justificativa eleitoral",
+        "fila para votar",
+        "segurança pública",
+        "juros",
+        "renegociar dívida"
+      ],
+      "mensagens": [
+        "A votação vai das 8h às 17h. Votar cedo evita fila.",
+        "Vai estar fora da cidade? Justifique pelo e-Título no dia, sem precisar ir ao cartório.",
+        "Confira o local antes: a seção pode ter mudado desde a última eleição."
+      ],
+      "fontes": [
+        "df_motivos",
+        "problemas"
+      ]
+    },
+    {
+      "id": "superior",
+      "nome": "Superior completo",
+      "regra": "30 a 69 anos, com ensino superior completo",
+      "classe": "Classes A/B (proxy: superior completo)",
+      "dores": [
+        "Grupo que menos falta (12% em 2022). A abstenção cresceu nos municípios mais ricos e no Sudeste e Sul, onde esse grupo se concentra (leitura por município, não individual)",
+        "Viagem é o motivo mais citado no geral (19%) e pesa num feriado prolongado",
+        "Desconfiança da política e sensação de que “tanto faz”"
+      ],
+      "temas": [
+        "Economia, impostos e gasto público",
+        "Corrupção",
+        "Segurança",
+        "Educação"
+      ],
+      "vies": "Datafolha 2–3/out, renda acima de 5 salários mínimos: Flávio 49%, Lula 35%.",
+      "vies_fontes": [
+        "df_vies"
+      ],
+      "canais": [
+        "Instagram, LinkedIn, X",
+        "Newsletters e podcasts",
+        "Grupos de WhatsApp profissionais"
+      ],
+      "palavras_chave": [
+        "justificar voto e-Título",
+        "voto em trânsito",
+        "multa eleitoral",
+        "regularizar título",
+        "abstenção recorde"
+      ],
+      "mensagens": [
+        "Viajando no dia 25? Pelo e-Título dá para justificar em minutos, mas só votando você escolhe.",
+        "A abstenção cresceu justamente nas cidades mais ricas. Seu voto pesa mais quando muita gente falta.",
+        "Ausência sem justificativa gera multa e pode bloquear passaporte e concurso público."
+      ],
+      "fontes": [
+        "df_motivos",
+        "problemas"
+      ]
+    }
+  ]
+}

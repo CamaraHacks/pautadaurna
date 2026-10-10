@@ -6,6 +6,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
 REGIOES = {"1": "Norte", "2": "Nordeste", "3": "Sudeste", "4": "Sul", "5": "Centro-Oeste"}
+GRUPOS = ["idosos", "jovens", "base", "media", "superior"]
 PORTES = ["até 10 mil", "10–50 mil", "50–200 mil", "200 mil–1 mi", "mais de 1 mi"]
 
 
@@ -34,6 +35,25 @@ def main():
     quintis["renda_mediana"] = c.groupby("quintil").renda_pc_mediana.agg(["min", "max"]).apply(
         lambda r: f"R$ {r['min']:,.0f}–{r['max']:,.0f}".replace(",", "."), axis=1)
 
+    # abstainer groups per municipality: {cd_tse: [aptos, abst] x GRUPOS}
+    seg = pd.read_csv(ROOT / "data" / "segmentos.csv")
+    seg_mun = {k: [int(v) for gr in GRUPOS for v in g.set_index("segmento").reindex([gr]).fillna(0)[["aptos", "abst"]].iloc[0]]
+               for k, g in seg.groupby("cd_tse")}
+    seg_br = seg.groupby("segmento")[["aptos", "abst"]].sum()
+    seg_br["tx"] = 100 * seg_br.abst / seg_br.aptos
+    seg_br["share"] = 100 * seg_br.abst / seg_br.abst.sum()
+
+    # 1st-round valid-vote share of the two national leaders, per municipality
+    votos = pd.read_csv(ROOT / "data" / "votos.csv")
+    top2 = votos.groupby("candidato").votos.sum().nlargest(2).index.tolist()
+    vt = votos.pivot_table(index="cd_tse", columns="candidato", values="votos", aggfunc="sum", fill_value=0)
+    share = (100 * vt[top2].div(vt.sum(axis=1), axis=0)).round(1)
+    # ecological lean: abstainer-weighted average share where each group's abstainers live
+    lean = {}
+    for gr in GRUPOS:
+        w = seg[seg.segmento == gr].set_index("cd_tse").abst.reindex(share.index).fillna(0)
+        lean[gr] = {c: round(float((share[c] * w).sum() / w.sum()), 1) for c in top2}
+
     perfil = pd.read_csv(ROOT / "data" / "perfil.csv")
     perfil = perfil[~perfil.categoria.isin(["NÃO INFORMADO", "Inválido"])]
 
@@ -52,20 +72,28 @@ def main():
         "portes": c.groupby("porte", observed=True).apply(taxa, include_groups=False).reset_index()
                    .astype({"porte": str}).to_dict("records"),
         "perfil_ano": int(perfil.ano.iloc[0]),
+        "grupos_ordem": GRUPOS,
+        "segmentos_br": {gr: {"aptos": int(seg_br.aptos[gr]), "abst": int(seg_br.abst[gr]), "tx": round(seg_br.tx[gr], 2),
+                              "share": round(seg_br.share[gr], 2)} for gr in seg_br.index},
+        "candidatos": [c.title() for c in top2],
+        "voto_br": [round(100 * votos[votos.candidato == c].votos.sum() / votos.votos.sum(), 2) for c in top2],
+        "lean": lean,
         "perfil": {d: g[["categoria", "aptos", "abst", "tx_abst", "share_abst"]].round(2).to_dict("records")
                    for d, g in perfil.groupby("dimensao", sort=False)},
-        # compact per-municipality rows for map + scatter: [ibge, nome, uf, aptos, tx26, tx22, renda, urb, alf]
+        # compact rows: [ibge, nome, uf, aptos, tx26, tx22, renda, urb, alf, abst26, abst22, [aptos,abst] x grupos, [top2 %]]
         "municipios": [
             [int(r.cd_ibge), r.nome.title(), r.uf, int(r.aptos_2026), round(r.tx_abst_2026, 1),
              None if pd.isna(r.tx_abst_2022) else round(r.tx_abst_2022, 1),
              None if pd.isna(r.renda_pc_mediana) else round(r.renda_pc_mediana),
              None if pd.isna(r.pct_urbana) else round(r.pct_urbana, 1),
-             None if pd.isna(r.alfabetizacao) else round(r.alfabetizacao, 1)]
+             None if pd.isna(r.alfabetizacao) else round(r.alfabetizacao, 1),
+             int(r.abst_2026), None if pd.isna(r.abst_2022) else int(r.abst_2022),
+             seg_mun.get(r.cd_tse), share.loc[r.cd_tse].tolist() if r.cd_tse in share.index else None]
             for r in m.itertuples()
         ],
     }
     (ROOT / "site" / "data.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
-    print(json.dumps({k: v for k, v in out.items() if k not in ("municipios", "perfil")}, ensure_ascii=False, indent=1))
+    print(json.dumps({k: v for k, v in out.items() if k not in ("municipios", "perfil", "segmentos_br")}, ensure_ascii=False, indent=1))
 
 
 if __name__ == "__main__":

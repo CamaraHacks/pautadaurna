@@ -104,6 +104,44 @@ def build_perfil():
     return p.sort_values(["dimensao", "ordem"])
 
 
+SEGMENTO = """
+    case
+        when cast(CD_FAIXA_ETARIA as int) >= 7074 then 'idosos'
+        when cast(CD_FAIXA_ETARIA as int) between 1800 and 2529 then 'jovens'
+        when cast(CD_FAIXA_ETARIA as int) between 3034 and 6569 then case
+            when CD_GRAU_ESCOLARIDADE in ('1', '2', '3', '4') then 'base'
+            when CD_GRAU_ESCOLARIDADE in ('5', '6', '7') then 'media'
+            when CD_GRAU_ESCOLARIDADE = '8' then 'superior'
+            else 'outros' end
+        else 'outros'
+    end"""
+
+
+def build_segmentos():
+    """Abstainer groups (age x schooling as class proxy) per municipality, from the TSE profile."""
+    year = 2026 if (RAW / "perfil_comparecimento_abstencao_2026.zip").exists() else 2022
+    csvs = extract(f"perfil_comparecimento_abstencao_{year}.zip", lambda n: n.endswith(".csv"))
+    files = [str(c) for c in csvs if not c.name.endswith(("_BR.csv", "_BRASIL.csv"))]
+    return duckdb.sql(f"""
+        select cast(CD_MUNICIPIO as int) cd_tse, {SEGMENTO} segmento,
+               sum(cast(QT_APTOS as bigint)) aptos, sum(cast(QT_ABSTENCAO as bigint)) abst
+        from read_csv({files}, delim=';', encoding='latin-1', all_varchar=true)
+        where NR_TURNO = '1' and SG_UF <> 'ZZ' group by all order by all
+    """).df()
+
+
+def build_votos():
+    """Presidente, 1º turno 2026: valid-vote share per candidate and municipality (top candidates nationally)."""
+    (csv,) = extract("votacao_candidato_munzona_2026.zip", lambda n: n.endswith("_BRASIL.csv"))
+    return duckdb.sql(f"""
+        select cast(CD_MUNICIPIO as int) cd_tse, NM_URNA_CANDIDATO candidato, SG_PARTIDO partido,
+               sum(cast(QT_VOTOS_NOMINAIS_VALIDOS as bigint)) votos
+        from read_csv('{csv}', delim=';', encoding='latin-1', all_varchar=true)
+        where DS_CARGO = 'Presidente' and NR_TURNO = '1' and SG_UF <> 'ZZ'
+        group by all
+    """).df()
+
+
 if __name__ == "__main__":
     m = build_municipios()
     m.to_csv(ROOT / "data" / "municipios.csv", index=False)
@@ -112,3 +150,11 @@ if __name__ == "__main__":
     p = build_perfil()
     p.to_csv(ROOT / "data" / "perfil.csv", index=False)
     print(p.to_string())
+    seg = build_segmentos()
+    seg.to_csv(ROOT / "data" / "segmentos.csv", index=False)
+    print(seg.groupby("segmento")[["aptos", "abst"]].sum().assign(tx=lambda d: 100 * d.abst / d.aptos,
+                                                                   share=lambda d: 100 * d.abst / d.abst.sum()))
+    v = build_votos()
+    v.to_csv(ROOT / "data" / "votos.csv", index=False)
+    print(v.groupby(["candidato", "partido"]).votos.sum().sort_values(ascending=False)
+          .pipe(lambda s: (100 * s / s.sum()).round(2)).head(5))
