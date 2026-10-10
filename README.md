@@ -36,6 +36,13 @@ Uma página com quatro abas e um filtro global (cidade, estado e grupo) que fica
   - ranking de cidades ou de regiões (Regiões Imediatas do IBGE, como a Baixada Santista), com ausentes, mobilizáveis e saldo pró-Lula;
   - visão da cidade, com o peso de cada grupo, os setores (Centro, Norte, Sul, Leste, Oeste) nas cidades com mais de 500 mil eleitores, os locais de votação ordenados por saldo e as zonas eleitorais.
 - **Kit de redes:** por grupo, dores em destaque, pautas que comparam os planos de Lula e Flávio (com fato oficial, página do plano e link para o [Mapa do Segundo Turno](https://mapasegundoturno.com.br)), imagem pronta para post, redes e formatos, mensagens cívicas e um carrossel de temas com buscas do Google Trends.
+- **Postar:** peças prontas para Instagram, TikTok e WhatsApp, com os números da cidade ou do estado escolhido:
+  - imagem do dado local (post e story);
+  - carrossel de 5 imagens por pauta;
+  - imagem 9:16;
+  - legendas por rede, roteiro de 30 s para gravar e botão "Abrir no WhatsApp";
+  - galeria de vídeos curtos enviados ao projeto;
+  - calendário e regras do TSE.
 - **Método** e **Sobre:** limites, posição editorial, regras e autoria.
 
 O sistema visual está documentado em `DESIGN.md`.
@@ -58,6 +65,29 @@ Sem a variável `SERPAPI_KEY`, o passo 06 apenas remonta os dados das buscas a p
 `pipeline/05_trends.py`, opcional, guarda uma foto dos assuntos brasileiros em alta no Google.
 
 Quando o TSE publicar `perfil_comparecimento_abstencao_2026.zip`, rodar de novo os passos 01 a 04 troca os grupos para 2026 automaticamente.
+
+## Vídeos curtos
+
+Os vídeos gravados por pessoas entram pela pasta `videos/entrada/`, que não vai para o git, e pela lista `videos/videos.csv`, com uma linha por vídeo: arquivo, título, grupo, pauta, autor, autorização e fontes.
+
+```sh
+.venv/bin/python pipeline/09_videos.py   # -> site/videos/<id>.mp4 + capa, site/videos.json
+```
+
+O script:
+- recusa vídeos sem autorização do autor e vídeos que afirmam dados sem fonte;
+- converte para MP4 H.264 9:16, com faststart e cerca de 3 Mbps;
+- acrescenta 1,5 s de cartela final do Pauta da Urna, com crédito ao autor.
+
+Exige ffmpeg e Pillow. As fontes da cartela (licença OFL) estão em `assets/fonts/`.
+
+## Regras para as peças
+
+- As imagens e os textos foram produzidos com apoio de IA, então trazem o aviso exigido pela Res. TSE 23.755/2026.
+- Esse tipo de conteúdo só pode ser publicado ou republicado até 72 horas antes do pleito: **até 21/10**.
+- Vídeos gravados por pessoas podem circular até 24/10.
+- Impulsionamento pago é exclusivo de campanhas.
+- No dia 25, nada novo.
 
 ## Publicação
 

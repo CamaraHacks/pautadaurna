@@ -50,7 +50,9 @@
     "flavio": "Criar entrega de remédio em domicílio para idosos, pessoas com deficiência e doentes crônicos. O plano não cita o Farmácia Popular.",
     "flavio_p": 38,
     "mapa_url": "/programas-sociais",
-    "mapa_titulo": "Programas sociais"
+    "mapa_titulo": "Programas sociais",
+    "gancho": "Remédio de graça na farmácia?",
+    "cta": "No 2º turno, dia 25/10, vote. Veja onde votar no e-Título."
    },
    {
     "dor": "Aposentadoria que não acompanha os preços",
@@ -61,7 +63,9 @@
     "flavio": "Reeditar um pacote antifraude na Previdência e mudar a governança do consignado do INSS. O plano não menciona política de valorização do salário mínimo.",
     "flavio_p": 72,
     "mapa_url": "/programas-sociais",
-    "mapa_titulo": "Programas sociais"
+    "mapa_titulo": "Programas sociais",
+    "gancho": "Sua aposentadoria acompanha os preços?",
+    "cta": "No 2º turno, dia 25/10, vote. Veja onde votar no e-Título."
    },
    {
     "dor": "Fila do INSS",
@@ -70,7 +74,9 @@
     "flavio": "Digitalizar os processos do INSS, dando continuidade ao Meu INSS, e profissionalizar a gestão do órgão.",
     "flavio_p": 26,
     "mapa_url": "/promessa-e-historico",
-    "mapa_titulo": "Promessa e histórico"
+    "mapa_titulo": "Promessa e histórico",
+    "gancho": "Cansou de esperar o INSS?",
+    "cta": "No 2º turno, dia 25/10, vote. Veja onde votar no e-Título."
    }
   ],
   "jovens": [
@@ -83,7 +89,9 @@
     "flavio": "O plano de governo não menciona a escala 6x1 nem a redução da jornada.",
     "flavio_p": null,
     "mapa_url": "/escala-6x1",
-    "mapa_titulo": "Escala 6x1"
+    "mapa_titulo": "Escala 6x1",
+    "gancho": "Você trabalha 6 dias por semana?",
+    "cta": "No 2º turno, dia 25/10, vote. Veja onde votar no e-Título."
    },
    {
     "dor": "Primeiro emprego",
@@ -94,7 +102,9 @@
     "flavio": "Dar a beneficiários de programas sociais prioridade em primeiro emprego e qualificação, com uma trilha própria de intermediação.",
     "flavio_p": 43,
     "mapa_url": "/projetos",
-    "mapa_titulo": "Projetos e entregas"
+    "mapa_titulo": "Projetos e entregas",
+    "gancho": "Procurando o primeiro emprego?",
+    "cta": "No 2º turno, dia 25/10, vote. Veja onde votar no e-Título."
    },
    {
     "dor": "Estudo e ENEM",
@@ -103,7 +113,9 @@
     "flavio": "Aproximar universidade e empresa: pesquisa voltada à indústria e pós-graduação financiada pelas empresas que precisam dos profissionais.",
     "flavio_p": 36,
     "mapa_url": "/educacao",
-    "mapa_titulo": "Educação"
+    "mapa_titulo": "Educação",
+    "gancho": "Vai fazer ENEM ou faculdade?",
+    "cta": "No 2º turno, dia 25/10, vote. Veja onde votar no e-Título."
    }
   ],
   "base": [
@@ -116,7 +128,9 @@
     "flavio": "Manter os programas sociais existentes: “quem depende hoje da ajuda do Estado para pôr comida na mesa não vai ter essa ajuda tirada”. Programa social como “ponto de partida”.",
     "flavio_p": 42,
     "mapa_url": "/fome",
-    "mapa_titulo": "Fome e alimentação"
+    "mapa_titulo": "Fome e alimentação",
+    "gancho": "Falta comida no fim do mês?",
+    "cta": "No 2º turno, dia 25/10, vote. Veja onde votar no e-Título."
    },
    {
     "dor": "Preço do gás de cozinha",
@@ -125,7 +139,9 @@
     "flavio": "Mais concorrência e mais gás natural do pré-sal para baixar o preço (Nova Lei do Gás). O plano não prevê auxílio para o botijão.",
     "flavio_p": 52,
     "mapa_url": "/gasolina",
-    "mapa_titulo": "Gasolina"
+    "mapa_titulo": "Gasolina",
+    "gancho": "Quanto está o botijão aí?",
+    "cta": "No 2º turno, dia 25/10, vote. Veja onde votar no e-Título."
    },
    {
     "dor": "Salário que não chega ao fim do mês",
@@ -136,7 +152,9 @@
     "flavio": "Redução de tributos para “sobrar dinheiro no fim do mês”. O plano não menciona política de valorização do salário mínimo.",
     "flavio_p": 29,
     "mapa_url": "/programas-sociais",
-    "mapa_titulo": "Programas sociais"
+    "mapa_titulo": "Programas sociais",
+    "gancho": "O salário chega ao fim do mês?",
+    "cta": "No 2º turno, dia 25/10, vote. Veja onde votar no e-Título."
    }
   ],
   "media": [
@@ -149,7 +167,9 @@
     "flavio": "O plano de governo não menciona a escala 6x1 nem a redução da jornada.",
     "flavio_p": null,
     "mapa_url": "/escala-6x1",
-    "mapa_titulo": "Escala 6x1"
+    "mapa_titulo": "Escala 6x1",
+    "gancho": "Você trabalha 6 dias por semana?",
+    "cta": "No 2º turno, dia 25/10, vote. Veja onde votar no e-Título."
    },
    {
     "dor": "Dívidas",
@@ -158,7 +178,9 @@
     "flavio": "Reduzir tributos para aliviar o orçamento das famílias; o plano cita que 85% das famílias com até 3 salários mínimos estão endividadas.",
     "flavio_p": 29,
     "mapa_url": "/juros",
-    "mapa_titulo": "Juros e Banco Central"
+    "mapa_titulo": "Juros e Banco Central",
+    "gancho": "Dívida tirando seu sono?",
+    "cta": "No 2º turno, dia 25/10, vote. Veja onde votar no e-Título."
    },
    {
     "dor": "Segurança no bairro",
@@ -167,7 +189,9 @@
     "flavio": "Declarar facções como organizações narcoterroristas e reduzir a maioridade penal de 18 para 16 anos.",
     "flavio_p": 13,
     "mapa_url": "/seguranca",
-    "mapa_titulo": "Segurança pública"
+    "mapa_titulo": "Segurança pública",
+    "gancho": "Tem medo de andar no seu bairro?",
+    "cta": "No 2º turno, dia 25/10, vote. Veja onde votar no e-Título."
    }
   ],
   "superior": [
@@ -180,7 +204,9 @@
     "flavio": "Reduzir o IVA da reforma tributária e “menos impostos”. O plano não trata do Imposto de Renda da pessoa física.",
     "flavio_p": 72,
     "mapa_url": "/divida-publica",
-    "mapa_titulo": "Dívida pública"
+    "mapa_titulo": "Dívida pública",
+    "gancho": "Você ganha até R$ 5 mil?",
+    "cta": "No 2º turno, dia 25/10, vote. Veja onde votar no e-Título."
    },
    {
     "dor": "Instituições e democracia",
@@ -189,7 +215,9 @@
     "flavio": "Fim da reeleição para presidente, fim das decisões monocráticas do STF e fim das competências criminais originárias do Supremo.",
     "flavio_p": 65,
     "mapa_url": "/constituicao",
-    "mapa_titulo": "Constituição"
+    "mapa_titulo": "Constituição",
+    "gancho": "O que cada um quer para o STF?",
+    "cta": "No 2º turno, dia 25/10, vote. Veja onde votar no e-Título."
    },
    {
     "dor": "Emprego e renda",
@@ -200,7 +228,9 @@
     "flavio": "“Menos impostos, mais formalidade, mais crescimento”, com corte de ministérios e simplificação tributária.",
     "flavio_p": 72,
     "mapa_url": "/projetos",
-    "mapa_titulo": "Projetos e entregas"
+    "mapa_titulo": "Projetos e entregas",
+    "gancho": "Emprego e renda: quem propõe o quê?",
+    "cta": "No 2º turno, dia 25/10, vote. Veja onde votar no e-Título."
    }
   ]
  }

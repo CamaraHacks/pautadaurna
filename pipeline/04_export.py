@@ -21,6 +21,8 @@ tg = SITE / "trends_grupos.json"  # optional, from 06_group_trends.py
 html = html.replace("/*__TRENDS_GRUPOS__*/null", tg.read_text() if tg.exists() else "null")
 html = html.replace("/*__REGIOES__*/null", (SITE / "regioes.json").read_text())
 html = html.replace("/*__PAUTAS__*/null", (SITE / "pautas.json").read_text())
+vids = SITE / "videos.json"  # from 09_videos.py
+html = html.replace("/*__VIDEOS__*/[]", vids.read_text() if vids.exists() else "[]")
 # GoatCounter site code (e.g. "pautadaurna"), from the environment; empty disables measurement
 html = html.replace('/*__GC__*/""', json.dumps(os.environ.get("GOATCOUNTER", "")))
 assert "/*__" not in html, "unfilled placeholder"

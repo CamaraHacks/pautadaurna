@@ -64,7 +64,7 @@ jobs:
           GOATCOUNTER: ${{ vars.GOATCOUNTER }}
         run: |
           python3 pipeline/04_export.py   # stdlib only; bakes the GoatCounter code into the page
-          mkdir _site && cp site/index.html _site/index.html && cp -r site/locais _site/locais
+          mkdir _site && cp site/index.html _site/index.html && cp -r site/locais _site/locais && cp -r site/videos _site/videos
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
