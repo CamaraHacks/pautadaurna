@@ -317,7 +317,11 @@ details.vies[open] summary { margin-bottom: 10px; }
 .gcards { grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); }
 .steps { grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); }
 .cmp-row .bar { max-width: calc(100% - 90px); flex: none; }
-pre, .note, td, .chip { overflow-wrap: anywhere; }
+pre, .note, .chip { overflow-wrap: anywhere; }
+/* tables keep each value whole and scroll sideways; only long place names wrap */
+.dtable th, .dtable td, .tbl th, .tbl td { white-space: nowrap; }
+.dtable td.wrap { white-space: normal; min-width: 170px; }
+.dtable td .note { overflow-wrap: normal; }
 #f-toggle { display: none; }
 @media (max-width: 720px) {
   body { font-size: 1rem; }
@@ -348,6 +352,7 @@ pre, .note, td, .chip { overflow-wrap: anywhere; }
   .dores { padding: 14px; }
   .dores ul { font-size: 0.95rem; }
   .site-foot { padding-inline: 16px; }
+  .dtable::before { content: "↔ arraste a tabela para o lado"; display: block; position: sticky; left: 0; font: 600 0.66rem/1 var(--mono); letter-spacing: 0.04em; color: var(--ink-3); padding: 8px 10px; border-bottom: 1px solid var(--rule); }
 }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 footer { border-top: 1px solid var(--rule); padding-top: 24px; font-size: 0.88rem; color: var(--ink-2); display: grid; gap: 12px; }
@@ -1100,7 +1105,7 @@ async function renderLocais(r) {
   const big = R && R.setores[String(r[0])];
   const shown = rows.slice(0, locLimit);
   $("t-locais").innerHTML = `<thead><tr><th>Local</th><th class="n">Zona</th>${big ? "<th>Setor</th>" : ""}<th class="n">Ausentes</th><th class="n">Lula</th><th class="n">Flávio</th><th class="n">Saldo pró-Lula</th></tr></thead><tbody>` +
-    shown.map(x => `<tr><td>${esc(x[3])}${x[4] ? `<br><span class="note">${esc(x[4])}</span>` : ""}</td><td class="n">${x[1]}ª</td>${big ? `<td>${x[2] || ""}</td>` : ""}<td class="n">${nf.format(x[6])}</td><td class="n">${pf(x[7])}%</td><td class="n">${pf(x[8])}%</td><td class="n">${saldoFmt(x[9])}</td></tr>`).join("") + "</tbody>";
+    shown.map(x => `<tr><td class="wrap">${esc(x[3])}${x[4] ? `<br><span class="note">${esc(x[4])}</span>` : ""}</td><td class="n">${x[1]}ª</td>${big ? `<td>${x[2] || ""}</td>` : ""}<td class="n">${nf.format(x[6])}</td><td class="n">${pf(x[7])}%</td><td class="n">${pf(x[8])}%</td><td class="n">${saldoFmt(x[9])}</td></tr>`).join("") + "</tbody>";
   $("locais-count").textContent = `Mostrando ${shown.length} de ${nf.format(rows.length)} locais, ordenados pelo saldo`;
   $("locais-more").hidden = locLimit >= rows.length;
 }
