@@ -323,6 +323,12 @@ pre, .note, .chip { overflow-wrap: anywhere; }
 .dtable td.wrap { white-space: normal; min-width: 170px; }
 .dtable td .note { overflow-wrap: normal; }
 #f-toggle { display: none; }
+.ac { position: relative; }
+.sug { position: absolute; z-index: 40; left: 0; right: 0; top: calc(100% + 4px); margin: 0; padding: 4px; list-style: none; background: var(--panel); border: 1px solid var(--ink-3); border-radius: 6px; box-shadow: 0 8px 20px rgba(25, 23, 20, 0.15); max-height: 300px; overflow-y: auto; }
+.sug button { display: flex; justify-content: space-between; gap: 10px; width: 100%; text-align: left; padding: 10px; font: inherit; font-size: 0.95rem; color: var(--ink); background: none; border: 0; border-radius: 4px; cursor: pointer; }
+.sug button span { font: 500 0.75rem var(--mono); color: var(--ink-3); white-space: nowrap; }
+.sug button:hover, .sug button[aria-selected="true"] { background: var(--yellow-soft); }
+.sug .vazio { padding: 10px; font-size: 0.88rem; color: var(--ink-3); }
 @media (max-width: 720px) {
   body { font-size: 1rem; }
   main { padding-inline: 16px; padding-block: 20px 72px; }
@@ -377,7 +383,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
       </nav>
     </div>
     <form class="filterbar" id="filtro" autocomplete="off">
-      <div class="field f-cidade"><label for="f-cidade">Cidade</label><input id="f-cidade" list="cidades" placeholder="Digite a cidade, ex.: Recife · PE"><datalist id="cidades"></datalist></div>
+      <div class="field f-cidade"><label for="f-cidade">Cidade</label><div class="ac"><input id="f-cidade" autocomplete="off" placeholder="Digite a cidade, ex.: Recife" role="combobox" aria-autocomplete="list" aria-controls="f-cidade-sug" aria-expanded="false"><ul id="f-cidade-sug" class="sug" role="listbox" hidden></ul></div></div>
       <div class="field f-regiao"><label for="f-regiao">Região</label><select id="f-regiao"><option value="">Todas as regiões</option></select></div>
       <div class="field"><label for="f-uf">Estado</label><select id="f-uf"><option value="">Brasil</option></select></div>
       <div class="field"><label for="f-grupo">Grupo</label><select id="f-grupo"><option value="">Todos os grupos</option></select></div>
@@ -733,27 +739,41 @@ function readHash() {
   const p = new URLSearchParams(qs || "");
   S.view = path === "kit" ? "postar" : ["panorama", "explorar", "postar", "metodo", "sobre"].includes(path) ? path : (/^\d{7}$/.test(path) ? "explorar" : "panorama");
   S.c = ROWS.get(p.get("c") || (/^\d{7}$/.test(path) ? path : "")) || null;
-  S.uf = S.c ? S.c[2] : (UFS.includes(p.get("uf")) ? p.get("uf") : "");
   S.g = GIDS.includes(p.get("g")) ? p.get("g") : "";
   S.r = REG_BY_ID.get(p.get("r")) || null;
-  if (S.r && S.r.ibge) { S.c = ROWS.get(String(S.r.ibge)) || S.c; S.uf = S.r.uf; }
-  else if (S.r) { S.c = null; S.uf = S.r.uf; }
+  if (S.r && S.r.ibge) S.c = ROWS.get(String(S.r.ibge)) || S.c;
+  if (S.r && S.c && !cabeNaRegiao(S.c, S.r)) S.c = null;
+  S.uf = S.r ? S.r.uf : S.c ? S.c[2] : (UFS.includes(p.get("uf")) ? p.get("uf") : "");
 }
 function writeHash() {
   const p = new URLSearchParams();
-  if (S.r) p.set("r", S.r.id); else if (S.c) p.set("c", S.c[0]); else if (S.uf) p.set("uf", S.uf);
+  if (S.r) p.set("r", S.r.id);
+  if (S.c && !(S.r && S.r.ibge)) p.set("c", S.c[0]);
+  if (!S.r && !S.c && S.uf) p.set("uf", S.uf);
   if (S.g) p.set("g", S.g);
   const h = `#/${S.view}${p.toString() ? "?" + p : ""}`;
   if (location.hash !== h) history.replaceState(null, "", h);
 }
+// filters form a hierarchy: state > region > city. A lower choice keeps the upper ones when it fits inside them;
+// an upper choice drops lower ones that fall outside it. Numbers always come from the most specific place.
+const cabeNaRegiao = (row, r) => r.ibge ? r.ibge === row[0] : (r.municipios || []).includes(row[0]);
 function go(patch) {
-  // a city or state change drops a region that no longer fits; an intra-city region keeps its city
-  if ("c" in patch && !("r" in patch) && S.r && !(patch.c && S.r.ibge === patch.c[0])) patch.r = null;
-  if ("uf" in patch && !("r" in patch) && !("c" in patch) && S.r) patch.r = null;
   Object.assign(S, patch);
-  if (S.r && S.r.ibge) { S.c = ROWS.get(String(S.r.ibge)) || S.c; S.uf = S.r.uf; }
-  else if (S.r) { S.c = null; S.uf = S.r.uf; }
-  else if ("c" in patch && patch.c) S.uf = patch.c[2];
+  if ("r" in patch) {
+    if (S.r) {
+      S.uf = S.r.uf;
+      if (S.r.ibge) S.c = ROWS.get(String(S.r.ibge)) || S.c;
+      else if (S.c && !cabeNaRegiao(S.c, S.r)) S.c = null;
+    }
+  } else if ("c" in patch) {
+    // picking a city means the whole city: an intra-city region goes; a region of municipalities stays if it fits
+    if (S.c) { S.uf = S.c[2]; if (S.r && (S.r.ibge || !cabeNaRegiao(S.c, S.r))) S.r = null; }
+    else if (S.r && S.r.ibge) S.r = null;  // no city left for an intra-city region
+  } else if ("uf" in patch) {
+    if (!S.uf) { S.r = null; S.c = null; }
+    if (S.r && S.r.uf !== S.uf) S.r = null;
+    if (S.c && S.c[2] !== S.uf) S.c = null;
+  }
   writeHash(); render();
 }
 window.addEventListener("hashchange", () => { readHash(); render(); });
@@ -763,7 +783,6 @@ document.querySelectorAll(".tabs a, .steps a, .brand").forEach(a => a.addEventLi
 
 // ---------- filter bar ----------
 const BY_LABEL = new Map(D.municipios.map(r => [`${r[1]} · ${r[2]}`, r]));
-$("cidades").innerHTML = [...BY_LABEL.keys()].sort((a, b) => a.localeCompare(b, "pt-BR")).map(k => `<option value="${esc(k)}"></option>`).join("");
 $("f-uf").innerHTML += UFS.map(u => `<option value="${u}">${u}</option>`).join("");
 // region dropdown, grouped; IBGE immediate regions only once a state is chosen (510 would flood the menu)
 function regionOptions() {
@@ -791,17 +810,57 @@ $("f-regiao").addEventListener("change", () => {
   track(`regiao/${x.id}`);
 });
 $("f-grupo").innerHTML += G.grupos.map(g => `<option value="${g.id}">${esc(g.nome)}</option>`).join("");
-function pickCity() {
-  const v = $("f-cidade").value.trim();
-  const row = BY_LABEL.get(v) || D.municipios.find(r => r[1].toLowerCase() === v.toLowerCase());
-  if (row) go({ c: row, view: S.view === "panorama" || S.view === "metodo" ? "explorar" : S.view });
-  else if (v) toast(`Não encontramos “${v}”. Escolha um nome da lista.`);
+const semAcento = t => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s*·\s*[a-z]{2}$/, "").trim();
+const NOMES_N = D.municipios.map(r => [semAcento(r[1]), r]);
+let sugAtual = [], sugIdx = -1;
+function cidadesPossiveis() {
+  if (S.r && !S.r.ibge && S.r.municipios) return NOMES_N.filter(([, r]) => S.r.municipios.includes(r[0]));
+  return S.uf ? NOMES_N.filter(([, r]) => r[2] === S.uf) : NOMES_N;
 }
-$("f-cidade").addEventListener("change", () => { if (BY_LABEL.has($("f-cidade").value)) pickCity(); });
+function sugerir() {
+  const q = semAcento($("f-cidade").value), ul = $("f-cidade-sug");
+  if (!q) { ul.hidden = true; $("f-cidade").setAttribute("aria-expanded", "false"); return; }
+  const pool = cidadesPossiveis();
+  const comeca = pool.filter(([n]) => n.startsWith(q)), contem = pool.filter(([n]) => !n.startsWith(q) && n.includes(q));
+  const maior = (a, b) => b[1][3] - a[1][3];
+  sugAtual = [...comeca.sort(maior), ...contem.sort(maior)].slice(0, 8).map(([, r]) => r);
+  sugIdx = sugAtual.length ? 0 : -1;
+  const onde = S.r && !S.r.ibge ? S.r.nome : S.uf;
+  ul.innerHTML = sugAtual.length
+    ? sugAtual.map((r, k) => `<li><button type="button" role="option" aria-selected="${k === sugIdx}" data-sug="${r[0]}">${esc(r[1])} · ${r[2]}<span>${nf.format(r[9])} ausentes</span></button></li>`).join("")
+    : `<li class="vazio">Nenhuma cidade com esse nome${onde ? " em " + esc(onde) : ""}.${onde ? " Limpe o estado ou a região para buscar no Brasil todo." : ""}</li>`;
+  ul.hidden = false; $("f-cidade").setAttribute("aria-expanded", "true");
+}
+function escolherCidade(row) {
+  $("f-cidade-sug").hidden = true; $("f-cidade").setAttribute("aria-expanded", "false");
+  go({ c: row, view: S.view === "panorama" || S.view === "metodo" || S.view === "sobre" ? "explorar" : S.view });
+  track(`cidade/${row[0]}`);
+}
+function pickCity() {
+  const v = $("f-cidade").value.trim(); if (!v) return;
+  const q = semAcento(v);
+  const exato = cidadesPossiveis().filter(([n]) => n === q).map(([, r]) => r);
+  const row = BY_LABEL.get(v) || (exato.length === 1 ? exato[0] : sugAtual[sugIdx >= 0 ? sugIdx : 0]);
+  if (row) escolherCidade(row);
+  else toast(`Não encontramos “${v}”. Escolha um nome da lista.`);
+}
+$("f-cidade").addEventListener("input", sugerir);
+$("f-cidade").addEventListener("focus", () => { if ($("f-cidade").value && !S.c) sugerir(); });
+$("f-cidade").addEventListener("keydown", ev => {
+  const ul = $("f-cidade-sug"); if (ul.hidden || !sugAtual.length) return;
+  if (ev.key === "ArrowDown" || ev.key === "ArrowUp") {
+    ev.preventDefault(); sugIdx = (sugIdx + (ev.key === "ArrowDown" ? 1 : -1) + sugAtual.length) % sugAtual.length;
+    ul.querySelectorAll("button").forEach((b, k) => b.setAttribute("aria-selected", k === sugIdx));
+  }
+  if (ev.key === "Escape") { ul.hidden = true; }
+});
+$("f-cidade").addEventListener("blur", () => setTimeout(() => { $("f-cidade-sug").hidden = true; if (S.c) $("f-cidade").value = `${S.c[1]} · ${S.c[2]}`; }, 200));
+$("f-cidade-sug").addEventListener("mousedown", ev => ev.preventDefault());  // keep focus so the tap lands
+$("f-cidade-sug").addEventListener("click", ev => { const b = ev.target.closest("[data-sug]"); if (b) escolherCidade(ROWS.get(b.dataset.sug)); });
 $("filtro").addEventListener("submit", ev => { ev.preventDefault(); pickCity(); });
-$("f-uf").addEventListener("change", () => go({ uf: $("f-uf").value, c: null }));
+$("f-uf").addEventListener("change", () => go({ uf: $("f-uf").value }));
 $("f-grupo").addEventListener("change", () => go({ g: $("f-grupo").value }));
-$("f-limpar").onclick = () => go({ c: null, uf: "", g: "", r: null });
+$("f-limpar").onclick = () => { Object.assign(S, { c: null, uf: "", g: "", r: null }); writeHash(); render(); };
 function renderFilter() {
   $("f-cidade").value = S.c ? `${S.c[1]} · ${S.c[2]}` : "";
   $("f-regiao").innerHTML = regionOptions();
@@ -809,9 +868,8 @@ function renderFilter() {
   $("f-uf").value = S.uf; $("f-grupo").value = S.g;
   const chips = [];
   if (S.r) chips.push(`<button type="button" class="chipbtn" data-clear="r">${esc(regLabel(S.r))} <b aria-hidden="true">×</b><span class="sr">remover região</span></button>`);
-  if (S.r && !S.r.ibge) { /* a region of municipalities already names the place */ }
-  else if (S.c) chips.push(`<button type="button" class="chipbtn" data-clear="c">${esc(S.c[1])} · ${S.c[2]} <b aria-hidden="true">×</b><span class="sr">remover cidade</span></button>`);
-  else if (S.uf) chips.push(`<button type="button" class="chipbtn" data-clear="uf">${S.uf} <b aria-hidden="true">×</b></button>`);
+  if (S.c && !(S.r && S.r.ibge)) chips.push(`<button type="button" class="chipbtn" data-clear="c">${esc(S.c[1])} · ${S.c[2]} <b aria-hidden="true">×</b><span class="sr">remover cidade</span></button>`);
+  if (!S.r && !S.c && S.uf) chips.push(`<button type="button" class="chipbtn" data-clear="uf">${S.uf} <b aria-hidden="true">×</b></button>`);
   if (S.g) chips.push(`<button type="button" class="chipbtn" data-clear="g"><i class="sw" style="background:${gcolor(S.g)}"></i>${esc(GBY[S.g].nome)} <b aria-hidden="true">×</b></button>`);
   const hints = { panorama: "O Panorama mostra o Brasil todo. O filtro vale em Onde agir e Postar.", explorar: "", kit: "", metodo: "" };
   $("scope").innerHTML = `<button type="button" class="btn sm" id="f-toggle" aria-expanded="${document.querySelector(".appbar").classList.contains("filtros")}">${document.querySelector(".appbar").classList.contains("filtros") ? "Fechar filtros" : "Filtros"}</button><span>Você está vendo:</span>${chips.length ? chips.join("") : "<strong>Brasil, todos os grupos</strong>"}<span class="hint">${hints[S.view] || ""}</span>`;
@@ -820,7 +878,7 @@ $("scope").addEventListener("click", ev => {
   if (ev.target.closest("#f-toggle")) { document.querySelector(".appbar").classList.toggle("filtros"); renderFilter(); return; }
   const b = ev.target.closest("[data-clear]"); if (!b) return;
   const k = b.dataset.clear;
-  go(k === "r" ? (S.r && S.r.ibge ? { r: null } : { r: null, uf: "" }) : k === "c" ? { c: null, uf: "", r: null } : k === "uf" ? { uf: "", r: null } : { g: "" });
+  go(k === "r" ? { r: null } : k === "c" ? { c: null } : k === "uf" ? { uf: "" } : { g: "" });
 });
 
 // ---------- toast + copy ----------
@@ -1195,7 +1253,7 @@ document.addEventListener("click", async ev => {
 const AVISO_IA = "Conteúdo produzido com apoio de IA";
 const FMT = { post: [1080, 1350], story: [1080, 1920] };
 function lugarAtual() {
-  if (S.r) return { nome: S.r.nome, prep: regPrep(S.r), abst: S.r.abst, margem: S.r.margem || 0, mob: S.r.mob, saldo: S.r.saldo };
+  if (S.r && (S.r.ibge || !S.c)) return { nome: S.r.nome, prep: regPrep(S.r), abst: S.r.abst, margem: S.r.margem || 0, mob: S.r.mob, saldo: S.r.saldo };
   if (S.c) { const r = S.c, m = R && R.mun[r[0]]; return { nome: r[1], abst: r[9], margem: r[13], mob: m ? m[0] : 0, saldo: m ? m[1] : 0 }; }
   if (S.uf) { const rs = D.municipios.filter(r => r[2] === S.uf); return { nome: S.uf, abst: rs.reduce((a, r) => a + r[9], 0), margem: D.ufs[S.uf].margem,
     mob: rs.reduce((a, r) => a + (R && R.mun[r[0]] ? R.mun[r[0]][0] : 0), 0), saldo: rs.reduce((a, r) => a + (R && R.mun[r[0]] ? R.mun[r[0]][1] : 0), 0) }; }
@@ -1325,9 +1383,9 @@ function wireCarousel(root) {
 // ---------- kit ----------
 function renderKit() {
   $("gchoose").innerHTML = G.grupos.map(g => `<button type="button" aria-pressed="${S.g === g.id}" data-g="${g.id}"><i class="sw" style="background:${gcolor(g.id)}"></i>${esc(g.nome)}</button>`).join("");
-  const sz = S.r && S.r.municipios ? groupSizesRows(D.municipios.filter(r => S.r.municipios.includes(r[0]))) : groupSizes(S.c, S.uf), tot = sz.reduce((s, x) => s + x.ab, 0) || 1;
+  const sz = !S.c && S.r && S.r.municipios ? groupSizesRows(D.municipios.filter(r => S.r.municipios.includes(r[0]))) : groupSizes(S.c, S.uf), tot = sz.reduce((s, x) => s + x.ab, 0) || 1;
   // group sizes exist per municipality: an intra-city region shows its city's numbers, labeled as the city
-  const onde = S.r && !S.r.ibge ? regLabel(S.r) : S.c ? `${S.c[1]} · ${S.c[2]}` : S.uf || "Brasil";
+  const onde = S.c ? `${S.c[1]} · ${S.c[2]}` : S.r ? regLabel(S.r) : S.uf || "Brasil";
   if (!S.g) {
     $("kit-body").innerHTML = `<section><div class="gcards">${G.grupos.map((g, i) => `
       <button type="button" class="gcard" data-g="${g.id}">
