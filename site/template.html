@@ -378,7 +378,7 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
     </div>
     <form class="filterbar" id="filtro" autocomplete="off">
       <div class="field f-cidade"><label for="f-cidade">Cidade</label><input id="f-cidade" list="cidades" placeholder="Digite a cidade, ex.: Recife · PE"><datalist id="cidades"></datalist></div>
-      <div class="field f-regiao"><label for="f-regiao">Região</label><input id="f-regiao" list="regioes-lista" placeholder="Ex.: Baixada Fluminense, Zona Sul"><datalist id="regioes-lista"></datalist></div>
+      <div class="field f-regiao"><label for="f-regiao">Região</label><select id="f-regiao"><option value="">Todas as regiões</option></select></div>
       <div class="field"><label for="f-uf">Estado</label><select id="f-uf"><option value="">Brasil</option></select></div>
       <div class="field"><label for="f-grupo">Grupo</label><select id="f-grupo"><option value="">Todos os grupos</option></select></div>
       <button type="button" class="btn corrige" id="f-limpar">Corrige</button>
@@ -765,16 +765,31 @@ document.querySelectorAll(".tabs a, .steps a, .brand").forEach(a => a.addEventLi
 const BY_LABEL = new Map(D.municipios.map(r => [`${r[1]} · ${r[2]}`, r]));
 $("cidades").innerHTML = [...BY_LABEL.keys()].sort((a, b) => a.localeCompare(b, "pt-BR")).map(k => `<option value="${esc(k)}"></option>`).join("");
 $("f-uf").innerHTML += UFS.map(u => `<option value="${u}">${u}</option>`).join("");
-const REG_LABEL = new Map(REG.map(x => [regLabel(x), x]));
-const ordemTipo = { municipios: 0, oficial: 1, aproximado: 2, ibge: 3 };
-$("regioes-lista").innerHTML = [...REG].sort((a, b) => ordemTipo[a.tipo] - ordemTipo[b.tipo] || regLabel(a).localeCompare(regLabel(b), "pt-BR")).map(x => `<option value="${esc(regLabel(x))}"></option>`).join("");
-function pickRegion() {
-  const v = $("f-regiao").value.trim();
-  const x = REG_LABEL.get(v) || REG.find(y => y.nome.toLowerCase() === v.toLowerCase());
-  if (x) { go({ r: x, view: S.view === "panorama" || S.view === "metodo" || S.view === "sobre" ? "explorar" : S.view }); track(`regiao/${x.id}`); }
-  else if (v) toast(`Não encontramos a região “${v}”. Escolha um nome da lista.`);
+// region dropdown, grouped; IBGE immediate regions only once a state is chosen (510 would flood the menu)
+function regionOptions() {
+  const noUF = x => !S.uf || x.uf === S.uf;
+  const grupos = [];
+  const metro = REG.filter(x => x.tipo === "municipios" && noUF(x)).sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+  if (metro.length) grupos.push(["Regiões metropolitanas e baixadas", metro]);
+  const cidades = [...new Set(REG.filter(x => x.ibge && noUF(x)).map(x => x.cidade))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+  for (const c of cidades) {
+    const xs = REG.filter(x => x.cidade === c);
+    const setores = xs.filter(x => x.campo === "setor").sort((a, b) => b.abst - a.abst);
+    const subs = xs.filter(x => x.campo === "sub").sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+    grupos.push([`${c}${setores[0] && setores[0].tipo === "aproximado" ? " (setores aproximados)" : ""}`, setores]);
+    if (subs.length) grupos.push([`${c} · ${c === "São Paulo" ? "subprefeituras" : "regiões de planejamento"}`, subs]);
+  }
+  if (S.uf) grupos.push([`Regiões do IBGE · ${S.uf}`, REG.filter(x => x.tipo === "ibge" && x.uf === S.uf).sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))]);
+  return `<option value="">${S.uf ? "Todas as regiões de " + S.uf : "Todas as regiões"}</option>` +
+    grupos.filter(g => g[1].length).map(([rot, xs]) => `<optgroup label="${esc(rot)}">${xs.map(x => `<option value="${esc(x.id)}">${esc(x.nome)}</option>`).join("")}</optgroup>`).join("") +
+    (S.uf ? "" : `<option value="" disabled>Escolha um estado para ver as regiões do IBGE</option>`);
 }
-$("f-regiao").addEventListener("change", () => { if (REG_LABEL.has($("f-regiao").value)) pickRegion(); });
+$("f-regiao").addEventListener("change", () => {
+  const x = REG_BY_ID.get($("f-regiao").value);
+  if (!x) { go({ r: null }); return; }
+  go({ r: x, view: S.view === "panorama" || S.view === "metodo" || S.view === "sobre" ? "explorar" : S.view });
+  track(`regiao/${x.id}`);
+});
 $("f-grupo").innerHTML += G.grupos.map(g => `<option value="${g.id}">${esc(g.nome)}</option>`).join("");
 function pickCity() {
   const v = $("f-cidade").value.trim();
@@ -783,13 +798,14 @@ function pickCity() {
   else if (v) toast(`Não encontramos “${v}”. Escolha um nome da lista.`);
 }
 $("f-cidade").addEventListener("change", () => { if (BY_LABEL.has($("f-cidade").value)) pickCity(); });
-$("filtro").addEventListener("submit", ev => { ev.preventDefault(); if (document.activeElement === $("f-regiao")) pickRegion(); else pickCity(); });
+$("filtro").addEventListener("submit", ev => { ev.preventDefault(); pickCity(); });
 $("f-uf").addEventListener("change", () => go({ uf: $("f-uf").value, c: null }));
 $("f-grupo").addEventListener("change", () => go({ g: $("f-grupo").value }));
 $("f-limpar").onclick = () => go({ c: null, uf: "", g: "", r: null });
 function renderFilter() {
   $("f-cidade").value = S.c ? `${S.c[1]} · ${S.c[2]}` : "";
-  $("f-regiao").value = S.r ? regLabel(S.r) : "";
+  $("f-regiao").innerHTML = regionOptions();
+  $("f-regiao").value = S.r ? S.r.id : "";
   $("f-uf").value = S.uf; $("f-grupo").value = S.g;
   const chips = [];
   if (S.r) chips.push(`<button type="button" class="chipbtn" data-clear="r">${esc(regLabel(S.r))} <b aria-hidden="true">×</b><span class="sr">remover região</span></button>`);
